@@ -1,0 +1,283 @@
+<html>
+
+<head>
+
+</head>
+
+<body>
+    <svg id="zone" height="1" width="1" style="border:3px solid blue">
+    </svg> 
+        
+    <script type="module">
+
+        //idee optimisation: pre calculer tous les gabari de carres (avec scales et rotations) puis les translater
+        import { createSVGSquare, updateSVGSquare, drawPoint, drawBox } from './draw.mjs';
+        import { MIN, MAX, W, H, NB_SQUARE, NB_VERTEX, COS, SIN } from './constants.mjs';
+        import { arrangement_to_VI } from './calculVI.mjs';
+        import { are_VI_Equivalents } from './compare-arrangements.mjs';
+        import { squares } from './initSquares.mjs';
+
+
+        //Liste des configurations N=3 trouvées  
+        var conf3 = [
+            /*{
+                id: 0,
+                V: [ 
+                    [0, 0, 0],
+                    [0, 0, 0],
+                    [0, 0, 0]
+                ],
+                I: [ 
+                    [0, 0, 0],
+                    [0, 0, 0],
+                    [0, 0, 0],
+                    [0, 0, 0]
+                ],
+            }*/
+        ];
+
+        //Generate a liste of angles    
+        var getAngles = (step, max) => {
+            let angles = [];
+            let angle = 0;
+            let i = 0;
+            while ( angle < max){
+                i++;
+                angle += step;
+                angles.push(angle);
+            }
+            return angles;
+        }
+       
+        //Generate a list of size in pixel 
+        var getSizes = (step, max) => {//peut depasser la valeur max
+            let sizes = [];
+            let size = 0;
+            let i = 0;
+            while ( size < max){
+                i++;
+                size += step;
+                sizes.push(size);
+            }
+            return sizes;
+        }
+
+        //Ajoute l'arrangement arr dans la liste conf3 si il n'y pas d'equivanlent deja present
+        var updateConf3 = (arr, conf3) => {
+            if ( arr.valid ){
+                //regarder si cet arrangement est deja dans conf3
+                let n = conf3.length;
+                let found = false;
+                for(let i=0;i<n;i++){
+                    if ( are_VI_Equivalents(conf3[i], arr) ){
+                        found = true;
+                        break;
+                    }
+                }
+                if (!found){
+                    conf3.push(arr);
+                    console.log(conf3);
+                }
+            }
+        }
+        // //tests
+        // let V0 = [
+        //     [0, 1, 0],
+        //     [1, 0, 0],
+        //     [0, 0, 0]
+        // ];
+        // let I0 = [ 
+        //     [1, 0, 0],
+        //     [0, 1, 0],
+        //     [0, 1, 0],
+        //     [1, 0, 0],
+        // ];
+        // let V2 = [
+        //     [0, 1, 0],
+        //     [1, 0, 0],
+        //     [0, 0, 0]
+        // ];
+        // let I2 = [ 
+        //     [0, 1, 0],
+        //     [0, 1, 0],
+        //     [1, 0, 0],
+        //     [1, 0, 0],
+        // ];
+
+        // console.log(are_VI_Equivalents({V:V0, I:I0}, {V:V2, I:I2}));
+        
+        //Simulation
+        //on place le square 0 au centre, il restera invariant
+        squares[0].initRotZero(100, {x:W/2, y:H/2});
+        squares[0].majBox();
+        createSVGSquare(squares[0],0);
+
+        //Les deux autre squares vont bouger    
+        squares[1].initRotZero(100, {x:-9999, y:-9999});
+        squares[1].majBox();
+        //squares[1].translate({x:W/2, y:H/2})
+        createSVGSquare(squares[1],1);
+
+        squares[2].initRotZero(100, {x:9999,y:9999});
+        squares[2].majBox();
+        createSVGSquare(squares[2],2);
+
+        //scale [0.01, 2]
+        //rotation [0, 89]
+        //x dans [ squares[0].box.xmin - squares[0].a/2, squares[0].box.xmax + squares[0].a/2]
+        //y dans [ squares[0].box.ymin - squares[0].a/2, squares[0].box.ymax + squares[0].a/2]
+        // pas x et y: squares[0].a/10; 
+
+        let zoneBalayage = {
+            xmin: squares[0].box.xmin - squares[0].a/2, 
+            xmax: squares[0].box.xmax + squares[0].a/2, 
+            ymin: squares[0].box.ymin - squares[0].a/2,
+            ymax: squares[0].box.ymax + squares[0].a/2
+        };
+        let step = squares[0].a/20;
+       
+        //zone balayage
+        let nx = parseInt((zoneBalayage.xmax - zoneBalayage.xmin)/step);
+        let ny = parseInt((zoneBalayage.ymax - zoneBalayage.ymin)/step);
+        let nx_half = Math.ceil(nx/2) + step;
+        let ny_half = Math.ceil(ny/2) + step;
+
+        let x2, y2, x3, y3;
+
+        let angles = getAngles(10, 90);
+        let sizes = getSizes(10, 150);
+        let n_angles = angles.length;
+        let n_size = sizes.length;
+    
+        for(let i0=0;i0<nx_half;i0++){
+            x2 = zoneBalayage.xmin + i0*step;
+            for(let j0=0;j0<ny_half;j0++){
+                y2 = zoneBalayage.ymin + j0*step;
+                //drawPoint({x:x2,y:y2});
+                //console.log(x, y);
+                squares[1].moveTo({x:x2,y:y2}, false);
+                for(let k=0;k<n_angles;k++){
+                    squares[1].rotate(angles[k], false);
+                    for(let p=0;p<n_size;p++){
+                        //console.log(x,y);       
+                        //debugger;                                                                        
+                        squares[1].changeSize(sizes[p], true);
+                        let arr = arrangement_to_VI(squares);
+                        let n3 = conf3.length; 
+                        //updateSVGSquare(squares[1],1);                      
+                        updateConf3(arr, conf3);
+                        // if ( conf3.length > n3 ){                                                   
+                        //     //updateSVGSquare(squares[1],1);                                               
+                        //     //on a trouvee une nouvelle conf N2
+                        //     //on va la balayer avec le 3 eme square                 
+                        //     for(let i1=0;i1<nx;i1++){
+                        //         x3 = zoneBalayage.xmin + i1*step;
+                        //         for(let j1=0;j1<ny;j1++){
+                        //             y3 = zoneBalayage.ymin + j1*step;
+                        //             //drawPoint({x:x3,y:y3});
+                        //             squares[2].moveTo({x:x3,y:y3}, false);
+                        //             for(let m=0;m<n_angles;m++){
+                        //                 squares[2].rotate(angles[m], false);   
+                        //                 for(let q=0;q<n_size;q++){                                          
+                        //                     squares[2].changeSize(sizes[q], true);                                                                                                                    
+                        //                     let arr = arrangement_to_VI(squares);
+                        //                     let n3 = conf3.length; 
+                        //                     updateConf3(arr,conf3);
+                        //                     //updateSVGSquare(squares[2],2);      
+                        //                     //debugger;                                  
+                        //                     if ( conf3.length > n3 ){ 
+                        //                         //updateSVGSquare(squares[2],2);
+                        //                         //console.log("xxxx");
+                        //                     }
+                        //                 }
+                        //             }
+                        //         }
+                        //     }
+                        // }
+                    }
+                }
+            }
+        }
+        
+        console.log(conf3.length+' configurations found.');
+
+        console.log('========= END =========');
+        // squares[0].initRotZero(100, {x:W/2, y:H/2});
+        // squares[0].majBox();
+        // drawSquare(squares[0]);
+
+        // squares[1].copy(squares[0]);
+        // squares[1].translate({x:40,y:40});
+        // //squares[1].rotate(24);
+        // drawSquare(squares[1]);
+
+        // squares[2].copy(squares[0]);
+        // //squares[2].scale(2.5);
+        // squares[2].translate({x:100,y:0});
+        // squares[2].rotate(45);
+        // drawSquare(squares[2]);
+        // console.log(squares);
+    
+        // let VI = arrangement_to_VI(squares);
+        // console.log('VI=',VI);
+
+        //arr 6
+        // squares[1].vertex = [
+        //     {x: 205.35533905932738, y: 198.76275643042055},
+        //     {x: 231.23724356957945, y: 295.3553390593274},
+        //     {x: 134.64466094067262, y: 321.23724356957945},
+        //     {x: 108.76275643042055, y: 224.64466094067262}
+        // ]
+
+        // squares[1].box = {xmin: 108.76275643042055, xmax: 231.23724356957945, ymin: 198.76275643042055, ymax: 321.23724356957945};
+
+        // squares[1].boxEdge = [
+        //     {xmin: 205.35533905932738, xmax: 231.23724356957945, ymin: 198.76275643042055, ymax: 295.3553390593274},
+        //     {xmin: 134.64466094067262, xmax: 231.23724356957945, ymin: 295.3553390593274, ymax: 321.23724356957945},
+        //     {xmin: 108.76275643042055, xmax: 134.64466094067262, ymin: 224.64466094067262, ymax: 321.23724356957945},
+        //     {xmin: 108.76275643042055, xmax: 205.35533905932738, ymin: 198.76275643042055, ymax: 224.64466094067262}
+        // ];
+        // squares[1].center = { x: 170, y: 260 };
+
+
+        // let arr = arrangement_to_VI(squares);// bug !!!!
+
+        // console.log("areEqual:"+ areEqual(V0, V2));
+        // console.log("sumOnColumn:"+ sumOnColumn(V2, 0));
+        // console.log("sumOnColumn:"+ sumOnColumn(V2, 1));
+        // console.log("sumOnColumn:"+ sumOnColumn(V2, 2));
+        // console.log("Det V0:"+ Det33(V0));
+        // console.log("Det V2:"+ Det33(V2));
+        
+        // let EquivalentsListV2 = getEquivalent_V(V2);
+        // console.log("EquivalentsList V2:",EquivalentsListV2);
+        // for (var elem in EquivalentsListV2) {
+        //     console.log(EquivalentsListV2[elem]);
+        //     if ( areEqual(V0, EquivalentsListV2[elem].matrix) ){
+        //         console.log("egale");
+        //     }
+        // }
+
+        
+
+        //on pose un premier carré fixe de 100px de large au centre de la zone de simu
+
+        // const black = "stroke:black;stroke-width:3;fill-opacity:0;"
+        // const red = "stroke:red;stroke-width:1;fill-opacity:0;"
+        // let boxA = {xmin:100, xmax: 200, ymin:80, ymax:160};
+        // drawBox(boxA,black);
+        // for (let i=0;i<15;i++){ 
+        //     for (let j=0;j<15;j++){ 
+        //         let xmin = 28 * i;
+        //         let ymin = 38 * j;
+        //         let boxB = {xmin, xmax: xmin+28, ymin, ymax:ymin+38};
+        //         if ( testBoxesOverlapping(boxA, boxB) )  {
+        //             drawBox(boxB,red);
+        //         }
+        //     }
+        // }
+
+    </script>
+</body>
+
+</html>
