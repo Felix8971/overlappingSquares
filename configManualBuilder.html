@@ -9,8 +9,13 @@
     <div id="container">
         <div id='result-zone'>
             <svg id="zone" height="1" width="1" style="border:1px solid #d8d8d8"></svg> 
-            <div id="matrix-container">
-                hjkeerjcrkjejc
+            <div id="footer-container">
+                <div id="export-svg">
+                    <button id="export-svg-btn">Export svg</button>
+                </div>
+                <div id='matrices'>
+                    2 matrices here... 
+                </div>  
             </div>   
         </div>     
         <div>
@@ -78,17 +83,20 @@
                     </div>            
             </div>
         </div>
-        
     </div>
+
     <script type="module">
 
         //idee optimisation: pre calculer tous les gabari de carres (avec scales et rotations) puis les translater
-        import { createSVGSquare, updateSVGSquare, drawPoint, drawBox } from './draw.mjs';
+        import { createSVGSquare, updateSVGSquare, drawPoint, drawBox, saveSvg } from './draw.mjs';
         import { MIN, MAX, W, H, NB_SQUARE, NB_VERTEX, COS, SIN } from './constants.mjs';
         import { arrangement_to_VI } from './calculVI.mjs';
         import { are_VI_Equivalents } from './compare-arrangements.mjs';
         import { squares } from './initSquares.mjs';
 
+        var svg = document.getElementsByTagName('svg')[0]; //Get svg element
+
+        var exportIndex = 0; 
         var selectedSquare = 0;
         var translationStep = 10;
         var rotationStep = 10;
@@ -190,13 +198,24 @@
         });
         document.getElementById('resize-plus').addEventListener('click', function(event) {
             let sq = squares[selectedSquare];
-            debugger;
             let a = sq.a + parseInt(resizeStep);
             sq.changeSize(a, true);
             updateSVGSquare(sq,selectedSquare);   
         });
+        document.getElementById('resize-moins').addEventListener('click', function(event) {
+            let sq = squares[selectedSquare];
+            let a = sq.a - parseInt(resizeStep);
+            sq.changeSize(a, true);
+            updateSVGSquare(sq,selectedSquare);
+        });
 
+        //export svg button
+        document.getElementById('export-svg-btn').addEventListener('click', function(event) {
+            saveSvg(svg, 'arr'+exportIndex+'.svg');
+            exportIndex++;
+        });
 
+        
 
         // //tests
         // let V0 = [
@@ -241,108 +260,115 @@
         squares[2].majBox();
         createSVGSquare(squares[2],2);
 
-      
 
     </script>
+
+<style>   
+        #container {
+            display:flex;
+            flex-direction: row;
+            justify-content: center;
+        }
+
+        #translate, #rotate, #resize {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-evenly;
+            align-items: center;
+        }
+        
+        button {
+            width: 44px;
+            height:44px;
+            font-size: 1.2em;
+            cursor:pointer;
+        }
+
+        input {
+            width: 44px;
+            font-size: 1.1em;
+            text-align: center;
+            height: 22px;
+        }
+
+        .radio-button {
+            display: flex;
+            flex-direction: row;
+            justify-content: space-evenly;
+            align-items: center;
+            padding-left: 10px;
+        }
+
+        #active-square{
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .line {
+            border: 1px solid #d8d8d8;
+            padding: 14px;
+        }
+        .flip{
+            transform: scale(-1, 1);
+        }
+
+        .column{
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+
+        .small-button{
+            width: 20px;
+            height:20px;
+            border: 1px solid #b9b9b9;
+            text-align: center;
+            cursor:pointer;
+        }
+
+
+        .small-btn-container{
+            display: flex;
+            flex-direction: row;
+        }
+
+        .form-group {
+            display:flex;
+        }
+
+        p {
+            margin: 0 0 10px 0;
+        }
+
+        #result-zone{
+            display: flex;
+            flex-direction: column;
+            justify-content: space-evenly;
+            align-items: center;
+            
+        }
+
+        h2 {
+            text-align: center;
+        }
+
+        #footer-container{
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            border: 1px solid #d8d8d8;
+            width: 500px;
+            height: 100px;
+        }
+
+        #export-svg-btn {
+            width: auto;
+            height:auto;
+            font-size: 1em;
+        }
+    </style>
 </body>
-<style>
- 
- #container {
-    display:flex;
-    flex-direction: row;
-    justify-content: center;
- }
-
- #translate, #rotate, #resize {
-    display: flex;
-    flex-direction: column;
-    justify-content: space-evenly;
-    align-items: center;
- }
-  button {
-    width: 44px;
-    height:44px;
-    font-size: 1.2em;
-    cursor:pointer;
-  }
-
-  input {
-    width: 44px;
-    font-size: 1.1em;
-    text-align: center;
-    height: 22px;
-  }
-
-
-  .radio-button {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-evenly;
-    align-items: center;
-    padding-left: 10px;
-  }
-
-  #active-square{
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-  }
- 
-  .line {
-    border: 1px solid #d8d8d8;
-    padding: 14px;
-  }
- .flip{
-    transform: scale(-1, 1);
- }
-
- .column{
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    flex-direction: column;
- }
-
- .small-button{
-    width: 20px;
-    height:20px;
-    border: 1px solid #b9b9b9;
-    text-align: center;
-    cursor:pointer;
- }
-
-
- .small-btn-container{
-    display: flex;
-    flex-direction: row;
- }
-
- .form-group {
-    display:flex;
- }
-
- p {
-    margin: 0 0 10px 0;
- }
-
- #result-zone{
-    display: flex;
-    flex-direction: column;
-    justify-content: space-evenly;
-    align-items: center;
-    
- }
-
- h2 {
-     text-align: center;
- }
-
-
- #matrix-container{
-    border: 1px solid #d8d8d8;
-    width: 500px;
-    height: 100px;
- }
-</style>
 </html>

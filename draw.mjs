@@ -16,7 +16,6 @@ import { W, H } from './constants.mjs';
 svg.setAttribute('width','500px');
 svg.setAttribute('height','398px');
 
-
 //Create label for the squares
 let label = [];
 for (let i=0;i<3;i++){
@@ -77,4 +76,18 @@ export function drawPoint(point) {//tested
     circle.setAttribute('r',2);       // give the circle a radius so we can see it
     circle.setAttribute('opacity',0.5); 
     svg.appendChild(circle);
+}
+
+export function saveSvg(svgEl, name) {
+    svgEl.setAttribute("xmlns", nameSpaceURI);
+    var svgData = svgEl.outerHTML;
+    var preface = '<?xml version="1.0" standalone="no"?>\r\n';
+    var svgBlob = new Blob([preface, svgData], {type:"image/svg+xml;charset=utf-8"});
+    var svgUrl = URL.createObjectURL(svgBlob);
+    var downloadLink = document.createElement("a");
+    downloadLink.href = svgUrl;
+    downloadLink.download = 'D:\overlapingSquares'+name;
+    document.body.appendChild(downloadLink);
+    downloadLink.click();
+    document.body.removeChild(downloadLink);
 }
