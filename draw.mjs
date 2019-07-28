@@ -86,7 +86,7 @@ export function saveSvg(svgEl, name) {
     var svgUrl = URL.createObjectURL(svgBlob);
     var downloadLink = document.createElement("a");
     downloadLink.href = svgUrl;
-    downloadLink.download = 'D:\overlapingSquares'+name;
+    downloadLink.download = name;
     document.body.appendChild(downloadLink);
     downloadLink.click();
     document.body.removeChild(downloadLink);

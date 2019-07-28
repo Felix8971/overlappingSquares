@@ -14,7 +14,7 @@
                     <button id="export-svg-btn">Export svg</button>
                 </div>
                 <div id='matrices'>
-                    2 matrices here... 
+                    2 valid matrices here... (or display illegal...)
                 </div>  
             </div>   
         </div>     
@@ -132,22 +132,22 @@
         });
         document.getElementById('go-up').addEventListener('click', function(event) {
             let sq = squares[selectedSquare];
-            sq.moveTo({x:sq.center.x, y:sq.center.y - parseInt(translationStep)}, true);
+            sq.translate({x:0, y: -parseInt(translationStep)}, true);
             updateSVGSquare(sq,selectedSquare);   
         });
         document.getElementById('go-down').addEventListener('click', function(event) {
             let sq = squares[selectedSquare];
-            sq.moveTo({x:sq.center.x, y:sq.center.y + parseInt(translationStep)}, true);
+            sq.translate({x:0, y: parseInt(translationStep)}, true);
             updateSVGSquare(sq,selectedSquare);   
         });
         document.getElementById('go-left').addEventListener('click', function(event) {
             let sq = squares[selectedSquare];
-            sq.moveTo({x:sq.center.x - parseInt(translationStep), y:sq.center.y}, true);
+            sq.translate({x: -parseInt(translationStep), y: 0}, true);
             updateSVGSquare(sq,selectedSquare);   
         });
         document.getElementById('go-right').addEventListener('click', function(event) {
             let sq = squares[selectedSquare];
-            sq.moveTo({x:sq.center.x + parseInt(translationStep), y:sq.center.y}, true);
+            sq.translate({x: parseInt(translationStep), y: 0}, true);
             updateSVGSquare(sq,selectedSquare);   
         });
         
@@ -361,7 +361,7 @@
             align-items: center;
             border: 1px solid #d8d8d8;
             width: 500px;
-            height: 100px;
+            height: 75px;
         }
 
         #export-svg-btn {
