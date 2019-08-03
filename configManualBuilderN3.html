@@ -15,12 +15,69 @@
                 </div>
                 <div id='matrices'>          
                     <div class="header">
-                        <div class="column">V</div>
-                        <div class="column">F</div>
+                        <div class="column-result">V</div>
+                        <div class="column-result">F</div>
                     </div>
                     <div class="body">
-                        <div class="column">Vvvvv</div>
-                        <div class="column">Ffffff</div>
+                        <div class="column-result" id="v-matrix">
+                            <div class="line-matrix-group">
+                                <div class="line-matrix">
+                                    <div class="m-square border-left border-top"></div>
+                                    <div id="v00" class="m-square">0</div>
+                                    <div id="v01" class="m-square">0</div>
+                                    <div id="v02" class="m-square">0</div>
+                                    <div class="m-square border-right border-top"></div>
+                                </div>
+                                <div class="line-matrix"> 
+                                    <div class="m-square border-left"></div>
+                                    <div id="v10" class="m-square">0</div>
+                                    <div id="v11" class="m-square">0</div>
+                                    <div id="v12" class="m-square">0</div>
+                                    <div class="m-square border-right"></div>
+                                </div>                            
+                                <div class="line-matrix">
+                                    <div class="m-square border-left border-bottom"></div>
+                                    <div id="v20" class="m-square">0</div>
+                                    <div id="v21" class="m-square">0</div>
+                                    <div id="v22" class="m-square">0</div>
+                                    <div class="m-square border-right border-bottom"></div>
+                                </div>                                  
+                            </div> 
+                            <div id="v-illegal">illegal!</div>                         
+                        </div>
+                        <div class="column-result" id="f-matrix">
+                            <div class="line-matrix-group">
+                                <div class="line-matrix">
+                                    <div class="m-square border-left border-top"></div>
+                                    <div id="f00" class="m-square">0</div>
+                                    <div id="f01" class="m-square">0</div>
+                                    <div id="f02" class="m-square">0</div>                                 
+                                    <div class="m-square border-right border-top"></div>
+                                </div>
+                                <div class="line-matrix"> 
+                                    <div class="m-square border-left"></div>
+                                    <div id="f10" class="m-square">0</div>
+                                    <div id="f11" class="m-square">0</div>
+                                    <div id="f12" class="m-square">0</div>                                 
+                                    <div class="m-square border-right"></div>
+                                </div>    
+                                <div class="line-matrix"> 
+                                    <div class="m-square border-left"></div>
+                                    <div id="f20" class="m-square">0</div>
+                                    <div id="f21" class="m-square">0</div>
+                                    <div id="f22" class="m-square">0</div>                                 
+                                    <div class="m-square border-right"></div>
+                                </div>                           
+                                <div class="line-matrix">
+                                    <div class="m-square border-left border-bottom"></div>
+                                    <div id="f30" class="m-square">0</div>
+                                    <div id="f31" class="m-square">0</div>
+                                    <div id="f32" class="m-square">0</div>                                
+                                    <div class="m-square border-right border-bottom"></div>
+                                </div>                                  
+                            </div> 
+                            <div id="f-illegal">illegal!</div>                                 
+                        </div>
                     </div>                                      
                 </div>  
             </div>   
@@ -102,6 +159,8 @@
         import { squares } from './initSquares.mjs';
 
         var svg = document.getElementsByTagName('svg')[0]; //Get svg element
+        svg.setAttribute('width','500px');
+        svg.setAttribute('height','353px');
 
         var exportIndex = 0; 
         var selectedSquare = 0;
@@ -109,9 +168,61 @@
         var rotationStep = 10;
         var resizeStep = 10;
 
-
         var updateMatrices = function(){
-            document.getElementById('matrices').innerHTML = JSON.stringify(arrangement_to_VI(squares));
+            let arr = arrangement_to_VI(squares);
+            let V = arr.V;
+            let I = arr.I;
+            if (arr.valid) {
+                document.getElementById('v-illegal').style.display = "none";
+                document.getElementById('f-illegal').style.display = "none";
+                document.getElementById('v00').innerHTML = V[0][0];
+                document.getElementById('v01').innerHTML = V[0][1];
+                document.getElementById('v02').innerHTML = V[0][2];
+                document.getElementById('v10').innerHTML = V[1][0];
+                document.getElementById('v11').innerHTML = V[1][1];
+                document.getElementById('v12').innerHTML = V[1][2];
+                document.getElementById('v20').innerHTML = V[2][0];
+                document.getElementById('v21').innerHTML = V[2][1];
+                document.getElementById('v22').innerHTML = V[2][2];
+                
+                document.getElementById('f00').innerHTML = I[0][0];
+                document.getElementById('f01').innerHTML = I[0][1];
+                document.getElementById('f02').innerHTML = I[0][2];
+                document.getElementById('f10').innerHTML = I[1][0];
+                document.getElementById('f11').innerHTML = I[1][1];
+                document.getElementById('f12').innerHTML = I[1][2];
+                document.getElementById('f20').innerHTML = I[2][0];
+                document.getElementById('f21').innerHTML = I[2][1];
+                document.getElementById('f22').innerHTML = I[2][2];
+                document.getElementById('f30').innerHTML = I[3][0];
+                document.getElementById('f31').innerHTML = I[3][1];
+                document.getElementById('f32').innerHTML = I[3][2];
+            } else {
+                document.getElementById('v-illegal').style.display = "block";
+                document.getElementById('f-illegal').style.display = "block";
+                document.getElementById('v00').innerHTML = '.';
+                document.getElementById('v01').innerHTML = '.';
+                document.getElementById('v02').innerHTML = '.';
+                document.getElementById('v10').innerHTML = '.';
+                document.getElementById('v11').innerHTML = '.';
+                document.getElementById('v12').innerHTML = '.';
+                document.getElementById('v20').innerHTML = '.';
+                document.getElementById('v21').innerHTML = '.';
+                document.getElementById('v22').innerHTML = '.';
+
+                document.getElementById('f00').innerHTML = '.';
+                document.getElementById('f01').innerHTML = '.';
+                document.getElementById('f02').innerHTML = '.';
+                document.getElementById('f10').innerHTML = '.';
+                document.getElementById('f11').innerHTML = '.';
+                document.getElementById('f12').innerHTML = '.';
+                document.getElementById('f20').innerHTML = '.';
+                document.getElementById('f21').innerHTML = '.';
+                document.getElementById('f22').innerHTML = '.';
+                document.getElementById('f30').innerHTML = '.';
+                document.getElementById('f31').innerHTML = '.';
+                document.getElementById('f32').innerHTML = '.';
+            }
         }
 
         //Define event when click a radio button
@@ -122,11 +233,25 @@
                 console.log(selectedSquare);
                 document.getElementById('square0').style.strokeWidth = '0.5';
                 document.getElementById('square1').style.strokeWidth = '0.5';
-                document.getElementById('square2').style.strokeWidth = '0.5';
                 document.getElementById('square'+selectedSquare).style.strokeWidth = 2;
             });
         }
-        
+
+
+        document.addEventListener("DOMContentLoaded", function() {
+            ['square0','square1','square2'].map((square)=>{
+                document.getElementById(square).addEventListener('click', function(event) { 
+                    selectedSquare = event.target.id.split("square")[1];
+                    console.log(selectedSquare);
+                    document.getElementById('square0').style.strokeWidth = '0.5';
+                    document.getElementById('square1').style.strokeWidth = '0.5';
+                    document.getElementById('square2').style.strokeWidth = '0.5';
+                    document.getElementById('square'+selectedSquare).style.strokeWidth = 2;
+                });
+            })
+        });
+       
+
         //tranlation step
         document.getElementById('translation-step').addEventListener('change', function(event) { 
             translationStep = event.target.value;
@@ -163,7 +288,7 @@
         document.getElementById('go-right').addEventListener('click', function(event) {
             let sq = squares[selectedSquare];
             sq.translate({x: parseInt(translationStep), y: 0}, true);
-            updateSVGSquare(sq,selectedSquare);   
+            updateSVGSquare(sq, selectedSquare);   
             updateMatrices();
         });
         
@@ -187,14 +312,14 @@
             let sq = squares[selectedSquare];
             sq.angle = sq.angle + parseInt(rotationStep);
             sq.rotate(sq.angle, true);
-            updateSVGSquare(sq,selectedSquare);   
+            updateSVGSquare(sq, selectedSquare);   
             updateMatrices();
         });
         document.getElementById('rotate-moins').addEventListener('click', function(event) {
             let sq = squares[selectedSquare];
             sq.angle = sq.angle - parseInt(rotationStep);
             sq.rotate(sq.angle, true);
-            updateSVGSquare(sq,selectedSquare);   
+            updateSVGSquare(sq, selectedSquare);   
             updateMatrices();
         });
 
@@ -225,7 +350,7 @@
             let sq = squares[selectedSquare];
             let a = sq.a - parseInt(resizeStep);
             sq.changeSize(a, true);
-            updateSVGSquare(sq,selectedSquare);
+            updateSVGSquare(sq, selectedSquare);
             updateMatrices();
         });
 
@@ -235,37 +360,8 @@
             exportIndex++;
         });
 
-        
-
-        // //tests
-        // let V0 = [
-        //     [0, 1, 0],
-        //     [1, 0, 0],
-        //     [0, 0, 0]
-        // ];
-        // let I0 = [ 
-        //     [1, 0, 0],
-        //     [0, 1, 0],
-        //     [0, 1, 0],
-        //     [1, 0, 0],
-        // ];
-        // let V2 = [
-        //     [0, 1, 0],
-        //     [1, 0, 0],
-        //     [0, 0, 0]
-        // ];
-        // let I2 = [ 
-        //     [0, 1, 0],
-        //     [0, 1, 0],
-        //     [1, 0, 0],
-        //     [1, 0, 0],
-        // ];
-
-        // console.log(are_VI_Equivalents({V:V0, I:I0}, {V:V2, I:I2}));
-        
-       
         //on place les squares dans la zone
-        squares[0].initRotZero(100, {x:W/2-110, y:H/2-110});
+        squares[0].initRotZero(100, {x:W/2-110, y:H/2});
         squares[0].majBox();
         createSVGSquare(squares[0],0);
         document.getElementById('square0').style.strokeWidth = 2;
@@ -276,11 +372,10 @@
         //squares[1].translate({x:W/2, y:H/2})
         createSVGSquare(squares[1],1);
 
-        squares[2].initRotZero(100, {x:W/2+110,y:H/2+110});
+        squares[2].initRotZero(100, {x:W/2 + 110, y:H/2});
         squares[2].majBox();
+        //squares[1].translate({x:W/2, y:H/2})
         createSVGSquare(squares[2],2);
-
-
     </script>
 
 <style>   
@@ -289,28 +384,24 @@
         flex-direction: row;
         justify-content: center;
     }
-
     #translate, #rotate, #resize {
         display: flex;
         flex-direction: column;
         justify-content: space-evenly;
         align-items: center;
     }
-    
     button {
         width: 44px;
         height:44px;
         font-size: 1.2em;
         cursor:pointer;
     }
-
     input {
         width: 44px;
         font-size: 1.1em;
         text-align: center;
         height: 20px;
     }
-
     .radio-button {
         display: flex;
         flex-direction: row;
@@ -318,14 +409,12 @@
         align-items: center;
         padding-left: 10px;
     }
-
     #active-square{
         display: flex;
         flex-direction: column;
         justify-content: center;
         align-items: center;
     }
-    
     .line {
         border: 1px solid #d8d8d8;
         padding: 14px;
@@ -333,14 +422,12 @@
     .flip{
         transform: scale(-1, 1);
     }
-
     .column{
         display: flex;
         justify-content: center;
         align-items: center;
         flex-direction: column;
     }
-
     .small-button{
         width: 20px;
         height:20px;
@@ -348,42 +435,33 @@
         text-align: center;
         cursor:pointer;
     }
-
-
     .small-btn-container{
         display: flex;
         flex-direction: row;
     }
-
     .form-group {
         display:flex;
     }
-
     p {
         margin: 0 0 10px 0;
     }
-
     #result-zone{
         display: flex;
         flex-direction: column;
         justify-content: space-evenly;
         align-items: center;
-        
     }
-
     h2 {
         text-align: center;
     }
-
     #footer-container{
         display: flex;
         justify-content: space-around;
         align-items: center;
         border: 1px solid #d8d8d8;
         width: 500px;
-        height: 75px;
+        height: 121px;
     }
-
     #export-svg {
         width: 20%;
         height: 100%;
@@ -392,22 +470,22 @@
         align-items: center;
         border-right:1px solid #d8d8d8;
     }
-
     #export-svg-btn {
         width: 90px;
         height: 30px;
         font-size: 0.8em;
     }
-
     #matrices{
         width: 80%;
         height: 100%;
         display: flex;
         flex-direction: column;
     }
-    .column{
+    .column-result{
         width:50%;
         border: 1px solid #d8d8d8;
+        display: flex;
+        justify-content: center;
     }
     .header{
         display: flex;
@@ -416,6 +494,39 @@
     .body{
         display: flex;
         flex-direction: row;
+    }
+    .line-matrix-group{
+        margin:6px;
+    }
+    .line-matrix {
+        display: flex;
+        flex-direction: row;
+    }
+    .m-square{
+        padding: 2px 5px;
+    }
+    .border-left{
+        border-left: 1px solid black;
+        padding: 2px 3px;
+    }
+    .border-right{
+        border-right: 1px solid black;
+        padding: 2px 3px;
+    }
+    .border-top{
+        border-top: 1px solid black;
+    }
+    .border-bottom{
+        border-bottom: 1px solid black;
+    }
+    #v-illegal, #f-illegal{
+        position: relative;
+        left: -60px;
+        top: 30px;
+        display:none;
+    }
+    #square0, #square1, #square2 {
+        cursor: pointer;
     }
 </style>
 </body>
