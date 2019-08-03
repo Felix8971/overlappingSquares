@@ -13,8 +13,15 @@
                 <div id="export-svg">
                     <button id="export-svg-btn">Export svg</button>
                 </div>
-                <div id='matrices'>
-                    2 valid matrices here... (or display illegal...)
+                <div id='matrices'>          
+                    <div class="header">
+                        <div class="column">V</div>
+                        <div class="column">F</div>
+                    </div>
+                    <div class="body">
+                        <div class="column">Vvvvv</div>
+                        <div class="column">Ffffff</div>
+                    </div>                                      
                 </div>  
             </div>   
         </div>     
@@ -102,6 +109,11 @@
         var rotationStep = 10;
         var resizeStep = 10;
 
+
+        var updateMatrices = function(){
+            document.getElementById('matrices').innerHTML = JSON.stringify(arrangement_to_VI(squares));
+        }
+
         //Define event when click a radio button
         var radio = document.getElementsByName('square-selected');
         for (var i = 0; i < radio.length; i++) {
@@ -133,22 +145,26 @@
         document.getElementById('go-up').addEventListener('click', function(event) {
             let sq = squares[selectedSquare];
             sq.translate({x:0, y: -parseInt(translationStep)}, true);
-            updateSVGSquare(sq,selectedSquare);   
+            updateSVGSquare(sq,selectedSquare);
+            updateMatrices();
         });
         document.getElementById('go-down').addEventListener('click', function(event) {
             let sq = squares[selectedSquare];
             sq.translate({x:0, y: parseInt(translationStep)}, true);
-            updateSVGSquare(sq,selectedSquare);   
+            updateSVGSquare(sq,selectedSquare); 
+            updateMatrices();  
         });
         document.getElementById('go-left').addEventListener('click', function(event) {
             let sq = squares[selectedSquare];
             sq.translate({x: -parseInt(translationStep), y: 0}, true);
             updateSVGSquare(sq,selectedSquare);   
+            updateMatrices();
         });
         document.getElementById('go-right').addEventListener('click', function(event) {
             let sq = squares[selectedSquare];
             sq.translate({x: parseInt(translationStep), y: 0}, true);
             updateSVGSquare(sq,selectedSquare);   
+            updateMatrices();
         });
         
 
@@ -172,12 +188,14 @@
             sq.angle = sq.angle + parseInt(rotationStep);
             sq.rotate(sq.angle, true);
             updateSVGSquare(sq,selectedSquare);   
+            updateMatrices();
         });
         document.getElementById('rotate-moins').addEventListener('click', function(event) {
             let sq = squares[selectedSquare];
             sq.angle = sq.angle - parseInt(rotationStep);
             sq.rotate(sq.angle, true);
             updateSVGSquare(sq,selectedSquare);   
+            updateMatrices();
         });
 
 
@@ -200,13 +218,15 @@
             let sq = squares[selectedSquare];
             let a = sq.a + parseInt(resizeStep);
             sq.changeSize(a, true);
-            updateSVGSquare(sq,selectedSquare);   
+            updateSVGSquare(sq,selectedSquare);
+            updateMatrices();
         });
         document.getElementById('resize-moins').addEventListener('click', function(event) {
             let sq = squares[selectedSquare];
             let a = sq.a - parseInt(resizeStep);
             sq.changeSize(a, true);
             updateSVGSquare(sq,selectedSquare);
+            updateMatrices();
         });
 
         //export svg button
@@ -245,7 +265,7 @@
         
        
         //on place les squares dans la zone
-        squares[0].initRotZero(100, {x:W/2-100, y:H/2-100});
+        squares[0].initRotZero(100, {x:W/2-110, y:H/2-110});
         squares[0].majBox();
         createSVGSquare(squares[0],0);
         document.getElementById('square0').style.strokeWidth = 2;
@@ -256,7 +276,7 @@
         //squares[1].translate({x:W/2, y:H/2})
         createSVGSquare(squares[1],1);
 
-        squares[2].initRotZero(100, {x:W/2+100,y:H/2+100});
+        squares[2].initRotZero(100, {x:W/2+110,y:H/2+110});
         squares[2].majBox();
         createSVGSquare(squares[2],2);
 
@@ -264,111 +284,139 @@
     </script>
 
 <style>   
-        #container {
-            display:flex;
-            flex-direction: row;
-            justify-content: center;
-        }
+    #container {
+        display:flex;
+        flex-direction: row;
+        justify-content: center;
+    }
 
-        #translate, #rotate, #resize {
-            display: flex;
-            flex-direction: column;
-            justify-content: space-evenly;
-            align-items: center;
-        }
+    #translate, #rotate, #resize {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-evenly;
+        align-items: center;
+    }
+    
+    button {
+        width: 44px;
+        height:44px;
+        font-size: 1.2em;
+        cursor:pointer;
+    }
+
+    input {
+        width: 44px;
+        font-size: 1.1em;
+        text-align: center;
+        height: 20px;
+    }
+
+    .radio-button {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-evenly;
+        align-items: center;
+        padding-left: 10px;
+    }
+
+    #active-square{
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+    }
+    
+    .line {
+        border: 1px solid #d8d8d8;
+        padding: 14px;
+    }
+    .flip{
+        transform: scale(-1, 1);
+    }
+
+    .column{
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-direction: column;
+    }
+
+    .small-button{
+        width: 20px;
+        height:20px;
+        border: 1px solid #b9b9b9;
+        text-align: center;
+        cursor:pointer;
+    }
+
+
+    .small-btn-container{
+        display: flex;
+        flex-direction: row;
+    }
+
+    .form-group {
+        display:flex;
+    }
+
+    p {
+        margin: 0 0 10px 0;
+    }
+
+    #result-zone{
+        display: flex;
+        flex-direction: column;
+        justify-content: space-evenly;
+        align-items: center;
         
-        button {
-            width: 44px;
-            height:44px;
-            font-size: 1.2em;
-            cursor:pointer;
-        }
+    }
 
-        input {
-            width: 44px;
-            font-size: 1.1em;
-            text-align: center;
-            height: 22px;
-        }
+    h2 {
+        text-align: center;
+    }
 
-        .radio-button {
-            display: flex;
-            flex-direction: row;
-            justify-content: space-evenly;
-            align-items: center;
-            padding-left: 10px;
-        }
+    #footer-container{
+        display: flex;
+        justify-content: space-around;
+        align-items: center;
+        border: 1px solid #d8d8d8;
+        width: 500px;
+        height: 75px;
+    }
 
-        #active-square{
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-        }
-        
-        .line {
-            border: 1px solid #d8d8d8;
-            padding: 14px;
-        }
-        .flip{
-            transform: scale(-1, 1);
-        }
+    #export-svg {
+        width: 20%;
+        height: 100%;
+        display: flex;
+        justify-content: space-around;
+        align-items: center;
+        border-right:1px solid #d8d8d8;
+    }
 
-        .column{
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            flex-direction: column;
-        }
+    #export-svg-btn {
+        width: 90px;
+        height: 30px;
+        font-size: 0.8em;
+    }
 
-        .small-button{
-            width: 20px;
-            height:20px;
-            border: 1px solid #b9b9b9;
-            text-align: center;
-            cursor:pointer;
-        }
-
-
-        .small-btn-container{
-            display: flex;
-            flex-direction: row;
-        }
-
-        .form-group {
-            display:flex;
-        }
-
-        p {
-            margin: 0 0 10px 0;
-        }
-
-        #result-zone{
-            display: flex;
-            flex-direction: column;
-            justify-content: space-evenly;
-            align-items: center;
-            
-        }
-
-        h2 {
-            text-align: center;
-        }
-
-        #footer-container{
-            display: flex;
-            justify-content: space-around;
-            align-items: center;
-            border: 1px solid #d8d8d8;
-            width: 500px;
-            height: 75px;
-        }
-
-        #export-svg-btn {
-            width: auto;
-            height:auto;
-            font-size: 1em;
-        }
-    </style>
+    #matrices{
+        width: 80%;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+    }
+    .column{
+        width:50%;
+        border: 1px solid #d8d8d8;
+    }
+    .header{
+        display: flex;
+        flex-direction: row;
+    }
+    .body{
+        display: flex;
+        flex-direction: row;
+    }
+</style>
 </body>
 </html>

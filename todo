@@ -1,0 +1,4 @@
+1) creer un generateur de conf a 2 carres (une nouvelle page) pour exporter les conf N=2 en json format 
+   Exporter les objets square avec centre, vertices et taille, on recalculera les box
+
+2) ajouter un selecteur de configuration "eye friendly"

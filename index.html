@@ -5,9 +5,13 @@
 </head>
 
 <body>
-    <svg id="zone" height="1" width="1" style="border:3px solid blue">
-    </svg> 
-        
+    <div id="main-container">
+        <div id="menu">
+            <button id="run-btn">RUN</button>    
+            <a href="configManualBuilder.html">Config Manual Builder</a>
+        </div>
+        <svg id="zone" height="1" width="1" style="border:3px solid blue"></svg> 
+    </div>
     <script type="module">
 
         //idee optimisation: pre calculer tous les gabari de carres (avec scales et rotations) puis les translater
@@ -17,7 +21,9 @@
         import { are_VI_Equivalents } from './compare-arrangements.mjs';
         import { squares } from './initSquares.mjs';
 
-
+        document.getElementById('run-btn').addEventListener('click', function(event) {
+            searchConfigurations();
+        });
         //Liste des configurations N=3 trouvées  
         var conf3 = [
             /*{
@@ -130,80 +136,82 @@
         //y dans [ squares[0].box.ymin - squares[0].a/2, squares[0].box.ymax + squares[0].a/2]
         // pas x et y: squares[0].a/10; 
 
-        let zoneBalayage = {
-            xmin: squares[0].box.xmin - squares[0].a/2, 
-            xmax: squares[0].box.xmax + squares[0].a/2, 
-            ymin: squares[0].box.ymin - squares[0].a/2,
-            ymax: squares[0].box.ymax + squares[0].a/2
-        };
-        let step = 10;//squares[0].a/20;
-       
-        //zone balayage
-        let nx = parseInt((zoneBalayage.xmax - zoneBalayage.xmin)/step);
-        let ny = parseInt((zoneBalayage.ymax - zoneBalayage.ymin)/step);
-        let nx_half = Math.ceil(nx/2) + step;
-        let ny_half = Math.ceil(ny/2) + step;
 
-        let x2, y2, x3, y3;
+        var searchConfigurations = function() {
+            let scanArea = {
+                xmin: squares[0].box.xmin - squares[0].a/2, 
+                xmax: squares[0].box.xmax + squares[0].a/2, 
+                ymin: squares[0].box.ymin - squares[0].a/2,
+                ymax: squares[0].box.ymax + squares[0].a/2
+            };
+            let step = 10;//squares[0].a/20;
+        
+            //zone balayage
+            let nx = parseInt(( scanArea.xmax -  scanArea.xmin)/step);
+            let ny = parseInt(( scanArea.ymax -  scanArea.ymin)/step);
+            let nx_half = Math.ceil(nx/2) + step;
+            let ny_half = Math.ceil(ny/2) + step;
 
-        let angles = getAngles(20, 90);
-        let sizes = getSizes(20, 150);
-        let n_angles = angles.length;
-        let n_size = sizes.length;
-    
-        for(let i0=0;i0<nx_half;i0++){
-            x2 = zoneBalayage.xmin + i0*step;
-            for(let j0=0;j0<ny_half;j0++){
-                y2 = zoneBalayage.ymin + j0*step;
-                //drawPoint({x:x2,y:y2});
-                //console.log(x, y);
-                squares[1].moveTo({x:x2,y:y2}, false);
-                for(let k=0;k<n_angles;k++){
-                    squares[1].rotate(angles[k], false);
-                    for(let p=0;p<n_size;p++){
-                        //console.log(x,y);       
-                        //debugger;                                                                        
-                        squares[1].changeSize(sizes[p], true);
-                        let arr = arrangement_to_VI(squares);
-                        let n3 = conf3.length; 
-                        //updateSVGSquare(squares[1],1);                      
-                        updateConf3(arr, conf3);
-                        //if ( conf3.length > n3 ){                                                 
-                            //updateSVGSquare(squares[1],1);                                               
-                            //on a trouvee une nouvelle conf N2
-                            //on va la balayer avec le 3 eme square                 
-                            for(let i1=0;i1<nx;i1++){
-                                x3 = zoneBalayage.xmin + i1*step;
-                                for(let j1=0;j1<ny;j1++){
-                                    y3 = zoneBalayage.ymin + j1*step;
-                                    //drawPoint({x:x3,y:y3});
-                                    squares[2].moveTo({x:x3,y:y3}, false);
-                                    for(let m=0;m<n_angles;m++){
-                                        squares[2].rotate(angles[m], false);   
-                                        for(let q=0;q<n_size;q++){                                          
-                                            squares[2].changeSize(sizes[q], true);                                                                                                                    
-                                            let arr = arrangement_to_VI(squares);
-                                            let n3 = conf3.length; 
-                                            updateConf3(arr,conf3);
-                                            //updateSVGSquare(squares[2],2);      
-                                            //debugger;                                  
-                                            if ( conf3.length > n3 ){ 
-                                                //updateSVGSquare(squares[2],2);
-                                                //console.log("xxxx");
+            let x2, y2, x3, y3;
+
+            let angles = getAngles(20, 90);
+            let sizes = getSizes(20, 150);
+            let n_angles = angles.length;
+            let n_size = sizes.length;
+        
+            for(let i0=0;i0<nx_half;i0++){
+                x2 =  scanArea.xmin + i0*step;
+                for(let j0=0;j0<ny_half;j0++){
+                    y2 =  scanArea.ymin + j0*step;
+                    //drawPoint({x:x2,y:y2});
+                    //console.log(x, y);
+                    squares[1].moveTo({x:x2,y:y2}, false);
+                    for(let k=0;k<n_angles;k++){
+                        squares[1].rotate(angles[k], false);
+                        for(let p=0;p<n_size;p++){
+                            //console.log(x,y);       
+                            //debugger;                                                                        
+                            squares[1].changeSize(sizes[p], true);
+                            let arr = arrangement_to_VI(squares);
+                            let n3 = conf3.length; 
+                            //updateSVGSquare(squares[1],1);                      
+                            updateConf3(arr, conf3);
+                            //if ( conf3.length > n3 ){                                                 
+                                //updateSVGSquare(squares[1],1);                                               
+                                //on a trouvee une nouvelle conf N2
+                                //on va la balayer avec le 3 eme square                 
+                                for(let i1=0;i1<nx;i1++){
+                                    x3 =  scanArea.xmin + i1*step;
+                                    for(let j1=0;j1<ny;j1++){
+                                        y3 =  scanArea.ymin + j1*step;
+                                        //drawPoint({x:x3,y:y3});
+                                        squares[2].moveTo({x:x3,y:y3}, false);
+                                        for(let m=0;m<n_angles;m++){
+                                            squares[2].rotate(angles[m], false);   
+                                            for(let q=0;q<n_size;q++){                                          
+                                                squares[2].changeSize(sizes[q], true);                                                                                                                    
+                                                let arr = arrangement_to_VI(squares);
+                                                let n3 = conf3.length; 
+                                                updateConf3(arr,conf3);
+                                                //updateSVGSquare(squares[2],2);      
+                                                //debugger;                                  
+                                                if ( conf3.length > n3 ){ 
+                                                    //updateSVGSquare(squares[2],2);
+                                                    //console.log("xxxx");
+                                                }
                                             }
                                         }
                                     }
                                 }
-                            }
-                        //}
+                            //}
+                        }
                     }
                 }
             }
+            
+            console.log(conf3.length+' configurations found.');
+            console.log('========= END =========');
         }
-        
-        console.log(conf3.length+' configurations found.');
-
-        console.log('========= END =========');
         // squares[0].initRotZero(100, {x:W/2, y:H/2});
         // squares[0].majBox();
         // drawSquare(squares[0]);
@@ -280,6 +288,17 @@
         // }
 
     </script>
+    <style>
+        #main-container {
+            display:flex;
+            flex-direction: column;
+        }
+        #run-btn{
+            width: 60px;
+            height: 36px;
+            margin: 10px 10px 10px 0;
+        }
+    </style>
 </body>
 
 </html>
