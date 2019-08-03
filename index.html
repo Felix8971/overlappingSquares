@@ -7,8 +7,9 @@
 <body>
     <div id="main-container">
         <div id="menu">
-            <button id="run-btn">RUN</button>    
-            <a href="configManualBuilder.html">Config Manual Builder</a>
+            <button id="run-btn">RUN</button>
+            <a href="configManualBuilderN2.html">Config Manual Builder N=2</a>
+            <a href="configManualBuilderN3.html">Config Manual Builder N=3</a>
         </div>
         <svg id="zone" height="1" width="1" style="border:3px solid blue"></svg> 
     </div>
@@ -147,8 +148,8 @@
             let step = 10;//squares[0].a/20;
         
             //zone balayage
-            let nx = parseInt(( scanArea.xmax -  scanArea.xmin)/step);
-            let ny = parseInt(( scanArea.ymax -  scanArea.ymin)/step);
+            let nx = parseInt(( scanArea.xmax - scanArea.xmin)/step);
+            let ny = parseInt(( scanArea.ymax - scanArea.ymin)/step);
             let nx_half = Math.ceil(nx/2) + step;
             let ny_half = Math.ceil(ny/2) + step;
 
@@ -156,6 +157,7 @@
 
             let angles = getAngles(20, 90);
             let sizes = getSizes(20, 150);
+            sizes.push(2);
             let n_angles = angles.length;
             let n_size = sizes.length;
         
@@ -164,13 +166,10 @@
                 for(let j0=0;j0<ny_half;j0++){
                     y2 =  scanArea.ymin + j0*step;
                     //drawPoint({x:x2,y:y2});
-                    //console.log(x, y);
                     squares[1].moveTo({x:x2,y:y2}, false);
                     for(let k=0;k<n_angles;k++){
                         squares[1].rotate(angles[k], false);
-                        for(let p=0;p<n_size;p++){
-                            //console.log(x,y);       
-                            //debugger;                                                                        
+                        for(let p=0;p<n_size;p++){                                                             
                             squares[1].changeSize(sizes[p], true);
                             let arr = arrangement_to_VI(squares);
                             let n3 = conf3.length; 

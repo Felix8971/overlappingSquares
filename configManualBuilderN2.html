@@ -1,0 +1,457 @@
+<html>
+
+<head>
+
+</head>
+
+<body>
+    <h2>2 squares overlapping manual builder</h2>    
+    <div id="container">
+        <div id='result-zone'>
+            <svg id="zone" height="1" width="1" style="border:1px solid #d8d8d8"></svg> 
+            <div id="footer-container">
+                <div id="export-svg">
+                    <button id="export-svg-btn">Export svg</button>
+                </div>
+                <div id='matrices'>          
+                    <div class="header">
+                        <div class="column-result">V</div>
+                        <div class="column-result">F</div>
+                    </div>
+                    <div class="body">
+                        <div class="column-result" id="v-matrix">
+                            <div class="line-matrix-group">
+                                <div class="line-matrix">
+                                    <div class="m-square border-left border-top"></div>
+                                    <div id="v00" class="m-square">x</div>
+                                    <div id="v01" class="m-square">x</div>
+                                    <div id="v02" class="m-square">x</div>
+                                    <div class="m-square border-right border-top"></div>
+                                </div>
+                                <div class="line-matrix"> 
+                                    <div class="m-square border-left"></div>
+                                    <div id="v10" class="m-square">x</div>
+                                    <div id="v11" class="m-square">x</div>
+                                    <div id="v12" class="m-square">x</div>
+                                    <div class="m-square border-right"></div>
+                                </div>                            
+                                <div class="line-matrix">
+                                    <div class="m-square border-left border-bottom"></div>
+                                    <div id="v20" class="m-square">x</div>
+                                    <div id="v21" class="m-square">x</div>
+                                    <div id="v22" class="m-square">x</div>
+                                    <div class="m-square border-right border-bottom"></div>
+                                </div>                                  
+                            </div> 
+                            <div id="v-illegal">illegal!</div>                         
+                        </div>
+                        <div class="column-result" id="f-matrix"></div>
+                    </div>                                      
+                </div>  
+            </div>   
+        </div>     
+        <div>
+            <div class='line' id='active-square'>
+                <p>Active square: </p>
+                <div class="radio-button">
+                    <div class="radio-button"> 
+                        <label>0</label>           
+                        <input type="radio" name="square-selected" value="0" checked>
+                        <label>1</label>   
+                        <input type="radio" name="square-selected" value="1" >
+                    </div>
+                </div>
+            </div>
+            <div class='line' id="translate">
+               <p>Translate (pixel)</p>
+               <button id="go-up">&uarr;</button>
+               <div class="form-group">  
+                    <button id="go-left">&larr;</button>
+                    <div id="column">
+                        <div>
+                            <input type="text" id="translation-step" name="translation-step" min="1" max="50" value='10' >
+                        </div>
+                        <div class="small-btn-container">
+                            <div class="small-button" id='decrease-translation-step'>-</div>       
+                            <div class="small-button" id='increase-translation-step'>+</div>       
+                        </div>
+                    </div>
+                    <button id="go-right">&rarr;</button>
+               </div>
+               <button id="go-down">&darr;</button>
+            </div>
+            <div class='line' id="rotate">
+                <p>Rotate (degres)</p>
+                <div class="form-group">  
+                    <button id="rotate-moins" class='flip' >&#8635;</button>
+                    <div class="column">
+                        <div>
+                            <input type="text" id="rotation-step" name="rotation-step" value='10' >
+                        </div>
+                        <div class="small-btn-container">
+                            <div class="small-button" id='decrease-rotation-step'>-</div>       
+                            <div class="small-button" id='increase-rotation-step'>+</div>                 
+                        </div>
+                    </div>   
+                    <button id="rotate-plus">&#8635;</button> 
+                </div>
+            </div>
+            <div class='line' id="resize">
+                    <p>Resize (pixel)</p>
+                    <div class="form-group">  
+                        <button id="resize-moins">-</button>
+                        <div class="column">
+                            <div>
+                                <input id="resize-step" type="text" name="resize-step" min="1" max="300" value='10' >
+                            </div>
+                            <div class="small-btn-container">
+                                <div class="small-button" id='decrease-resize-step'>-</div>                      
+                                <div class="small-button" id='increase-resize-step'>+</div>                 
+                            </div>
+                        </div>                
+                        <button id="resize-plus">+</button>
+                    </div>            
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+
+        //idee optimisation: pre calculer tous les gabari de carres (avec scales et rotations) puis les translater
+        import { createSVGSquare, updateSVGSquare, drawPoint, drawBox, saveSvg } from './draw.mjs';
+        import { MIN, MAX, W, H, NB_SQUARE, NB_VERTEX, COS, SIN } from './constants.mjs';
+        import { arrangement_to_VI } from './calculVI.mjs';
+        import { are_VI_Equivalents } from './compare-arrangements.mjs';
+        import { squares } from './initSquares.mjs';
+
+        var svg = document.getElementsByTagName('svg')[0]; //Get svg element
+        svg.setAttribute('width','500px');
+        svg.setAttribute('height','374px');
+
+        var exportIndex = 0; 
+        var selectedSquare = 0;
+        var translationStep = 10;
+        var rotationStep = 10;
+        var resizeStep = 10;
+
+        var updateMatrices = function(){
+            debugger;
+            let arr = arrangement_to_VI(squares);
+            let V = arr.V;
+            let I = arr.I;
+            if (arr.valid) {
+                document.getElementById('v-illegal').style.display = "none";
+                document.getElementById('v00').innerHTML = V[0][0];
+                document.getElementById('v01').innerHTML = V[0][1];
+                document.getElementById('v02').innerHTML = V[0][2];
+
+                document.getElementById('v10').innerHTML = V[1][0];
+                document.getElementById('v11').innerHTML = V[1][1];
+                document.getElementById('v12').innerHTML = V[1][2];
+
+                document.getElementById('v20').innerHTML = V[2][0];
+                document.getElementById('v21').innerHTML = V[2][1];
+                document.getElementById('v22').innerHTML = V[2][2];
+                //document.getElementById('v-matrix').innerHTML = JSON.stringify(V);
+                //document.getElementById('f-matrix').innerHTML = JSON.stringify(I);
+            } else {
+                document.getElementById('v-illegal').style.display = "block";
+                document.getElementById('v00').innerHTML = '.';
+                document.getElementById('v01').innerHTML = '.';
+                document.getElementById('v02').innerHTML = '.';
+
+                document.getElementById('v10').innerHTML = '.';
+                document.getElementById('v11').innerHTML = '.';
+                document.getElementById('v12').innerHTML = '.';
+                
+                document.getElementById('v20').innerHTML = '.';
+                document.getElementById('v21').innerHTML = '.';
+                document.getElementById('v22').innerHTML = '.';
+            }
+        }
+
+        //Define event when click a radio button
+        var radio = document.getElementsByName('square-selected');
+        for (var i = 0; i < radio.length; i++) {
+            radio[i].addEventListener('change', function(event) { 
+                selectedSquare = event.target.value;
+                console.log(selectedSquare);
+                document.getElementById('square0').style.strokeWidth = '0.5';
+                document.getElementById('square1').style.strokeWidth = '0.5';
+                document.getElementById('square'+selectedSquare).style.strokeWidth = 2;
+            });
+        }
+        
+        //tranlation step
+        document.getElementById('translation-step').addEventListener('change', function(event) { 
+            translationStep = event.target.value;
+        });
+        document.getElementById('increase-translation-step').addEventListener('click', function(event) {
+            let elem = document.getElementById('translation-step');
+            elem.value = parseInt(elem.value) + 1;
+            translationStep = elem.value;
+        });
+        document.getElementById('decrease-translation-step').addEventListener('click', function(event) {
+            let elem = document.getElementById('translation-step');
+            elem.value = parseInt(elem.value) - 1;
+            if ( elem.value < 0 ){ elem.value = 0; }
+            translationStep = elem.value;
+        });
+        document.getElementById('go-up').addEventListener('click', function(event) {
+            let sq = squares[selectedSquare];
+            sq.translate({x:0, y: -parseInt(translationStep)}, true);
+            updateSVGSquare(sq,selectedSquare);
+            updateMatrices();
+        });
+        document.getElementById('go-down').addEventListener('click', function(event) {
+            let sq = squares[selectedSquare];
+            sq.translate({x:0, y: parseInt(translationStep)}, true);
+            updateSVGSquare(sq,selectedSquare); 
+            updateMatrices();  
+        });
+        document.getElementById('go-left').addEventListener('click', function(event) {
+            let sq = squares[selectedSquare];
+            sq.translate({x: -parseInt(translationStep), y: 0}, true);
+            updateSVGSquare(sq,selectedSquare);   
+            updateMatrices();
+        });
+        document.getElementById('go-right').addEventListener('click', function(event) {
+            let sq = squares[selectedSquare];
+            sq.translate({x: parseInt(translationStep), y: 0}, true);
+            updateSVGSquare(sq, selectedSquare);   
+            updateMatrices();
+        });
+        
+
+        //Rotation events
+        document.getElementById('rotation-step').addEventListener('change', function(event) { 
+            rotationStep = event.target.value;
+        });
+        document.getElementById('increase-rotation-step').addEventListener('click', function(event) {
+            let elem = document.getElementById('rotation-step');
+            elem.value = parseInt(elem.value) + 1;
+            rotationStep = elem.value;
+        });
+        document.getElementById('decrease-rotation-step').addEventListener('click', function(event) {
+            let elem = document.getElementById('rotation-step');
+            elem.value = parseInt(elem.value) - 1;
+            if ( elem.value < 0 ){ elem.value = 0; }
+            rotationStep = elem.value;
+        });
+        document.getElementById('rotate-plus').addEventListener('click', function(event) {
+            let sq = squares[selectedSquare];
+            sq.angle = sq.angle + parseInt(rotationStep);
+            sq.rotate(sq.angle, true);
+            updateSVGSquare(sq, selectedSquare);   
+            updateMatrices();
+        });
+        document.getElementById('rotate-moins').addEventListener('click', function(event) {
+            let sq = squares[selectedSquare];
+            sq.angle = sq.angle - parseInt(rotationStep);
+            sq.rotate(sq.angle, true);
+            updateSVGSquare(sq, selectedSquare);   
+            updateMatrices();
+        });
+
+
+        //Resize events
+        document.getElementById('resize-step').addEventListener('change', function(event) { 
+            resizeStep = event.target.value;
+        });
+        document.getElementById('increase-resize-step').addEventListener('click', function(event) {
+            let elem = document.getElementById('resize-step');
+            elem.value = parseInt(elem.value) + 1;
+            resizeStep = elem.value;
+        });
+        document.getElementById('decrease-resize-step').addEventListener('click', function(event) {
+            let elem = document.getElementById('resize-step');
+            elem.value = parseInt(elem.value) - 1;
+            if ( elem.value < 0 ){ elem.value = 0; }
+            resizeStep = elem.value;
+        });
+        document.getElementById('resize-plus').addEventListener('click', function(event) {
+            let sq = squares[selectedSquare];
+            let a = sq.a + parseInt(resizeStep);
+            sq.changeSize(a, true);
+            updateSVGSquare(sq,selectedSquare);
+            updateMatrices();
+        });
+        document.getElementById('resize-moins').addEventListener('click', function(event) {
+            let sq = squares[selectedSquare];
+            let a = sq.a - parseInt(resizeStep);
+            sq.changeSize(a, true);
+            updateSVGSquare(sq, selectedSquare);
+            updateMatrices();
+        });
+
+        //export svg button
+        document.getElementById('export-svg-btn').addEventListener('click', function(event) {
+            saveSvg(svg, 'arr'+exportIndex+'.svg');
+            exportIndex++;
+        });
+
+        //on place les squares dans la zone
+        squares[0].initRotZero(100, {x:W/2-110, y:H/2-110});
+        squares[0].majBox();
+        createSVGSquare(squares[0],0);
+        document.getElementById('square0').style.strokeWidth = 2;
+
+        //Les deux autre squares vont bouger    
+        squares[1].initRotZero(100, {x:W/2, y:H/2});
+        squares[1].majBox();
+        //squares[1].translate({x:W/2, y:H/2})
+        createSVGSquare(squares[1],1);
+
+    </script>
+
+<style>   
+    #container {
+        display:flex;
+        flex-direction: row;
+        justify-content: center;
+    }
+    #translate, #rotate, #resize {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-evenly;
+        align-items: center;
+    }
+    button {
+        width: 44px;
+        height:44px;
+        font-size: 1.2em;
+        cursor:pointer;
+    }
+    input {
+        width: 44px;
+        font-size: 1.1em;
+        text-align: center;
+        height: 20px;
+    }
+    .radio-button {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-evenly;
+        align-items: center;
+        padding-left: 10px;
+    }
+    #active-square{
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+    }
+    .line {
+        border: 1px solid #d8d8d8;
+        padding: 14px;
+    }
+    .flip{
+        transform: scale(-1, 1);
+    }
+    .column{
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-direction: column;
+    }
+    .small-button{
+        width: 20px;
+        height:20px;
+        border: 1px solid #b9b9b9;
+        text-align: center;
+        cursor:pointer;
+    }
+    .small-btn-container{
+        display: flex;
+        flex-direction: row;
+    }
+    .form-group {
+        display:flex;
+    }
+    p {
+        margin: 0 0 10px 0;
+    }
+    #result-zone{
+        display: flex;
+        flex-direction: column;
+        justify-content: space-evenly;
+        align-items: center;
+        
+    }
+    h2 {
+        text-align: center;
+    }
+    #footer-container{
+        display: flex;
+        justify-content: space-around;
+        align-items: center;
+        border: 1px solid #d8d8d8;
+        width: 500px;
+        height: 100px;
+    }
+    #export-svg {
+        width: 20%;
+        height: 100%;
+        display: flex;
+        justify-content: space-around;
+        align-items: center;
+        border-right:1px solid #d8d8d8;
+    }
+    #export-svg-btn {
+        width: 90px;
+        height: 30px;
+        font-size: 0.8em;
+    }
+    #matrices{
+        width: 80%;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+    }
+    .column-result{
+        width:50%;
+        border: 1px solid #d8d8d8;
+        display: flex;
+        justify-content: center;
+    }
+    .header{
+        display: flex;
+        flex-direction: row;
+    }
+    .body{
+        display: flex;
+        flex-direction: row;
+    }
+    .line-matrix-group{
+        margin:6px;
+    }
+    .line-matrix {
+        display: flex;
+        flex-direction: row;
+    }
+    .m-square{
+        padding: 2px 5px;
+    }
+    .border-left{
+        border-left: 1px solid black;
+        padding: 2px 3px;
+    }
+    .border-right{
+        border-right: 1px solid black;
+        padding: 2px 3px;
+    }
+    .border-top{
+        border-top: 1px solid black;
+    }
+    .border-bottom{
+        border-bottom: 1px solid black;
+    }
+    #v-illegal{
+        position: relative;
+        left: -60px;
+        top: 30px;
+        display:none;
+    }
+</style>
+</body>
+</html>
