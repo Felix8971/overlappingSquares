@@ -18,71 +18,18 @@
         //idee optimisation: pre calculer tous les gabari de carres (avec scales et rotations) puis les translater
         import { createSVGSquare, updateSVGSquare, drawPoint, drawBox } from './draw.mjs';
         import { MIN, MAX, W, H, NB_SQUARE, NB_VERTEX, COS, SIN } from './constants.mjs';
-        import { arrangement_to_VI } from './calculVI.mjs';
-        import { are_VI_Equivalents } from './compare-arrangements.mjs';
-        import { squares } from './initSquares.mjs';
+        //import { arrangement_to_VI } from './calculVI.mjs';
+        //import { are_VI_Equivalents } from './compare-arrangements.mjs';
+        import { getInitSquares } from './initSquares.mjs';
+        import { searchArrangments_V1 } from  './searchArrangments.mjs';
 
+
+        let squares = getInitSquares(); 
         document.getElementById('run-btn').addEventListener('click', function(event) {
-            searchConfigurations();
+            searchArrangments_V1(squares);
         });
-        //Liste des configurations N=3 trouvées  
-        var conf3 = [
-            /*{
-                id: 0,
-                V: [ 
-                    [0, 0, 0],
-                    [0, 0, 0],
-                    [0, 0, 0]
-                ],
-                I: [ 
-                    [0, 0, 0],
-                    [0, 0, 0],
-                    [0, 0, 0],
-                    [0, 0, 0]
-                ],
-            }*/
-        ];
-
-        //Generate a liste of angles    
-        var getAngles = (step, max) => {
-            let angles = [];
-            let angle = 0;
-            while ( angle < max){
-                angle += step;
-                angles.push(angle);
-            }
-            return angles;
-        }
        
-        //Generate a list of size in pixel 
-        var getSizes = (step, max) => {//peut depasser la valeur max
-            let sizes = [];
-            let size = 0;
-            while ( size < max){
-                size += step;
-                sizes.push(size);
-            }
-            return sizes;
-        }
 
-        //Ajoute l'arrangement arr dans la liste conf3 si il n'y pas d'equivanlent deja present
-        var updateConf3 = (arr, conf3) => {
-            if ( arr.valid ){
-                //regarder si cet arrangement est deja dans conf3
-                let n = conf3.length;
-                let found = false;
-                for(let i=0;i<n;i++){
-                    if ( are_VI_Equivalents(conf3[i], arr) ){
-                        found = true;
-                        break;
-                    }
-                }
-                if (!found){
-                    conf3.push(arr);
-                    console.log(conf3);
-                }
-            }
-        }
         // //tests
         // let V0 = [
         //     [0, 1, 0],
@@ -106,7 +53,6 @@
         //     [1, 0, 0],
         //     [1, 0, 0],
         // ];
-
 
 
         //to do: generer un fichier json contenant les matrices V et I trouvées ainsi
@@ -137,80 +83,6 @@
         //y dans [ squares[0].box.ymin - squares[0].a/2, squares[0].box.ymax + squares[0].a/2]
         // pas x et y: squares[0].a/10; 
 
-
-        var searchConfigurations = function() {
-            let scanArea = {
-                xmin: squares[0].box.xmin - squares[0].a/2, 
-                xmax: squares[0].box.xmax + squares[0].a/2, 
-                ymin: squares[0].box.ymin - squares[0].a/2,
-                ymax: squares[0].box.ymax + squares[0].a/2
-            };
-            let step = 10;//squares[0].a/20;
-        
-            //zone balayage
-            let nx = parseInt(( scanArea.xmax - scanArea.xmin)/step);
-            let ny = parseInt(( scanArea.ymax - scanArea.ymin)/step);
-            let nx_half = Math.ceil(nx/2) + step;
-            let ny_half = Math.ceil(ny/2) + step;
-
-            let x2, y2, x3, y3;
-
-            let angles = getAngles(20, 90);
-            let sizes = getSizes(20, 150);
-            sizes.push(2);
-            let n_angles = angles.length;
-            let n_size = sizes.length;
-        
-            for(let i0=0;i0<nx_half;i0++){
-                x2 =  scanArea.xmin + i0*step;
-                for(let j0=0;j0<ny_half;j0++){
-                    y2 =  scanArea.ymin + j0*step;
-                    //drawPoint({x:x2,y:y2});
-                    squares[1].moveTo({x:x2,y:y2}, false);
-                    for(let k=0;k<n_angles;k++){
-                        squares[1].rotate(angles[k], false);
-                        for(let p=0;p<n_size;p++){                                                             
-                            squares[1].changeSize(sizes[p], true);
-                            let arr = arrangement_to_VI(squares);
-                            let n3 = conf3.length; 
-                            //updateSVGSquare(squares[1],1);                      
-                            updateConf3(arr, conf3);
-                            //if ( conf3.length > n3 ){                                                 
-                                //updateSVGSquare(squares[1],1);                                               
-                                //on a trouvee une nouvelle conf N2
-                                //on va la balayer avec le 3 eme square                 
-                                for(let i1=0;i1<nx;i1++){
-                                    x3 =  scanArea.xmin + i1*step;
-                                    for(let j1=0;j1<ny;j1++){
-                                        y3 =  scanArea.ymin + j1*step;
-                                        //drawPoint({x:x3,y:y3});
-                                        squares[2].moveTo({x:x3,y:y3}, false);
-                                        for(let m=0;m<n_angles;m++){
-                                            squares[2].rotate(angles[m], false);   
-                                            for(let q=0;q<n_size;q++){                                          
-                                                squares[2].changeSize(sizes[q], true);                                                                                                                    
-                                                let arr = arrangement_to_VI(squares);
-                                                let n3 = conf3.length; 
-                                                updateConf3(arr,conf3);
-                                                //updateSVGSquare(squares[2],2);      
-                                                //debugger;                                  
-                                                if ( conf3.length > n3 ){ 
-                                                    //updateSVGSquare(squares[2],2);
-                                                    //console.log("xxxx");
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                            //}
-                        }
-                    }
-                }
-            }
-            
-            console.log(conf3.length+' configurations found.');
-            console.log('========= END =========');
-        }
         // squares[0].initRotZero(100, {x:W/2, y:H/2});
         // squares[0].majBox();
         // drawSquare(squares[0]);
@@ -248,7 +120,6 @@
         // ];
         // squares[1].center = { x: 170, y: 260 };
 
-
         // let arr = arrangement_to_VI(squares);// bug !!!!
 
         // console.log("areEqual:"+ areEqual(V0, V2));
@@ -267,7 +138,6 @@
         //     }
         // }
 
-        
 
         //on pose un premier carré fixe de 100px de large au centre de la zone de simu
 

@@ -237,7 +237,7 @@
             });
         }
 
-
+        //Define event when click a svg square
         document.addEventListener("DOMContentLoaded", function() {
             ['square0','square1','square2'].map((square)=>{
                 document.getElementById(square).addEventListener('click', function(event) { 
@@ -251,7 +251,6 @@
             })
         });
        
-
         //tranlation step
         document.getElementById('translation-step').addEventListener('change', function(event) { 
             translationStep = event.target.value;
