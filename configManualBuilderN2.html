@@ -12,8 +12,13 @@
             <div id="footer-container">
                 <div id="export-svg">
                     <button id="export-svg-btn">Export svg</button>
+                    <div class='import-export-container'>
+                        <button id="import-selection-btn">Import</button>   
+                        <button id="export-selection-btn">Export</button>   
+                    </div>
                     <button id="save-squares-btn">Save current object</button>      
-                    <button id="search-arr-btn">Search N=3 arr</button>                   
+                    <button id="search-arr-btn">Search N=3 arr</button>    
+                    <div id="progress"></div>               
                 </div>
                 <div id='matrices'>          
                     <div class="header">
@@ -169,13 +174,14 @@
         svg.setAttribute('width','500px');
         svg.setAttribute('height','353px');
 
-
         var exportIndex = 0; 
         var selectedSquare = 0;
         var translationStep = 10;
         var rotationStep = 10;
         var resizeStep = 10;
 
+
+        //Update the displayed matrice according to the value of the squares object
         var updateMatrices = function(){
             let arr = arrangement_to_VI(squares);
             let V = arr.V;
@@ -226,7 +232,6 @@
             ['square0','square1'].map((square)=>{
                 document.getElementById(square).addEventListener('click', function(event) { 
                     selectedSquare = event.target.id.split("square")[1];
-                    console.log(selectedSquare);
                     document.getElementById('square0').style.strokeWidth = '0.5';
                     document.getElementById('square1').style.strokeWidth = '0.5';
                     document.getElementById('square'+selectedSquare).style.strokeWidth = 2;
@@ -342,7 +347,7 @@
             exportIndex++;
         });
 
-        //export square object button
+        //save square object button
         document.getElementById('save-squares-btn').addEventListener('click', (event) => {
             let _squares = JSON.parse(JSON.stringify(squares));
             //const _squares = Object.assign([], squares);
@@ -359,13 +364,36 @@
             }
         });
 
+
+        document.getElementById('export-selection-btn').addEventListener('click', (event) => {
+            let dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(arrangmentsSelection));
+            let dlAnchorElem = document.getElementById('downloadAnchorElem');
+            var downloadLink = document.createElement("a");
+            document.body.appendChild(downloadLink);
+            document.body.removeChild(downloadLink);
+            downloadLink.setAttribute("href",dataStr);
+            let fileName = "arr-selection-"+Date.now()+".json";
+            console.log(fileName);
+            downloadLink.setAttribute("download",fileName);
+            downloadLink.click();
+        });
+       
+        document.getElementById('import-selection-btn').addEventListener('click', (event) => {
+            fetch('arr-selection-1565085578378.json')
+            .then(response => response.text())
+            .then((text) => { 
+                console.log(text);
+                arrangmentsSelection = JSON.parse(text);
+                debugger;
+            })
+        });
         //on place les squares dans la zone
         squares[0].initRotZero(100, {x:W/2-110, y:H/2-110});
         squares[0].majBox();
         createSVGSquare(squares[0],0);
         document.getElementById('square0').style.strokeWidth = 2;
 
-        //Les deux autre squares vont bouger    
+        //Les deux autre squares vont bouger
         squares[1].initRotZero(100, {x:W/2, y:H/2});
         squares[1].majBox();
         //squares[1].translate({x:W/2, y:H/2})
@@ -460,7 +488,7 @@
         align-items: center;
         border: 1px solid #d8d8d8;
         width: 500px;
-        height: 121px;
+        height: 140px;
     }
     #export-svg {
         width: 50%;
@@ -476,7 +504,15 @@
         height: 30px;
         font-size: 0.8em;
     }
-     
+    #import-export-container{
+        display:flex;
+        flex-direction: column;
+    }
+    #import-selection-btn, #export-selection-btn{
+        width: 76px;
+        height: 30px;
+        font-size: 0.8em;
+    }
     #matrices{
         width: 80%;
         height: 100%;
@@ -530,6 +566,8 @@
     #square0, #square1 {
         cursor: pointer;
     }
+
+
 </style>
 </body>
 </html>

@@ -32,7 +32,8 @@ var updateArrsN3 = (arr, arrsN3) => {
         //regarder si cet arrangement est deja dans arrsN3
         let n = arrsN3.length;
         let found = false;
-        for(let i=0;i<n;i++){
+        //for(let i=0;i<n;i++){// comparer le temps execution dans chaque cas :118
+        for(let i=n-1;i>=0;i--){
             if ( are_VI_Equivalents(arrsN3[i], arr) ){
                 found = true;
                 break;
@@ -191,7 +192,7 @@ export function searchArrangments_V2(arrangmentsSelection) {
         ymin: 9999,
         ymax: -9999
     };
-    let step = 1.9;//_squares[0].a/20;//1.52
+    let step = 2;//_squares[0].a/20;//1.52
 
     //scan zone
     //let nx_half = Math.ceil(nx/2) + step;
@@ -204,7 +205,6 @@ export function searchArrangments_V2(arrangmentsSelection) {
 
     let nbArr = arrangmentsSelection.length;
     let _squares = getInitSquares();
-    debugger;
 
     for(let k=0;k<nbArr;k++){
         //2 static squares
@@ -220,26 +220,36 @@ export function searchArrangments_V2(arrangmentsSelection) {
         //Scan area around the squares 0 and 1 used to move square 2
         scanArea = getScanArea(arrangmentsSelection[k]);
         //the bigger square 2 possible when plaved in the center of the sna zone must contain the 2 other squares 
-        let sizes = getSizes(2, scanArea.xmax - scanArea.xmin + 4*step); //2
+        let sizes = getSizes(9, (scanArea.xmax - scanArea.xmin) + 4*step); //2
+        sizes.push(1);
         let n_size = sizes.length;
 
         let nx = parseInt((scanArea.xmax - scanArea.xmin)/step);
         let ny = parseInt((scanArea.ymax - scanArea.ymin)/step);
+        let count = 0;
+        let total = nx*ny;
         for(let i=0;i<nx;i++){
             x3 = scanArea.xmin + i*step;
-            console.log('.');
+            count++;
+            console.log(100*count/nx + '%');
             for(let j=0;j<ny;j++){
                 y3 = scanArea.ymin + j*step;
                 //drawPoint({x:x3,y:y3});
-                _squares[2].moveTo({x:x3,y:y3}, false);
-                for(let m=0;m<n_angles;m++){
-                    _squares[2].rotate(angles[m], false);   
-                    for(let q=0;q<n_size;q++){                                          
-                        _squares[2].changeSize(sizes[q], true);   
+                //_squares[2].moveTo({x:x3,y:y3}, false);
+                _squares[2].initRotZero(100,{x:x3,y:y3});//a tester !!!!!!!!!!!!!!!!!!!!!
+
+                // cet initRotZero est il vraiment utile etant donne qu'on en refait un dans 
+                // rotate() juste apres ?
+                // un simple _squares[2].center.x = x3 et _squares[2].center.y = y3 
+                // devrait suffire et sera plus rapide !!!!
+                for(let q=0;q<n_size;q++){                                          
+                    _squares[2].changeSize(sizes[q], true);
+                    for(let m=0;m<n_angles;m++){
+                        _squares[2].rotate(angles[m], false);   
                         //updateSVGSquare(_squares[2],2);                                                                                                                 
-                        let arr = arrangement_to_VI(_squares);
+                        //let arr = arrangement_to_VI(_squares);
                         //let n3 = arrsN3.length; 
-                        arrsN3 = updateArrsN3(arr, arrsN3); 
+                        arrsN3 = updateArrsN3(arrangement_to_VI(_squares), arrsN3); 
                         //debugger;                  
                     }
                 }
@@ -248,6 +258,6 @@ export function searchArrangments_V2(arrangmentsSelection) {
         let n3 = arrsN3.length; 
         console.log('arrangmentsSelection '+k + ': found '+n3);
     }
-    console.log(arrsN3.length + ' arrangments found');
+    console.log(arrsN3.length + ' arrangments found');//71
     console.log('========= END =========');
 }

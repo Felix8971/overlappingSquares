@@ -97,6 +97,18 @@ export function getInitSquares(){
                 this.vertex[1].x = this.vertex[2].x = this.center.x + half_a;
                 this.vertex[2].y = this.vertex[3].y  = this.center.y + half_a;
             },
+            //move the square and rotate it to the initial position (this.angle = 0)
+            moveTo: function (M, majBox) {
+                this.center.x = M.x;  
+                this.center.y = M.y;
+                this.angle = 0;
+                let half_a = 0.5 * this.a;
+                this.vertex[0].x = this.vertex[3].x = this.center.x - half_a;
+                this.vertex[0].y = this.vertex[1].y  = this.center.y - half_a;
+                this.vertex[1].x = this.vertex[2].x = this.center.x + half_a;
+                this.vertex[2].y = this.vertex[3].y  = this.center.y + half_a;
+                majBox && this.majBox();//not good, translater les box plutot que de recalculer!
+            },
             translate: function (u, majBox) {
                 this.center.x += u.x;  
                 this.center.y += u.y;  
@@ -106,16 +118,7 @@ export function getInitSquares(){
                 }
                 majBox && this.majBox();//not good, translater les box plutot de recalculer!
             },
-            moveTo: function (M, majBox) {
-                this.center.x = M.x;  
-                this.center.y = M.y;  
-                let half_a = 0.5 * this.a;
-                this.vertex[0].x = this.vertex[3].x = this.center.x - half_a;
-                this.vertex[0].y = this.vertex[1].y  = this.center.y - half_a;
-                this.vertex[1].x = this.vertex[2].x = this.center.x + half_a;
-                this.vertex[2].y = this.vertex[3].y  = this.center.y + half_a;
-                majBox && this.majBox();//not good, translater les box plutot que de recalculer!
-            },
+          
             // rotate: function (angle, majBox) {// angle must be an integer between 0 and 90
             //     for (let i=0;i<NB_VERTEX;i++){
             //         let vx = this.vertex[i].x;
