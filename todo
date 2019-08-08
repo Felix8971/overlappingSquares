@@ -4,14 +4,6 @@
 - Lancer des calculs en faisant diminuer progressivement les parametres step, pas angulaire, etc 
 jusqu'a convergeance du nombre d'arrangements.
 
-
 - ajouter un selecteur de configuration "eyes friendly"
 
-
-- Ajouter 2 boutons pour importer et exporter la selection d'arrangement 2d au format json
-(exporter automatiquement si click button run ?)
-
-- idee: Le calcul complet est trop long donc faire un calcul separement pour chaque conf N=2 (avec plusieurs versions du meme arr a chaque fois)
-  exporter un array de {V, F, squares } (il est probable que le fait d'avoir plusieurs versions differentes d'une
-   conf n=2 permette de reduire le nombre de step necesaire et le pas angulaire minimum permettant la convergence)
-  Ensuite merger tous les resultats (eliminer les V,F equivalents...)
+- re-ecrire en C la partie searchArrangment

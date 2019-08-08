@@ -87,27 +87,28 @@ export function getInitSquares(){
             //calcul vertices en fct de a et de "center" pour rotation = 0
             initRotZero: function (a, center) {
                 this.a = a;
-                this.angle = 0;
-                this.center.x = center.x;
-                this.center.y = center.y;
-                let half_a = 0.5 * this.a;
-                //this.vertex = [{},{},{},{}];
-                this.vertex[0].x = this.vertex[3].x = this.center.x - half_a;
-                this.vertex[0].y = this.vertex[1].y  = this.center.y - half_a;
-                this.vertex[1].x = this.vertex[2].x = this.center.x + half_a;
-                this.vertex[2].y = this.vertex[3].y  = this.center.y + half_a;
+                this.moveTo(center, false);
+                // this.angle = 0;
+                // this.center.x = center.x;
+                // this.center.y = center.y;
+                // let half_a = 0.5 * this.a;
+                // //this.vertex = [{},{},{},{}];
+                // this.vertex[0].x = this.vertex[3].x = this.center.x - half_a;
+                // this.vertex[0].y = this.vertex[1].y  = this.center.y - half_a;
+                // this.vertex[1].x = this.vertex[2].x = this.center.x + half_a;
+                // this.vertex[2].y = this.vertex[3].y  = this.center.y + half_a;
             },
             //move the square and rotate it to the initial position (this.angle = 0)
             moveTo: function (M, majBox) {
+                this.angle = 0;
                 this.center.x = M.x;  
                 this.center.y = M.y;
-                this.angle = 0;
                 let half_a = 0.5 * this.a;
                 this.vertex[0].x = this.vertex[3].x = this.center.x - half_a;
                 this.vertex[0].y = this.vertex[1].y  = this.center.y - half_a;
                 this.vertex[1].x = this.vertex[2].x = this.center.x + half_a;
                 this.vertex[2].y = this.vertex[3].y  = this.center.y + half_a;
-                majBox && this.majBox();//not good, translater les box plutot que de recalculer!
+                majBox && this.majBox();// translater les box plutot que de recalculer!?
             },
             translate: function (u, majBox) {
                 this.center.x += u.x;  
@@ -116,19 +117,9 @@ export function getInitSquares(){
                     this.vertex[i].x += u.x;  
                     this.vertex[i].y += u.y;  
                 }
-                majBox && this.majBox();//not good, translater les box plutot de recalculer!
+                majBox && this.majBox();//translater les box plutot que de recalculer!?
             },
-          
-            // rotate: function (angle, majBox) {// angle must be an integer between 0 and 90
-            //     for (let i=0;i<NB_VERTEX;i++){
-            //         let vx = this.vertex[i].x;
-            //         let vy = this.vertex[i].y;
-            //         this.vertex[i].x = this.center.x + (vx  - this.center.x)*COS[angle] - (vy  - this.center.y)*SIN[angle]
-            //         this.vertex[i].y = this.center.y + (vx  - this.center.x)*SIN[angle] + (vy  - this.center.y)*COS[angle]
-            //     }
-            //     majBox && this.majBox();
-            // },
-            rotate: function (angle, majBox) {// angle must be an integer 
+            rotate: function (angle, majBox) {// angle must be an integer in degres!
                 angle = angle < 0 ? 180*100 + angle : angle;
                 angle = angle - parseInt(angle/90)*90;
                 this.initRotZero(this.a, this.center);// angle zero                
@@ -141,6 +132,7 @@ export function getInitSquares(){
                 this.angle = angle;
                 majBox && this.majBox();
             },
+            //will work whatever the rotation angle 
             changeSize: function (a, majBox) {
                 if ( a > 0 ){
                     for (let i=0;i<NB_VERTEX;i++){
@@ -151,14 +143,6 @@ export function getInitSquares(){
                     majBox && this.majBox();
                 }
             },
-            // scale: function (scale, majBox) {
-            //     this.a = scale * this.a;
-            //     for (let i=0;i<NB_VERTEX;i++){
-            //         this.vertex[i].x = this.center.x + scale*(this.vertex[i].x - this.center.x);  
-            //         this.vertex[i].y = this.center.y + scale*(this.vertex[i].y - this.center.y);  
-            //     }
-            //     majBox && this.majBox();
-            // },
             copy: function (square) {
                 this.a = square.a;//edge length
                 this.center.x = square.center.x;

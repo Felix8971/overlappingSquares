@@ -358,7 +358,7 @@
 
         document.getElementById('search-arr-btn').addEventListener('click', function(event) {
             if ( arrangmentsSelection.length > 0){
-                searchArrangments_V2(arrangmentsSelection);
+                searchArrangments_V1(arrangmentsSelection);
             } else {
                 alert('No arrangment(s) selected');
             }
@@ -393,7 +393,7 @@
         createSVGSquare(squares[0],0);
         document.getElementById('square0').style.strokeWidth = 2;
 
-        //Les deux autre squares vont bouger
+        //Les deux autres squares vont bouger
         squares[1].initRotZero(100, {x:W/2, y:H/2});
         squares[1].majBox();
         //squares[1].translate({x:W/2, y:H/2})
