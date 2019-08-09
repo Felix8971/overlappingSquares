@@ -156,7 +156,31 @@ export function getInitSquares(){
                 this.box.xmax = square.box.xmax;
                 this.box.ymin = square.box.ymin;
                 this.box.ymax = square.box.ymax;
+            },
+
+            changeState: function(M, a, angle){
+                //moveTo and resize if necessary
+                let half_a = 0.5 * a;
+                this.vertex[0].x = this.vertex[3].x = M.x - half_a;
+                this.vertex[0].y = this.vertex[1].y  = M.y - half_a;
+                this.vertex[1].x = this.vertex[2].x = M.x + half_a;
+                this.vertex[2].y = this.vertex[3].y  = M.y + half_a;
+                //must be done after !
+                this.center.x = M.x;
+                this.center.y = M.y;
+                this.a = a;
+                //rotate    
+                this.angle = angle; 
+                for (let i=0;i<NB_VERTEX;i++){ //buggee !!!!!
+                    let vx = this.vertex[i].x;//important de conserver cette variable
+                    let vy = this.vertex[i].y;//important de conserver cette variable
+                    this.vertex[i].x = this.center.x + (vx  - this.center.x)*COS[angle] - (vy  - this.center.y)*SIN[angle]
+                    this.vertex[i].y = this.center.y + (vx  - this.center.x)*SIN[angle] + (vy  - this.center.y)*COS[angle]
+                }
+               
+                this.majBox();               
             }
+
         });
     }
     return _squares;

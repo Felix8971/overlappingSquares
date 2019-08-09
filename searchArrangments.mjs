@@ -9,8 +9,8 @@ var getAngles = (step, max) => {
     let angles = [];
     let angle = 0;
     while ( angle < max){
-        angle += step;
         angles.push(angle);
+        angle += step;
     }
     return angles;
 }
@@ -47,10 +47,10 @@ var updateArrsN3 = (arr, arrsN3) => {
     return arrsN3;
 }
 
-export function searchArrangments_V1(squares) {
-    //on place un carre fixe au centre de la zone de simulation puis on 
+export function searchArrangments_V1(_squares) {
+    //Principe: on place un carre fixe au centre de la zone de simulation puis on 
     //balaye la zone avec 2 autres carres (taille et rotation variables)
-
+   let t0 = Date.now(); 
     //Liste des configurations N=3 trouvées  
    let arrsN3 = [
        /*{
@@ -68,8 +68,8 @@ export function searchArrangments_V1(squares) {
            ],
        }*/
    ];
-   debugger;
-   let _squares = getInitSquares();
+  
+   //let _squares = getInitSquares();
 
    let scanArea = {
        xmin: _squares[0].box.xmin - _squares[0].a/2,
@@ -77,7 +77,7 @@ export function searchArrangments_V1(squares) {
        ymin: _squares[0].box.ymin - _squares[0].a/2,
        ymax: _squares[0].box.ymax + _squares[0].a/2
    };
-   let step = 10;//_squares[0].a/20;
+   let step = 30;//_squares[0].a/20;
 
    //scan zone
    let nx = parseInt((scanArea.xmax - scanArea.xmin)/step);
@@ -87,59 +87,69 @@ export function searchArrangments_V1(squares) {
 
    let x2, y2, x3, y3;
 
-   let angles = getAngles(20, 90);
-   let sizes = getSizes(20, 150);
-   //sizes.push(2);
+   let angles = [0, 10, 20, 30, 45, 50, 60, 70, 80, 85];//getAngles(45, 90);
+   let sizes = [20,50,80, 150];//getSizes(50, 150);
+  
    let n_angles = angles.length;
    let n_size = sizes.length;
 
    let positionsTested = 0;
+   let count = 0;
    
-   for(let i0=0;i0<nx_half;i0++){
+   for(let i0=0;i0<nx;i0++){
        x2 = scanArea.xmin + i0*step;
-       for(let j0=0;j0<ny_half;j0++){
+       count++;console.log(100*count/nx + '%');
+       for(let j0=0;j0<ny;j0++){
             y2 = scanArea.ymin + j0*step;
             //drawPoint({x:x2,y:y2});
-            _squares[1].moveTo({x:x2,y:y2}, false);
-            for(let p=0;p<n_size;p++){
-                _squares[1].changeSize(sizes[p], false);
-                for(let k=0;k<n_angles;k++){                                                       
-                    _squares[1].rotate(angles[k], true);
-                    let arr = arrangement_to_VI(_squares);
-                    let n3 = arrsN3.length; 
-                    //updateSVGSquare(_squares[1],1);                      
-                    updateArrsN3(arr, arrsN3);                     
-                    for(let i1=0;i1<nx;i1++){
-                        x3 = scanArea.xmin + i1*step;
-                        for(let j1=0;j1<ny;j1++){
-                            y3 = scanArea.ymin + j1*step;
-                            //drawPoint({x:x3,y:y3});
-                            _squares[2].moveTo({x:x3,y:y3}, false);                         
+            //_squares[1].moveTo({x:x2,y:y2}, false);
+            for(let i1=0;i1<nx;i1++){
+                x3 = scanArea.xmin + i1*step;
+                for(let j1=0;j1<ny;j1++){
+                    y3 = scanArea.ymin + j1*step;
+                    //drawPoint({x:x3,y:y3});
+                    //_squares[2].moveTo({x:x3,y:y3}, false);   
+                    for(let p=0;p<n_size;p++){
+                        //_squares[1].changeSize(sizes[p], false);
+                        for(let k=0;k<n_angles;k++){                                                       
+                            //_squares[1].rotate(angles[k], true);
+                            //let arr = arrangement_to_VI(_squares);
+                            //let n3 = arrsN3.length; 
+                            //updateSVGSquare(_squares[1],1);                      
+                            //updateArrsN3(arr, arrsN3);     
+                            _squares[1].changeState({x:x2,y:y2}, sizes[p], angles[k]);              
                             for(let q=0;q<n_size;q++){                                 
-                                _squares[2].changeSize(sizes[q], true);      
-                                for(let m=0;m<n_angles;m++){                                      
-                                    _squares[2].rotate(angles[m], false);                                                                                                                
+                                //_squares[2].changeSize(sizes[q], false); 
+                                for(let m=0;m<n_angles;m++){                                 
+                                    //_squares[2].rotate(angles[m], true);   
+                                    _squares[2].changeState({x:x3,y:y3}, sizes[q], angles[m]);                                                                                                              
                                     let arr = arrangement_to_VI(_squares);
                                     let n3 = arrsN3.length; 
-                                    updateArrsN3(arr,arrsN3);
-                                    //updateSVGSquare(_squares[2],2);      
-                                    positionsTested++;                               
-                                    if ( arrsN3.length > n3 ){ 
+                                    updateArrsN3(arr, arrsN3);
+                                    updateSVGSquare(_squares[1],1);  
+                                    updateSVGSquare(_squares[2],2);      
+                                    positionsTested++;
+                                    debugger;                      
+                                    //if ( arrsN3.length > n3 ){ 
                                         //updateSVGSquare(_squares[2],2);
                                         //console.log("xxxx");
-                                    }
+                                    //}
                                 }
                             }
                         }
                     }
-               }
-           }
-       }
-   }
+                }
+            }
+        }
+    }
    console.log(positionsTested + ' positionsTested');
-   console.log(arrsN3.length + ' arrangments found');
-   console.log('Arrangments list:'+arrsN3);
+   let delta_t = (Date.now() - t0)/(1000*60);
+   console.log(arrsN3.length + ' arrangments found in '+ delta_t + ' minutes');
+   
+   //console.log('Arrangments list:'+arrsN3);
    console.log('========= END =========');
+//    331776 positionsTested
+//    searchArrangments.mjs:147 551 arrangments found in 2.2467166666666665 minutes
 }
 
 var getScanArea = function(box){

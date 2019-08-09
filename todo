@@ -7,3 +7,8 @@ jusqu'a convergeance du nombre d'arrangements.
 - ajouter un selecteur de configuration "eyes friendly"
 
 - re-ecrire en C la partie searchArrangment
+
+idee: regrouper moveto, rotate et resize en une seule fonction qui depend de :
+   - position x,y du centre du carres 
+   - size
+   - angle rotation
