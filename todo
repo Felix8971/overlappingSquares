@@ -8,7 +8,7 @@ jusqu'a convergeance du nombre d'arrangements.
 
 - re-ecrire en C la partie searchArrangment
 
-idee: regrouper moveto, rotate et resize en une seule fonction qui depend de :
+idee: regrouper moveto, rotate et resize en une seule fonction qui depend de:
    - position x,y du centre du carres 
    - size
    - angle rotation

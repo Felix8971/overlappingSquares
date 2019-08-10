@@ -81,7 +81,7 @@ var getEquivalent_V = function(V0) {//ok
 }
 
 //Determine si V1 est dans la liste des matrices equivalentes de V0
-//Si oui on retourne la permutation correspondante par rapport à V0 (qui va serbir à calculer I1)
+//Si oui on retourne la permutation correspondante par rapport à V0 (qui va servir à calculer I1)
 //sinon on retourne false
 var are_V_Equivalent = function(V0, V1){
     let EquivalentsList = getEquivalent_V(V0);
@@ -100,7 +100,7 @@ var are_V_Equivalent = function(V0, V1){
 export function are_VI_Equivalents(arr0, arr1) {
     //Tester l'egalité pure pour V0 == V1 et I0 == I1
     //On va le plus souvent comparer des conf sctrictement egales lors du balayage donc
-    //autant tester directement l'egalité pure en premier
+    //autant tester directement l'egalité stricte en premier
     let V0 = arr0.V;
     let V1 = arr1.V;
     let I0 = arr0.I;
@@ -200,7 +200,7 @@ export function are_VI_Equivalents(arr0, arr1) {
         //console.log('Equivalentes !'); 
         return true; 
 
-    } else{
+    } else {
         //console.log('non equivalentes');
         return false;
     }   
