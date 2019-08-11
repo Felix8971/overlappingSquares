@@ -47,12 +47,12 @@ var updateArrsN3 = (arr, arrsN3) => {
     return arrsN3;
 }
 
-export function searchArrangments_V1(_squares) {
+export function searchArrangments_V1(squares) {
     //Principe: on place un carre fixe au centre de la zone de simulation puis on 
     //balaye la zone avec 2 autres carres (taille et rotation variables)
-   const t0 = Date.now(); 
+    const t0 = Date.now(); 
     //Liste des configurations N=3 trouvées  
-   let arrsN3 = [
+    let arrsN3 = [
        /*{
            id: 0,
            V: [ 
@@ -69,71 +69,71 @@ export function searchArrangments_V1(_squares) {
        }*/
    ];
   
-   //let _squares = getInitSquares();
+   //let squares = getInitSquares();
 
-   let scanArea = {
-       xmin: _squares[0].box.xmin - _squares[0].a/2,
-       xmax: _squares[0].box.xmax + _squares[0].a/2,
-       ymin: _squares[0].box.ymin - _squares[0].a/2,
-       ymax: _squares[0].box.ymax + _squares[0].a/2
-   };
-   const step = 5.3;//_squares[0].a/20;
+    let scanArea = {
+        xmin: squares[0].box.xmin - squares[0].a/2,
+        xmax: squares[0].box.xmax + squares[0].a/2,
+        ymin: squares[0].box.ymin - squares[0].a/2,
+        ymax: squares[0].box.ymax + squares[0].a/2
+    };
+    const step = 50;//squares[0].a/20;
 
-   //scan zone
-   const nx = parseInt((scanArea.xmax - scanArea.xmin)/step);
-   const ny = parseInt((scanArea.ymax - scanArea.ymin)/step);
-   const nxny = nx*ny;
-//    const nx_half = Math.ceil(nx/2) + step;
-//    const ny_half = Math.ceil(ny/2) + step;
+    //scan zone
+    const nx = parseInt((scanArea.xmax - scanArea.xmin)/step);
+    const ny = parseInt((scanArea.ymax - scanArea.ymin)/step);
+    const nxny = nx*ny;
+    //    const nx_half = Math.ceil(nx/2) + step;
+    //    const ny_half = Math.ceil(ny/2) + step;
 
-   let x2, y2, x3, y3;
+    let x2, y2, x3, y3;
 
-   const angles = [0, 5, 10, 20, 30, 45, 50, 60, 70, 80, 85];//getAngles(45, 90);
-   const sizes = [2.1, 10.2, 40.3, 80.4, 60.7, 100.5, 160.6];//getSizes(50, 150);
-  
-   const n_angles = angles.length;
-   const n_size = sizes.length;
+    const angles = [0, 45, 60, 85];//getAngles(45, 90);
+    const sizes = [ 40.3, 60.7, 100.5];//getSizes(50, 150);
 
-   let positionsTested = 0;
-   let count = 0;
-   
-   for(let i0=0;i0<nx;i0++){
-       x2 = scanArea.xmin + i0*step;
-       for(let j0=0;j0<ny;j0++){
+    const n_angles = angles.length;
+    const n_size = sizes.length;
+
+    let positionsTested = 0;
+    let count = 0;
+
+    for(let i0=0;i0<nx;i0++){
+        x2 = scanArea.xmin + i0*step;
+        for(let j0=0;j0<ny;j0++){
             y2 = scanArea.ymin + j0*step;
             count++;
             console.log(100*count/nxny + '% : '+arrsN3.length+ ' arr found');
             //drawPoint({x:x2,y:y2});
-            //_squares[1].moveTo({x:x2,y:y2}, false);
+            //squares[1].moveTo({x:x2,y:y2}, false);
             for(let p=0;p<n_size;p++){
-                //_squares[1].changeSize(sizes[p], false);
+                //squares[1].changeSize(sizes[p], false);
                 for(let k=0;k<n_angles;k++){                                                       
-                    //_squares[1].rotate(angles[k], true);
-                    //let arr = arrangement_to_VI(_squares);
+                    //squares[1].rotate(angles[k], true);
+                    //let arr = arrangement_to_VI(squares);
                     //let n3 = arrsN3.length; 
-                    //updateSVGSquare(_squares[1],1);                      
+                    //updateSVGSquare(squares[1],1);                      
                     //updateArrsN3(arr, arrsN3); 
-                    _squares[1].changeState({x:x2,y:y2}, sizes[p], angles[k]);   
+                    squares[1].changeState({x:x2,y:y2}, sizes[p], angles[k]);   
                     for(let i1=i0;i1<nx;i1++){// i1=i0
                         x3 = scanArea.xmin + i1*step;
                         for(let j1=j0;j1<ny;j1++){// j1=j0
                             y3 = scanArea.ymin + j1*step;
                             //drawPoint({x:x3,y:y3});
-                            //_squares[2].moveTo({x:x3,y:y3}, false);   
+                            //squares[2].moveTo({x:x3,y:y3}, false);   
                             for(let q=0;q<n_size;q++){                                 
-                                //_squares[2].changeSize(sizes[q], false); 
+                                //squares[2].changeSize(sizes[q], false); 
                                 for(let m=0;m<n_angles;m++){                                 
-                                    //_squares[2].rotate(angles[m], true);   
-                                    _squares[2].changeState({x:x3,y:y3}, sizes[q], angles[m]);                                                                                                              
-                                    let arr = arrangement_to_VI(_squares);
+                                    //squares[2].rotate(angles[m], true);   
+                                    squares[2].changeState({x:x3,y:y3}, sizes[q], angles[m]);                                                                                                              
+                                    let arr = arrangement_to_VI(squares);
                                     let n3 = arrsN3.length; 
                                     updateArrsN3(arr, arrsN3);
-                                    //updateSVGSquare(_squares[1],1);  
-                                    //updateSVGSquare(_squares[2],2);      
+                                    //updateSVGSquare(squares[1],1);  
+                                    //updateSVGSquare(squares[2],2);      
                                     positionsTested++;                                                       
                                     if ( arrsN3.length > n3 ){ 
-                                        //updateSVGSquare(_squares[1],1);  
-                                        //updateSVGSquare(_squares[2],2);      
+                                        //updateSVGSquare(squares[1],1);  
+                                        //updateSVGSquare(squares[2],2);      
                                         //console.log("xxxx");
                                     }
                                 }
@@ -144,21 +144,40 @@ export function searchArrangments_V1(_squares) {
             }
         }
     }
-   console.log(positionsTested + ' positionsTested');
-   let delta_t = (Date.now() - t0)/(1000*60);
-   console.log(arrsN3.length + ' arrangments found in '+ delta_t + ' minutes');
-   // 705600 positionsTested
-   // 574 arrangments found in 4.1722 minutes
-   //console.log('Arrangments list:'+arrsN3);
+    console.log('========= RESULT =========');
+    
+    console.log('step:'+step);
+    console.log('angles:'+angles);
+    console.log('sizes:'+sizes);
+    let delta_t = (Date.now() - t0)/(1000*60);
+    console.log(positionsTested + ' positionsTested');
+    console.log(arrsN3.length + ' arrangments found in '+ delta_t + ' minutes');
+
+    //Export result 
+    console.log('Download result...');
+    let dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(arrsN3));
+    let dlAnchorElem = document.getElementById('downloadAnchorElem');
+    var downloadLink = document.createElement("a");
+    document.body.appendChild(downloadLink);
+    document.body.removeChild(downloadLink);
+    downloadLink.setAttribute("href",dataStr);
+    let fileName = "arrangments-found-"+Date.now()+".json";
+    console.log(fileName);
+    downloadLink.setAttribute("download",fileName);
+    downloadLink.click();
+
+    // 705600 positionsTested
+    // 574 arrangments found in 4.1722 minutes
+    //console.log('Arrangments list:'+arrsN3);
 
 
-   // 2073600 positionsTested
-   // 580 arrangments found in 15.674666666666667 minutes
+    // 2073600 positionsTested
+    // 580 arrangments found in 15.674666666666667 minutes
 
-   // 7562500 positionsTested
-   // 783 arrangments found in 66.8529 minutes
+    // 7562500 positionsTested
+    // 783 arrangments found in 66.8529 minutes
 
-   console.log('========= END =========');
+    console.log('========= END =========');
 
 }
 

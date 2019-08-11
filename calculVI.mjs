@@ -37,53 +37,6 @@ export function testBoxesOverlapping(boxA, boxB){//tested
 }
 
 
-//test
-// let square0 = {
-//     a: 100,//edge length
-//     center: { x: 0, y: 0},//c'est lui qu'on va deplacer
-//     angle: 0,// angle de rotation par rapport à l'horizontal 
-//     vertex:[  
-//         { x: 110, y: 110},//point 2d
-//         { x: 210, y: 110},
-//         { x: 210, y: 210},
-//         { x: 110, y: 210},
-//     ],
-//     box: {xmin: 110, xmax: 210, ymin:110, ymax:210}, //sera utile pour optimiser les calculs d'intersection
-//     majBox: function() {
-//         this.box.xmin = this.box.ymin = MAX;
-//         this.box.xman = this.box.yman = MIN;        
-//         for (let i=0;i<4;i++){
-//             if ( this.vertex.x < this.box.xmin ){
-//                 this.box.xmin = this.vertex.x;
-//             }
-//             if ( this.vertex.y < this.box.ymin ){
-//                 this.box.ymin = this.vertex.y;
-//             }
-//             if ( this.vertex.x > this.box.xmax ){
-//                 this.box.xmax = this.vertex.x;
-//             }
-//             if ( this.vertex.y > this.box.ymax ){
-//                 this.box.ymax = this.vertex.y;
-//             }
-//         }
-//         this.box.xmin = 2;
-//     },
-//     majVertex : function (){
-//         // en fct de angle, cote a et centre
-//     }
-// }
-
-// for (let i=0;i<W;i++){ 
-//     for (let j=0;j<H;j++){ 
-//         let box = {xmin:i, xmax: i+1, ymin:j, ymax:j+1};
-//         //if ( isPointInSquare({x:i, y:j}, square0, 0) ){
-//         if ( testBoxesOverlapping(box, square0.box) )  {
-//             drawPoint({x:i,y:j});
-//         }
-//     }
-// }
-
-
 //signe du determinant de 2 vecteurs u et v se trouvant dans le plan (x,y)
 var Det = (u, v) => {
   return u.x * v.y - u.y * v.x; 
@@ -180,45 +133,6 @@ var intersectionSegments = (squareA, kA0, squareB, kB0) => {
 //     }
 // }
 
-/* 
-
-arrangement = array of squares:
-{
-    a: 0,//edge length
-    center: { x: 0, y: 0},//c'est lui qu'on va deplacer
-    angle: 0,// angle de rotation par rapport à l'horizontal 
-    vertex:[ 
-        { x: 0, y: 0},//point 2d
-        { x: 0, y: 0},
-        { x: 0, y: 0},
-        { x: 0, y: 0},
-    ],
-    box: {xmin: 0, xmax: 0, ymin:0, ymax:0}, //sera utile pour optimiser les calculs d'intersection
-    majBox: function() {
-        this.box.xmin = this.box.ymin = MAX;
-        this.box.xman = this.box.yman = MIN;        
-        for (let i=0;i<4;i++){
-            if ( this.vertex.x < this.box.xmin ){
-                this.box.xmin = this.vertex.x;
-            }
-            if ( this.vertex.y < this.box.ymin ){
-                this.box.ymin = this.vertex.y;
-            }
-            if ( this.vertex.x > this.box.xmax ){
-                this.box.xmax = this.vertex.x;
-            }
-            if ( this.vertex.y > this.box.ymax ){
-                this.box.ymax = this.vertex.y;
-            }
-        }
-        this.box.xmin = 2;
-    },
-    majVertex : function (){
-        // en fct de angle, cote a et centre
-    }
-}
-*/
-
 // calcul le nombre de vertex du carre A se trouvant dans le carre B
 var nbVertexInside = (squareA, squareB) => {
     let n = 0;
@@ -282,5 +196,58 @@ export function arrangement_to_VI(squares) {
         }
     }
 
-    return {V, I, valid:arrangementValid};
+    return {
+        V, 
+        I,
+        squares: JSON.parse(JSON.stringify(squares)),
+        valid:arrangementValid
+    };
 }
+
+
+
+//test
+// let square0 = {
+//     a: 100,//edge length
+//     center: { x: 0, y: 0},//c'est lui qu'on va deplacer
+//     angle: 0,// angle de rotation par rapport à l'horizontal 
+//     vertex:[  
+//         { x: 110, y: 110},//point 2d
+//         { x: 210, y: 110},
+//         { x: 210, y: 210},
+//         { x: 110, y: 210},
+//     ],
+//     box: {xmin: 110, xmax: 210, ymin:110, ymax:210}, //sera utile pour optimiser les calculs d'intersection
+//     majBox: function() {
+//         this.box.xmin = this.box.ymin = MAX;
+//         this.box.xman = this.box.yman = MIN;        
+//         for (let i=0;i<4;i++){
+//             if ( this.vertex.x < this.box.xmin ){
+//                 this.box.xmin = this.vertex.x;
+//             }
+//             if ( this.vertex.y < this.box.ymin ){
+//                 this.box.ymin = this.vertex.y;
+//             }
+//             if ( this.vertex.x > this.box.xmax ){
+//                 this.box.xmax = this.vertex.x;
+//             }
+//             if ( this.vertex.y > this.box.ymax ){
+//                 this.box.ymax = this.vertex.y;
+//             }
+//         }
+//         this.box.xmin = 2;
+//     },
+//     majVertex : function (){
+//         // en fct de angle, cote a et centre
+//     }
+// }
+
+// for (let i=0;i<W;i++){ 
+//     for (let j=0;j<H;j++){ 
+//         let box = {xmin:i, xmax: i+1, ymin:j, ymax:j+1};
+//         //if ( isPointInSquare({x:i, y:j}, square0, 0) ){
+//         if ( testBoxesOverlapping(box, square0.box) )  {
+//             drawPoint({x:i,y:j});
+//         }
+//     }
+// }

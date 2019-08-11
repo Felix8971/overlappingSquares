@@ -388,7 +388,9 @@
             })
         });
         //on place les squares dans la zone
-        squares[0].initRotZero(100, {x:W/2-110, y:H/2-110});
+        //squares[0].initRotZero(100, {x:W/2-110, y:H/2-110});
+
+        squares[0].initRotZero(100, {x:0, y:0});
         squares[0].majBox();
         createSVGSquare(squares[0],0);
         document.getElementById('square0').style.strokeWidth = 2;
