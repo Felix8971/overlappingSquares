@@ -88,7 +88,7 @@ export function searchArrangments_V1(squares) {
 
     let x2, y2, x3, y3;
 
-    const angles = [0, 5, 10, 20, 45, 50, 60,70, 80];//getAngles(45, 90);
+    const angles = [0, 5, 10, 20, 45, 50, 60, 70, 80, 85];//getAngles(45, 90);
     const sizes = [2.1, 10.2, 40.3, 60.7, 80.4, 100.5, 160.5];//getSizes(50, 150);
 
     const n_angles = angles.length;
@@ -102,7 +102,8 @@ export function searchArrangments_V1(squares) {
         for(let j0=0;j0<ny;j0++){
             y2 = scanArea.ymin + j0*step;
             count++;
-            console.log(100*count/nxny + '% : '+arrsN3.length+ ' arr found');
+            let delta_t = (Date.now() - t0)/(1000*60);
+            console.log(100*count/nxny + '% : '+arrsN3.length + ' arrangments found in '+ delta_t + ' minutes');
             //drawPoint({x:x2,y:y2});
             //squares[1].moveTo({x:x2,y:y2}, false);
             for(let p=0;p<n_size;p++){
@@ -120,7 +121,7 @@ export function searchArrangments_V1(squares) {
                             y3 = scanArea.ymin + j1*step;
                             //drawPoint({x:x3,y:y3});
                             //squares[2].moveTo({x:x3,y:y3}, false);   
-                            for(let q=0;q<n_size;q++){                                 
+                            for(let q=0;q<n_size;q++){                       
                                 //squares[2].changeSize(sizes[q], false); 
                                 for(let m=0;m<n_angles;m++){                                 
                                     //squares[2].rotate(angles[m], true);   
