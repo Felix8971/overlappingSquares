@@ -77,19 +77,19 @@ export function searchArrangments_V1(squares) {
         ymin: squares[0].box.ymin - squares[0].a/2,
         ymax: squares[0].box.ymax + squares[0].a/2
     };
-    const step = 50;//squares[0].a/20;
+    const step = 7;//squares[0].a/20;
 
     //scan zone
     const nx = parseInt((scanArea.xmax - scanArea.xmin)/step);
     const ny = parseInt((scanArea.ymax - scanArea.ymin)/step);
     const nxny = nx*ny;
-    //    const nx_half = Math.ceil(nx/2) + step;
-    //    const ny_half = Math.ceil(ny/2) + step;
+    //const nx_half = Math.ceil(nx/2) + step;
+    //const ny_half = Math.ceil(ny/2) + step;
 
     let x2, y2, x3, y3;
 
-    const angles = [0, 45, 60, 85];//getAngles(45, 90);
-    const sizes = [ 40.3, 60.7, 100.5];//getSizes(50, 150);
+    const angles = [0, 5, 10, 20, 45, 50, 60,70, 80];//getAngles(45, 90);
+    const sizes = [2.1, 10.2, 40.3, 60.7, 80.4, 100.5, 160.5];//getSizes(50, 150);
 
     const n_angles = angles.length;
     const n_size = sizes.length;
@@ -131,11 +131,11 @@ export function searchArrangments_V1(squares) {
                                     //updateSVGSquare(squares[1],1);  
                                     //updateSVGSquare(squares[2],2);      
                                     positionsTested++;                                                       
-                                    if ( arrsN3.length > n3 ){ 
+                                    //if ( arrsN3.length > n3 ){ 
                                         //updateSVGSquare(squares[1],1);  
                                         //updateSVGSquare(squares[2],2);      
                                         //console.log("xxxx");
-                                    }
+                                    //}
                                 }
                             }
                         }
@@ -156,7 +156,7 @@ export function searchArrangments_V1(squares) {
     //Export result 
     console.log('Download result...');
     let dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(arrsN3));
-    let dlAnchorElem = document.getElementById('downloadAnchorElem');
+    //let dlAnchorElem = document.getElementById('downloadAnchorElem');
     var downloadLink = document.createElement("a");
     document.body.appendChild(downloadLink);
     document.body.removeChild(downloadLink);
@@ -165,14 +165,6 @@ export function searchArrangments_V1(squares) {
     console.log(fileName);
     downloadLink.setAttribute("download",fileName);
     downloadLink.click();
-
-    // 705600 positionsTested
-    // 574 arrangments found in 4.1722 minutes
-    //console.log('Arrangments list:'+arrsN3);
-
-
-    // 2073600 positionsTested
-    // 580 arrangments found in 15.674666666666667 minutes
 
     // 7562500 positionsTested
     // 783 arrangments found in 66.8529 minutes
