@@ -26,25 +26,126 @@ var getSizes = (step, max) => {//peut depasser la valeur max
     return sizes;
 }
 
+
+//Fait la somme de tous les elements de la colonne j sur la matrice M
+var sumOnColumn = function(M, j) {//ok
+    const nbLine = M.length;
+    let sum = 0;
+    for (let i=0;i<nbLine;i++){ 
+      sum += M[i][j];
+    }
+    return sum;
+}
+
+// Sum sizes of all the arrsN3[nV][nI] defined
+// to get the total number of arrangement found
+var getArrsN3Length = (arrsN3) => {
+    let n = arrsN3.length;
+    let sum = 0;
+    for (let i=0;i<n;i++){
+        if (arrsN3[i]) {
+            let p = arrsN3[i].length;
+            for (let j=0;j<p;j++){
+                if (arrsN3[i][j]) {
+                    sum += arrsN3[i][j].length;
+                }
+            }
+        }
+    } 
+    return sum;
+}
+
+
+var getArrsN3Array = (arrsN3) => {
+    let n = arrsN3.length;
+    let arrs = [];
+    for (let i=0;i<n;i++){
+        if (arrsN3[i]) {
+            let p = arrsN3[i].length;
+            for (let j=0;j<p;j++){
+                if (arrsN3[i][j]) {                 
+                    arrs.push(arrsN3[i][j][0]);                
+                }
+            }
+        }
+    } 
+
+    // todo: enlever les decimale inutiles, 4 chiffres apres la virgule devraient suffirent   
+    let arrsLigth = arrs.map((elem)=>{
+        return {
+            V: elem.V,
+            I: elem.I,
+            squares: [
+                elem.squares[0].vertex,
+                elem.squares[1].vertex,
+                elem.squares[2].vertex,
+            ]
+        }
+    });
+
+    return arrsLigth;
+}
+
 //Ajoute l'arrangement arr dans la liste arrsN3 si il n'y pas d'equivalent deja present
 var updateArrsN3 = (arr, arrsN3) => {
     if ( arr.valid ){
-        //regarder si cet arrangement est deja dans arrsN3
-        let n = arrsN3.length;
-        let found = false;
-        //for(let i=0;i<n;i++){// comparer le temps execution dans chaque cas 
-        for(let i=n-1;i>=0;i--){
-            if ( are_VI_Equivalents(arrsN3[i], arr) ){
-                found = true;
-                break;
+       
+        let sV = [
+            sumOnColumn(arr.V, 0), 
+            sumOnColumn(arr.V, 1),  
+            sumOnColumn(arr.V, 2)
+        ];
+        sV.sort((a, b) => a - b);//ascending sort
+
+        let sI = [
+            sumOnColumn(arr.I, 0), 
+            sumOnColumn(arr.I, 1),  
+            sumOnColumn(arr.I, 2)
+        ];
+        sI.sort((a, b) => a - b);//ascending sort
+
+        //convertion to a decimal number 
+        let nV = sV[0]*100 + sV[1]*10 + sV[2];
+        let nI = sI[0]*100 + sI[1]*10 + sI[2];
+
+        if ( arrsN3[nV] ){
+            if ( arrsN3[nV][nI] ){//the category exist so we search arr inside
+                let n = arrsN3[nV][nI].length;
+                
+                let found = false;
+                for(let i=n-1;i>=0;i--){
+                    if ( are_VI_Equivalents(arrsN3[nV][nI][i], arr) ){
+                        found = true;
+                        break;
+                    }
+                }
+                if (!found){
+                    arrsN3[nV][nI].push(arr); 
+                    //console.log(arrsN3.length + ' arrangments found');
+                }
+            } else {//new arrangment category
+                arrsN3[nV][nI] = [];
+                arrsN3[nV][nI].push(arr);      
             }
+        } else {//new arrangment category
+            arrsN3[nV] = [];
+            arrsN3[nV][nI] = [];
+            arrsN3[nV][nI].push(arr);        
         }
-        if (!found){
-            arrsN3.push(arr);                  
-            //console.log(arrsN3.length + ' arrangments found');
-        }
+
+        //for(let i=0;i<n;i++){// comparer le temps execution dans chaque cas 
+        // for(let i=n-1;i>=0;i--){
+        //     if ( are_VI_Equivalents(arrsN3[i], arr) ){
+        //         found = true;
+        //         break;
+        //     }
+        // }
+        // if (!found){
+        //     arrsN3.push(arr);                  
+        //     //console.log(arrsN3.length + ' arrangments found');
+        // }
     }
-    return arrsN3;
+    //return arrsN3;
 }
 
 export function searchArrangments_V1(squares) {
@@ -52,22 +153,7 @@ export function searchArrangments_V1(squares) {
     //balaye la zone avec 2 autres carres (taille et rotation variables)
     const t0 = Date.now(); 
     //Liste des configurations N=3 trouvées  
-    let arrsN3 = [
-       /*{
-           id: 0,
-           V: [ 
-               [0, 0, 0],
-               [0, 0, 0],
-               [0, 0, 0]
-           ],
-           I: [ 
-               [0, 0, 0],
-               [0, 0, 0],
-               [0, 0, 0],
-               [0, 0, 0]
-           ],
-       }*/
-   ];
+    let arrsN3 = [];
   
    //let squares = getInitSquares();
 
@@ -77,7 +163,7 @@ export function searchArrangments_V1(squares) {
         ymin: squares[0].box.ymin - squares[0].a/2,
         ymax: squares[0].box.ymax + squares[0].a/2
     };
-    const step = 7;//squares[0].a/20;
+    const step = 70;//squares[0].a/20;
 
     //scan zone
     const nx = parseInt((scanArea.xmax - scanArea.xmin)/step);
@@ -88,8 +174,8 @@ export function searchArrangments_V1(squares) {
 
     let x2, y2, x3, y3;
 
-    const angles = [0, 5, 10, 20, 45, 50, 60, 70, 80, 85];//getAngles(45, 90);
-    const sizes = [2.1, 10.2, 40.3, 60.7, 80.4, 100.5, 160.5];//getSizes(50, 150);
+    const angles = [0, 5, 10, 20, 30, 40, 50, 60, 70, 80];//getAngles(45, 90);
+    const sizes = [2, 10.1, 40.2, 60.3, 80.4, 100.5, 150.6];//g5etSizes(50, 150);
 
     const n_angles = angles.length;
     const n_size = sizes.length;
@@ -103,7 +189,7 @@ export function searchArrangments_V1(squares) {
             y2 = scanArea.ymin + j0*step;
             count++;
             let delta_t = (Date.now() - t0)/(1000*60);
-            console.log(100*count/nxny + '% : '+arrsN3.length + ' arrangments found in '+ delta_t + ' minutes');
+            console.log(100*count/nxny + '% : '+getArrsN3Length(arrsN3) + ' arrangments found in '+ delta_t + ' minutes');
             //drawPoint({x:x2,y:y2});
             //squares[1].moveTo({x:x2,y:y2}, false);
             for(let p=0;p<n_size;p++){
@@ -127,7 +213,7 @@ export function searchArrangments_V1(squares) {
                                     //squares[2].rotate(angles[m], true);   
                                     squares[2].changeState({x:x3,y:y3}, sizes[q], angles[m]);                                                                                                              
                                     let arr = arrangement_to_VI(squares);
-                                    let n3 = arrsN3.length; 
+                                    //let n3 = arrsN3.length; 
                                     updateArrsN3(arr, arrsN3);
                                     //updateSVGSquare(squares[1],1);  
                                     //updateSVGSquare(squares[2],2);      
@@ -152,11 +238,11 @@ export function searchArrangments_V1(squares) {
     console.log('sizes:'+sizes);
     let delta_t = (Date.now() - t0)/(1000*60);
     console.log(positionsTested + ' positionsTested');
-    console.log(arrsN3.length + ' arrangments found in '+ delta_t + ' minutes');
+    console.log(getArrsN3Length(arrsN3) + ' arrangments found in '+ delta_t + ' minutes');
 
     //Export result 
     console.log('Download result...');
-    let dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(arrsN3));
+    let dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(getArrsN3Array(arrsN3)));
     //let dlAnchorElem = document.getElementById('downloadAnchorElem');
     var downloadLink = document.createElement("a");
     document.body.appendChild(downloadLink);
@@ -290,7 +376,7 @@ export function searchArrangments_V2(arrangmentsSelection) {
                         let arr = arrangement_to_VI(_squares);
                         let n3 = arrsN3.length;
                       
-                        arrsN3 = updateArrsN3(arr, arrsN3);
+                        updateArrsN3(arr, arrsN3);
                         positionsTested++;
                         // if ( arrsN3.length > n3 ){ 
                         //     updateSVGSquare(_squares[2],2);

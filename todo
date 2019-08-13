@@ -12,3 +12,21 @@ idee: regrouper moveto, rotate et resize en une seule fonction qui depend de:
    - position x,y du centre du carres 
    - size
    - angle rotation
+
+idee optimisation: separer arrsN3 en plusieurs parties
+
+arrsN3 devient un array a 2 dimension  arrsN3[i][j]
+
+i correspond au nombre entier obtenu en faisant la somme de chaque colonne de V puis un tri croissant
+
+j correspond au nombre entier obtenu en faisant la somme de chaque colonne de I puis un tri croissant
+
+
+========= RESULT =========
+searchArrangments.mjs:222 step:7
+searchArrangments.mjs:223 angles:0,5,10,20,30,40,50,60,70,80
+searchArrangments.mjs:224 sizes:2,10.1,40.2,60.3,80.4,100.5,150.6
+searchArrangments.mjs:226 313644100 positionsTested
+searchArrangments.mjs:227 830 arrangments found in 581.1396666666667 minutes
+searchArrangments.mjs:230 Download result...
+searchArrangments.mjs:238 arrangments-found-1565662706511.json

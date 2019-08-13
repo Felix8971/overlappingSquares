@@ -33,10 +33,10 @@ export function createSVGSquare(square, id){//tested
     polygon.setAttribute("id",'square'+id); 
     let points = "";
     for(let i=0;i<4;i++){
-        points += square.vertex[i].x + ',' +square.vertex[i].y + ' ';
+        points += square.vertex[i].x+ ',' +square.vertex[i].y + ' ';
     }
     polygon.setAttribute("points",points);
-    polygon.style = squareStyle[id]; 
+    polygon.style = squareStyle[id];
     svg.appendChild(polygon);
     label[id].setAttributeNS(null, 'x', square.center.x-5);
     label[id].setAttributeNS(null, 'y', square.center.y+5);

@@ -172,8 +172,16 @@ export function arrangement_to_VI(squares) {
                 //console.log('square '+i+' dans '+j+':'+val);
                 //calcul vertex de j dans i
                 //V[j][i] = nbVertexInside(squares[j], squares[i]);
-                V[j][i] = nbVertexInside(squares[i], squares[j]);
-                //console.log('square '+j+' dans '+i+':'+val);
+  
+                //optim: a ne calculer que si V[i][j] <= 2  !!
+
+                V[j][i] = V[i][j] <= 2 ? nbVertexInside(squares[i], squares[j]) : 0;//à tester !!!!!!!!!!!!!!!!!!
+                // if ( V[i][j] <= 2 ) {
+                //     V[j][i] = nbVertexInside(squares[i], squares[j]);
+                //     //console.log('square '+j+' dans '+i+':'+val);
+                // } else {
+                //     V[j][i] = 0;
+                // }
                 
                 //Intersection des segmemts de i et de j
                 for (let k=0;k<NB_VERTEX;k++){ //pour chaque segment k de i
