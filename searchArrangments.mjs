@@ -4,7 +4,7 @@ import { arrangement_to_VI } from './calculVI.mjs';
 import { getInitSquares } from './initSquares.mjs';
 import { createSVGSquare, updateSVGSquare, drawPoint, drawBox } from './draw.mjs';
 
-//Generate a liste of angles    
+//Generate a liste of angles
 var getAngles = (step, max) => {
     let angles = [];
     let angle = 0;
@@ -16,7 +16,7 @@ var getAngles = (step, max) => {
 }
 
 //Generate a list of size in pixel 
-var getSizes = (step, max) => {//peut depasser la valeur max
+var getSizes = (step, max) => {//sizes[i] can go beyond the max value 
     let sizes = [];
     let size = 0;
     while ( size < max){
@@ -27,7 +27,7 @@ var getSizes = (step, max) => {//peut depasser la valeur max
 }
 
 
-//Fait la somme de tous les elements de la colonne j sur la matrice M
+//Sum of the elements of column j on the matrix M
 var sumOnColumn = function(M, j) {//ok
     const nbLine = M.length;
     let sum = 0;
@@ -55,7 +55,7 @@ var getArrsN3Length = (arrsN3) => {
     return sum;
 }
 
-
+//Extract the arrangments from arrsN3 to return a simplified array
 var getArrsN3Array = (arrsN3) => {
     let n = arrsN3.length;
     let arrs = [];
@@ -70,26 +70,58 @@ var getArrsN3Array = (arrsN3) => {
         }
     } 
 
-    // todo: enlever les decimale inutiles, 4 chiffres apres la virgule devraient suffirent   
+    // We only keep the information useful to draw the arrangement in svg
     let arrsLigth = arrs.map((elem)=>{
         return {
             V: elem.V,
             I: elem.I,
             squares: [
-                elem.squares[0].vertex,
-                elem.squares[1].vertex,
-                elem.squares[2].vertex,
+                {
+                    a: elem.squares[0].a,
+                    center: elem.squares[0].center,
+                    angle: elem.squares[0].angle,
+                    vertex: elem.squares[0].vertex,
+                },
+                {
+                    a: elem.squares[1].a,
+                    center: elem.squares[1].center,
+                    angle: elem.squares[1].angle,
+                    vertex: elem.squares[1].vertex,
+                },
+                {
+                    a: elem.squares[2].a,
+                    center: elem.squares[2].center,
+                    angle: elem.squares[2].angle,
+                    vertex: elem.squares[2].vertex,
+                },               
             ]
         }
     });
-
+    
+    debugger;
+    // We remove unnecessary decimals, 4 digits after the decimal point should be ok
+    n = arrsLigth.length;
+    for (let i=0;i<n;i++){
+        for (let j=0;j<3;j++){
+            for (let k=0;k<4;k++){
+                arrsLigth[i].squares[j].vertex[k].x = parseFloat(arrsLigth[i].squares[j].vertex[k].x.toFixed(4));
+                arrsLigth[i].squares[j].vertex[k].y = parseFloat(arrsLigth[i].squares[j].vertex[k].y.toFixed(4));
+            }
+        }
+    }
+   
     return arrsLigth;
 }
 
-//Ajoute l'arrangement arr dans la liste arrsN3 si il n'y pas d'equivalent deja present
+// Add the arr arrangement to the list arrsN3 if there is no equivalent already present
 var updateArrsN3 = (arr, arrsN3) => {
+    
     if ( arr.valid ){
        
+        //For optimisation purpose we store each arrangement in a particular category. 
+        //When a new arrangment will be generated we will search his equivalent only inside his category.
+        //The category of an arrangment is defined by 2 integers calulated as following:
+
         let sV = [
             sumOnColumn(arr.V, 0), 
             sumOnColumn(arr.V, 1),  
@@ -109,7 +141,7 @@ var updateArrsN3 = (arr, arrsN3) => {
         let nI = sI[0]*100 + sI[1]*10 + sI[2];
 
         if ( arrsN3[nV] ){
-            if ( arrsN3[nV][nI] ){//the category exist so we search arr inside
+            if ( arrsN3[nV][nI] ){//the category exist so we search an equivalent of arr inside
                 let n = arrsN3[nV][nI].length;
                 
                 let found = false;
@@ -123,11 +155,11 @@ var updateArrsN3 = (arr, arrsN3) => {
                     arrsN3[nV][nI].push(arr); 
                     //console.log(arrsN3.length + ' arrangments found');
                 }
-            } else {//new arrangment category
+            } else {//we create a new arrangment category
                 arrsN3[nV][nI] = [];
                 arrsN3[nV][nI].push(arr);      
             }
-        } else {//new arrangment category
+        } else {//we create a new arrangment category
             arrsN3[nV] = [];
             arrsN3[nV][nI] = [];
             arrsN3[nV][nI].push(arr);        
@@ -149,21 +181,21 @@ var updateArrsN3 = (arr, arrsN3) => {
 }
 
 export function searchArrangments_V1(squares) {
-    //Principe: on place un carre fixe au centre de la zone de simulation puis on 
-    //balaye la zone avec 2 autres carres (taille et rotation variables)
+    //Principle: we place a fixed square in the center of the simulation zone then sweep
+    //the the simulation zone with 2 other squares (by varying their size and their angle of rotation)
     const t0 = Date.now(); 
-    //Liste des configurations N=3 trouvées  
+    //Liste of the N=3 arrangments found
     let arrsN3 = [];
   
-   //let squares = getInitSquares();
-
     let scanArea = {
         xmin: squares[0].box.xmin - squares[0].a/2,
         xmax: squares[0].box.xmax + squares[0].a/2,
         ymin: squares[0].box.ymin - squares[0].a/2,
         ymax: squares[0].box.ymax + squares[0].a/2
     };
-    const step = 70;//squares[0].a/20;
+    
+    //const step = 5;//squares[0].a/20;
+    const step = 50;
 
     //scan zone
     const nx = parseInt((scanArea.xmax - scanArea.xmin)/step);
@@ -174,8 +206,13 @@ export function searchArrangments_V1(squares) {
 
     let x2, y2, x3, y3;
 
-    const angles = [0, 5, 10, 20, 30, 40, 50, 60, 70, 80];//getAngles(45, 90);
-    const sizes = [2, 10.1, 40.2, 60.3, 80.4, 100.5, 150.6];//g5etSizes(50, 150);
+    //const angles = [0, 5, 10, 20, 30, 40, 50, 60, 70, 80];//getAngles(45, 90);
+    //const sizes = [80.4, 60.3, 40.2, 20.3, 100.5, 10.1, 150.6, 2];
+
+
+    const angles = [0, 5];
+    const sizes = [80, 60];
+    
 
     const n_angles = angles.length;
     const n_size = sizes.length;
@@ -188,8 +225,8 @@ export function searchArrangments_V1(squares) {
         for(let j0=0;j0<ny;j0++){
             y2 = scanArea.ymin + j0*step;
             count++;
-            let delta_t = (Date.now() - t0)/(1000*60);
-            console.log(100*count/nxny + '% : '+getArrsN3Length(arrsN3) + ' arrangments found in '+ delta_t + ' minutes');
+            let delta_t = parseFloat(((Date.now() - t0)/(1000*60)).toFixed(2))  ;
+            console.log(100*count/nxny + '% : '+ getArrsN3Length(arrsN3) + ' arrangments found in '+ delta_t + ' minutes');
             //drawPoint({x:x2,y:y2});
             //squares[1].moveTo({x:x2,y:y2}, false);
             for(let p=0;p<n_size;p++){
@@ -200,7 +237,7 @@ export function searchArrangments_V1(squares) {
                     //let n3 = arrsN3.length; 
                     //updateSVGSquare(squares[1],1);                      
                     //updateArrsN3(arr, arrsN3); 
-                    squares[1].changeState({x:x2,y:y2}, sizes[p], angles[k]);   
+                    squares[1].changeState({x:x2,y:y2}, sizes[p], angles[k]);
                     for(let i1=i0;i1<nx;i1++){// i1=i0
                         x3 = scanArea.xmin + i1*step;
                         for(let j1=j0;j1<ny;j1++){// j1=j0
@@ -208,13 +245,13 @@ export function searchArrangments_V1(squares) {
                             //drawPoint({x:x3,y:y3});
                             //squares[2].moveTo({x:x3,y:y3}, false);   
                             for(let q=0;q<n_size;q++){                       
-                                //squares[2].changeSize(sizes[q], false); 
+                                //squares[2].changeSize(sizes[q], false);
                                 for(let m=0;m<n_angles;m++){                                 
                                     //squares[2].rotate(angles[m], true);   
                                     squares[2].changeState({x:x3,y:y3}, sizes[q], angles[m]);                                                                                                              
-                                    let arr = arrangement_to_VI(squares);
+                                    //let arr = arrangement_to_VI(squares);
                                     //let n3 = arrsN3.length; 
-                                    updateArrsN3(arr, arrsN3);
+                                    updateArrsN3(arrangement_to_VI(squares), arrsN3);
                                     //updateSVGSquare(squares[1],1);  
                                     //updateSVGSquare(squares[2],2);      
                                     positionsTested++;                                                       
@@ -253,11 +290,7 @@ export function searchArrangments_V1(squares) {
     downloadLink.setAttribute("download",fileName);
     downloadLink.click();
 
-    // 7562500 positionsTested
-    // 783 arrangments found in 66.8529 minutes
-
     console.log('========= END =========');
-
 }
 
 var getScanArea = function(box){

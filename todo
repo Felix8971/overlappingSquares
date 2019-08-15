@@ -8,8 +8,8 @@ jusqu'a convergeance du nombre d'arrangements.
 
 - re-ecrire en C la partie searchArrangment
 
-idee: regrouper moveto, rotate et resize en une seule fonction qui depend de:
-   - position x,y du centre du carres 
+idee: regrouper moveto, rotate et resize en une seule fonction qui prend:
+   - position x,y du centre du carre
    - size
    - angle rotation
 
@@ -21,6 +21,18 @@ i correspond au nombre entier obtenu en faisant la somme de chaque colonne de V 
 
 j correspond au nombre entier obtenu en faisant la somme de chaque colonne de I puis un tri croissant
 
+
+- ecrire le code pour creer les svg a partir du fichier arrangments-found-*.json
+
+- creer les tests avec Jest
+
+- optimisation: ne faire bouger qu'un seul carre à la fois afin de ne pas 
+   recalculer inutilement les intersections entre les deux autres carres
+
+- mettre en place un outil qui va permettre de charger chaque arrangments trouvé et de le rectifier 
+  sans changer les matrice V et F afin de rendre le svg plus lisible (sans avoir a zoomer).
+  A chaque step mettre en place un syteme qui control si V et F restent constants et ne pas autoriser 
+  la modification dans sinon puis creer un bouton pour mettre à jour le fichier svg de l'arrangement. 
 
 ========= RESULT =========
 searchArrangments.mjs:222 step:7

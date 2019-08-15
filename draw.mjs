@@ -1,6 +1,6 @@
 
 const nameSpaceURI = "http://www.w3.org/2000/svg";
-const squareStyle = [
+export const squareStyle = [
     "stroke:blue; stroke-width:0.5;fill-opacity:0;",
     "stroke:green;stroke-width:0.5;fill-opacity:0;",
     "stroke:red;  stroke-width:0.5;fill-opacity:0;",
@@ -22,6 +22,7 @@ for (let i=0;i<3;i++){
     label[i] = document.createElementNS('http://www.w3.org/2000/svg', 'text');
     label[i].setAttributeNS(null, 'x', 0);
     label[i].setAttributeNS(null, 'y', 0);
+    label[i].setAttributeNS(null, 'id', 'label'+i);
     let txt = document.createTextNode(i+'');
     label[i].appendChild(txt);
     label[i].style = txtStyle[i]; 
@@ -40,11 +41,11 @@ export function createSVGSquare(square, id){//tested
     svg.appendChild(polygon);
     label[id].setAttributeNS(null, 'x', square.center.x-5);
     label[id].setAttributeNS(null, 'y', square.center.y+5);
-   
 }
 export function updateSVGSquare(square, id){//tested             
     let polygon = document.getElementById('square'+id);
     let points = "";
+    debugger;
     for(let i=0;i<4;i++){
         points += square.vertex[i].x + ',' +square.vertex[i].y + ' ';
     }
@@ -90,4 +91,31 @@ export function saveSvg(svgEl, name) {
     document.body.appendChild(downloadLink);
     downloadLink.click();
     document.body.removeChild(downloadLink);
+}
+
+
+export function createSvgArr() {
+    fetch('http://localhost:8080/arrangments-found-1565748053448.json')
+    .then(response => response.text())
+    .then((data) => { 
+        
+        let arrangments = JSON.parse(data);
+        let n = 5;//arrangments.length;
+        for (let i=0;i<n;i++){
+            let arr = arrangments[i];
+            for (let j=0;j<3;j++){
+                let polygon = document.getElementById('square'+j);
+                let points = "";
+                for(let k=0;k<4;k++){
+                    points += arr.squares[j][k].x + ',' +arr.squares[j][k].y + ' ';
+                }
+                polygon.setAttribute("points",points); 
+                polygon.style = squareStyle[j]; 
+                label[j].setAttributeNS(null, 'x',  arr.squares[j][0].x-10);
+                label[j].setAttributeNS(null, 'y', arr.squares[j][0].y-10);                   
+            }
+           
+            //saveSvg(svg, 'arr'+i+'.svg');
+        }            
+    })
 }

@@ -5,20 +5,28 @@
 </head>
 
 <body>
-    <h2>2 squares overlapping manual builder</h2>    
+    <h2>3 squares overlapping manual builder</h2>    
     <div id="container">
         <div id='result-zone'>
             <svg id="zone" height="1" width="1" style="border:1px solid #d8d8d8"></svg> 
             <div id="footer-container">
                 <div id="export-svg">
-                    <button id="export-svg-btn">Export svg</button>
-                    <button id="import-selection-btn">Import</button>   
-                    <!-- <div class='import-export-container'>                       
+                    <button id="load-arr">Load arrangments</button> 
+                    <div>Current arr:
+                        <input id="current-arr" type="text" name="current-arr"  value='0' >
+                    </div>
+                    <div class="nav">
+                        <button id="previous-btn"><<</button> 
+                        <button id="next-btn">>></button> 
+                    </div>
+                   
+                    <button id="export-svg-btn">Update json</button>
+                    <!-- 
+                    <div class='import-export-container'>                     
                         <button id="export-selection-btn">Export</button>   
-                    </div> -->
-                    <!-- <button id="save-squares-btn">Save current object</button>       -->
-                    <button id="search-arr-btn">Search N=3 arr</button>    
-                    <div id="progress"></div>               
+                    </div>
+                    <button id="save-squares-btn">Save current object</button> 
+                    -->                                
                 </div>
                 <div id='matrices'>          
                     <div class="header">
@@ -98,6 +106,8 @@
                         <input type="radio" name="square-selected" value="0" checked>
                         <label>1</label>   
                         <input type="radio" name="square-selected" value="1" >
+                        <label>2</label>   
+                        <input type="radio" name="square-selected" value="2" >
                     </div>
                 </div>
             </div>
@@ -157,18 +167,34 @@
     <script type="module">
 
         //idee optimisation: pre calculer tous les gabari de carres (avec scales et rotations) puis les translater
-        import { createSVGSquare, updateSVGSquare, drawPoint, drawBox, saveSvg, createSvgArr } from './draw.mjs';
+        import { createSVGSquare, updateSVGSquare, drawPoint, drawBox, saveSvg, squareStyle, createSvgArr } from './draw.mjs';
         import { MIN, MAX, W, H, NB_SQUARE, NB_VERTEX, COS, SIN } from './constants.mjs';
         import { arrangement_to_VI } from './calculVI.mjs';
         import { are_VI_Equivalents } from './compare-arrangements.mjs';
         import { getInitSquares } from './initSquares.mjs';
-        import { searchArrangments_V2 } from  './searchArrangments.mjs';
+        // import { searchArrangments_V2 } from  './searchArrangments.mjs';
 
+
+        let arrangments = [];    
+        let nbArr;
+
+        let currentArr = 0;
+        let currV = [ 
+            [0, 0, 0],
+            [0, 0, 0],
+            [0, 0, 0]
+        ];
+        let currI = [
+            [0, 0, 0],
+            [0, 0, 0],
+            [0, 0, 0],
+            [0, 0, 0]
+        ];
         var squares = getInitSquares();
 
         //List of arrangments that we will select and export to use later in a simulation
         //contains center, vertices and size (a), boxes will be recalculaed later
-        var arrangmentsSelection = [];
+        //var arrangmentsSelection = [];
 
         var svg = document.getElementsByTagName('svg')[0]; //Get svg element
         svg.setAttribute('width','500px');
@@ -179,7 +205,6 @@
         var translationStep = 10;
         var rotationStep = 10;
         var resizeStep = 10;
-
 
         //Update the displayed matrice according to the value of the squares object
         var updateMatrices = function(){
@@ -223,17 +248,19 @@
                 console.log(selectedSquare);
                 document.getElementById('square0').style.strokeWidth = '0.5';
                 document.getElementById('square1').style.strokeWidth = '0.5';
+                document.getElementById('square2').style.strokeWidth = '0.5';
                 document.getElementById('square'+selectedSquare).style.strokeWidth = 2;
             });
         }
 
         //Define event when click a svg square
         document.addEventListener("DOMContentLoaded", function() {
-            ['square0','square1'].map((square)=>{
+            ['square0','square1','square2',].map((square)=>{
                 document.getElementById(square).addEventListener('click', function(event) { 
                     selectedSquare = event.target.id.split("square")[1];
                     document.getElementById('square0').style.strokeWidth = '0.5';
                     document.getElementById('square1').style.strokeWidth = '0.5';
+                    document.getElementById('square2').style.strokeWidth = '0.5';
                     document.getElementById('square'+selectedSquare).style.strokeWidth = 2;
                 });
             })
@@ -254,32 +281,54 @@
             if ( elem.value < 0 ){ elem.value = 0; }
             translationStep = elem.value;
         });
+
+
+        var validMove = function(sq, callback){
+            //calcul nouvelle matrices V et I pour cette position
+            let arr = arrangement_to_VI(squares);
+            let V = arr.V;
+            let I = arr.I;
+            if (arr.valid && are_VI_Equivalents(arrangments[currentArr], arr) ) {
+                updateSVGSquare(sq,selectedSquare);
+            } else {
+                //Reverse the modification  
+                callback(sq);             
+            }
+        }
+
         document.getElementById('go-up').addEventListener('click', function(event) {
-            debugger;
             let sq = squares[selectedSquare];
             sq.translate({x:0, y: -parseInt(translationStep)}, true);
-            updateSVGSquare(sq,selectedSquare);
-            updateMatrices();
+            validMove(sq, (elem)=>{
+                elem.translate({x:0, y: parseInt(translationStep)}, true);  
+                alert('nope!');
+            });                
         });
+
         document.getElementById('go-down').addEventListener('click', function(event) {
             let sq = squares[selectedSquare];
             sq.translate({x:0, y: parseInt(translationStep)}, true);
-            updateSVGSquare(sq,selectedSquare);
-            updateMatrices();  
+            validMove(sq, (elem)=>{
+                elem.translate({x:0, y: -parseInt(translationStep)}, true);  
+                alert('nope!');
+            });   
         });
         document.getElementById('go-left').addEventListener('click', function(event) {
             let sq = squares[selectedSquare];
             sq.translate({x: -parseInt(translationStep), y: 0}, true);
-            updateSVGSquare(sq,selectedSquare);   
-            updateMatrices();
+            validMove(sq, (elem)=>{
+                sq.translate({x: parseInt(translationStep), y: 0}, true);
+                alert('nope!');
+            }); 
         });
         document.getElementById('go-right').addEventListener('click', function(event) {
             let sq = squares[selectedSquare];
             sq.translate({x: parseInt(translationStep), y: 0}, true);
-            updateSVGSquare(sq, selectedSquare);   
-            updateMatrices();
+            validMove(sq, (elem)=>{
+                sq.translate({x: -parseInt(translationStep), y: 0}, true);
+                alert('nope!');
+            });   
         });
-        
 
         //Rotation events
         document.getElementById('rotation-step').addEventListener('change', function(event) { 
@@ -300,15 +349,21 @@
             let sq = squares[selectedSquare];
             sq.angle = sq.angle + parseInt(rotationStep);
             sq.rotate(sq.angle, true);
-            updateSVGSquare(sq, selectedSquare);   
-            updateMatrices();
+            validMove(sq, (elem)=>{
+                sq.angle = sq.angle - parseInt(rotationStep);
+                sq.rotate(sq.angle, true);
+                alert('nope!');
+            }); 
         });
         document.getElementById('rotate-moins').addEventListener('click', function(event) {
             let sq = squares[selectedSquare];
             sq.angle = sq.angle - parseInt(rotationStep);
             sq.rotate(sq.angle, true);
-            updateSVGSquare(sq, selectedSquare);   
-            updateMatrices();
+            validMove(sq, (elem)=>{
+                sq.angle = sq.angle + parseInt(rotationStep);
+                sq.rotate(sq.angle, true);
+                alert('nope!');
+            }); 
         });
 
 
@@ -331,15 +386,21 @@
             let sq = squares[selectedSquare];
             let a = sq.a + parseInt(resizeStep);
             sq.changeSize(a, true);
-            updateSVGSquare(sq,selectedSquare);
-            updateMatrices();
+            validMove(sq, (elem)=>{
+                let a = sq.a - parseInt(resizeStep);
+                sq.changeSize(a, true);
+                alert('nope!');
+            }); 
         });
         document.getElementById('resize-moins').addEventListener('click', function(event) {
             let sq = squares[selectedSquare];
             let a = sq.a - parseInt(resizeStep);
             sq.changeSize(a, true);
-            updateSVGSquare(sq, selectedSquare);
-            updateMatrices();
+            validMove(sq, (elem)=>{
+                let a = sq.a + parseInt(resizeStep);
+                sq.changeSize(a, true);
+                alert('nope!');
+            }); 
         });
 
         //export svg button
@@ -348,24 +409,107 @@
             exportIndex++;
         });
 
-        //save square object button
-        // document.getElementById('save-squares-btn').addEventListener('click', (event) => {
-        //     let _squares = JSON.parse(JSON.stringify(squares));
-        //     //const _squares = Object.assign([], squares);
-        //     //_squares.pop();//remove the third square which is not used
-        //     arrangmentsSelection.push(_squares);
-        //     console.log(arrangmentsSelection);
+
+        // document.getElementById('import-selection-btn').addEventListener('click', (event) => {
+        //     //createSvgArr();         
+        //     let n = 4;//arrangments.length;
+        //     for (let i=0;i<n;i++){
+        //         let arr = arrangments[i];
+        //         let label = [];
+        //         for (let j=0;j<3;j++){
+        //             //debugger;
+        //             let polygon = document.getElementById('square'+j);
+        //             let points = "";
+        //             for(let k=0;k<4;k++){
+        //                 points += arr.squares[j].vertex[k].x + ',' +arr.squares[j].vertex[k].y + ' ';
+        //             }
+        //             polygon.setAttribute("points",points); 
+        //             polygon.style = squareStyle[j]; 
+        //             label[j] = document.getElementById('label'+j);                     
+        //             label[j].setAttributeNS(null, 'x', arr.squares[j].center.x-5);
+        //             label[j].setAttributeNS(null, 'y', arr.squares[j].center.y+5);
+                    
+        //             //mettre à jour l'objet squares local 
+        //             squares[j].copy2(arr.squares[j]);
+        //             squares[j].majBox();
+        //             updateMatrices();
+        //         }
+        //         //saveSvg(svg, 'arr'+i+'.svg');
+        //     }            
         // });
 
-        document.getElementById('search-arr-btn').addEventListener('click', function(event) {
-            if ( arrangmentsSelection.length > 0){
-                searchArrangments_V1(arrangmentsSelection);
-            } else {
-                alert('No arrangment(s) selected');
+
+        //Charge l'arrangement i: upadate squares objet with it and update displayed svg
+        function loadArr(i){
+            //createSvgArr();         
+            let arr = arrangments[i];
+            let label = [];
+            for (let j=0;j<3;j++){
+                //debugger;
+                let polygon = document.getElementById('square'+j);
+                let points = "";
+                for(let k=0;k<4;k++){
+                    points += arr.squares[j].vertex[k].x + ',' +arr.squares[j].vertex[k].y + ' ';
+                }
+                polygon.setAttribute("points",points); 
+                polygon.style = squareStyle[j]; 
+                label[j] = document.getElementById('label'+j);                     
+                label[j].setAttributeNS(null, 'x', arr.squares[j].center.x-5);
+                label[j].setAttributeNS(null, 'y', arr.squares[j].center.y+5);
+                
+                //mettre à jour l'objet squares local 
+                squares[j].copy2(arr.squares[j]);
+                squares[j].majBox();
+                updateMatrices();
+            }         
+        };
+
+        //Charge les arrangements contenues dans le fichier json 
+        //et affiche le premier d'entre eux 
+        document.getElementById('load-arr').addEventListener('click', function(event) {
+            fetch('http://localhost:8080/arrangments-found-1565853183188.json')
+            .then(response => response.text())
+            .then((data) => { 
+                arrangments = JSON.parse(data);
+                nbArr = arrangments.length;
+                currentArr = 0;
+                loadArr(currentArr);
+            });
+        });
+
+        document.getElementById('next-btn').addEventListener('click', function(event) {
+            if (currentArr < nbArr - 1){
+                currentArr++;
+                loadArr(currentArr);
+            }
+        });
+
+        document.getElementById('previous-btn').addEventListener('click', function(event) {
+            if (currentArr > 0 ){
+                currentArr--;
+                loadArr(currentArr);
             }
         });
 
 
+        //on place les squares dans la zone
+        //squares[0].initRotZero(100, {x:W/2-110, y:H/2-110});
+
+        squares[0].initRotZero(100, {x:W/2 - 150, y:H/2 - 110});
+        squares[0].majBox();
+        createSVGSquare(squares[0],0);
+        document.getElementById('square0').style.strokeWidth = 2;
+
+        //Les deux autres squares vont bouger
+        squares[1].initRotZero(100, {x:W/2 - 20, y:H/2});
+        squares[1].majBox();
+        //squares[1].translate({x:W/2, y:H/2})
+        createSVGSquare(squares[1],1);
+
+        squares[2].initRotZero(100, {x:W/2 + 110, y:H/2 - 110});
+        squares[2].majBox();
+        //squares[1].translate({x:W/2, y:H/2})
+        createSVGSquare(squares[2],2);
         // document.getElementById('export-selection-btn').addEventListener('click', (event) => {
         //     let dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(arrangmentsSelection));
         //     let dlAnchorElem = document.getElementById('downloadAnchorElem');
@@ -379,25 +523,27 @@
         //     downloadLink.click();
         // });
        
-      
-        //on place les squares dans la zone
-        //squares[0].initRotZero(100, {x:W/2-110, y:H/2-110});
+        // document.getElementById('import-selection-btn').addEventListener('click', (event) => {
+        //     fetch('arr-selection-1565085578378.json')
+        //     .then(response => response.text())
+        //     .then((text) => { 
+        //         console.log(text);
+        //         arrangmentsSelection = JSON.parse(text);
+        //         debugger;
+        //     })
+        // });
 
-        squares[0].initRotZero(100, {x:W/2-115 + 70, y:H/2-15});
-        squares[0].majBox();
-        createSVGSquare(squares[0],0);
-        document.getElementById('square0').style.strokeWidth = 2;
+        //save square object button
+        // document.getElementById('save-squares-btn').addEventListener('click', (event) => {
+        //     let _squares = JSON.parse(JSON.stringify(squares));
+        //     //const _squares = Object.assign([], squares);
+        //     //_squares.pop();//remove the third square which is not used
+        //     arrangmentsSelection.push(_squares);
+        //     console.log(arrangmentsSelection);
+        // });
 
-        //Les deux autres squares vont bouger
-        squares[1].initRotZero(100, {x:W/2 + 70, y:H/2});
-        squares[1].majBox();
-        //squares[1].translate({x:W/2, y:H/2})
-        createSVGSquare(squares[1],1);
 
-        squares[2].initRotZero(50, {x:-999, y:-999});
-        squares[2].majBox();
-        //squares[1].translate({x:W/2, y:H/2})
-        createSVGSquare(squares[2],2);
+
 
     </script>
 
@@ -423,7 +569,7 @@
         width: 44px;
         font-size: 1.1em;
         text-align: center;
-        height: 20px;
+        height: 22px;
     }
     .radio-button {
         display: flex;
@@ -483,6 +629,7 @@
         align-items: center;
         border: 1px solid #d8d8d8;
         width: 500px;
+        height: 140px;
     }
     #export-svg {
         width: 50%;
@@ -490,9 +637,10 @@
         display: flex;
         justify-content: space-around;
         align-items: center;
+        border-right:1px solid #d8d8d8;
         flex-direction: column;
     }
-    #export-svg-btn, #save-squares-btn, #search-arr-btn {
+    #export-svg-btn, #save-squares-btn, #load-arr {
         width: 155px;
         height: 30px;
         font-size: 0.8em;
@@ -501,7 +649,7 @@
         display:flex;
         flex-direction: column;
     }
-    #import-selection-btn, #export-selection-btn{
+    #import-selection-btn, #export-selection-btn, #previous-btn, #next-btn{
         width: 76px;
         height: 30px;
         font-size: 0.8em;
@@ -556,10 +704,13 @@
         top: 30px;
         display:none;
     }
-    #square0, #square1 {
+    #square0, #square1 , #square2{
         cursor: pointer;
     }
 
+    .nav{
+        display:flex;
+    }
 
 </style>
 </body>

@@ -1,6 +1,5 @@
 # overlapping squares project 
 
-  
 ### Pre-requirements
 - node & npm & Google Chrome
 - I use files with .mjs extension to create JavaScript modules (tested in Google Chrome only).

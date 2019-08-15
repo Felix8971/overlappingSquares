@@ -5,23 +5,26 @@ export function getInitSquares(){
     let _squares = [];
     for (let i=0;i<NB_SQUARE;i++) {
         _squares.push({
-            a: 0,//edge length
-            center: { x: 0, y: 0},//c'est lui qu'on va deplacer
-            angle: 0,// angle de rotation par rapport à l'horizontal 
+            a: 0,//edge width of the square in pixel
+            center: { x: 0, y: 0},
+            angle: 0,// angle of rotation relative to the horizontal
             vertex:[ 
                 { x: 0, y: 0},//point 2d
                 { x: 0, y: 0},
                 { x: 0, y: 0},
                 { x: 0, y: 0},
             ],
-            box: {xmin: 0, xmax: 0, ymin:0, ymax:0}, //sera utile pour optimiser les calculs d'intersection
-            boxEdge: [// boite englobante de chaque segment du carre
+            //bounding boxes
+            //will be used to optimize the calcul of interection of 2 squares
+            box: {xmin: 0, xmax: 0, ymin:0, ymax:0}, 
+            boxEdge: [// bounding box of each segment of the square
                 {xmin: 0, xmax: 0, ymin:0, ymax:0},
                 {xmin: 0, xmax: 0, ymin:0, ymax:0},
                 {xmin: 0, xmax: 0, ymin:0, ymax:0},
                 {xmin: 0, xmax: 0, ymin:0, ymax:0},
             ],
             //Methods
+            //When the square chaneg we update his bounding boxes
             majBox: function() {
                 this.box.xmin = this.box.ymin = MAX;
                 this.box.xmax = this.box.ymax = MIN;
@@ -41,7 +44,7 @@ export function getInitSquares(){
                 }
                 this.majBoxEdge();
             },
-            majBoxEdge: function() { //a tester
+            majBoxEdge: function() {
                 //box segment 0 : [0,1]
                 if ( this.vertex[0].x > this.vertex[1].x ){
                     this.boxEdge[0].xmax = this.vertex[0].x;
@@ -84,19 +87,10 @@ export function getInitSquares(){
                 this.boxEdge[3].xmax = this.boxEdge[1].xmax + (this.vertex[0].x - this.vertex[1].x)
                 this.boxEdge[3].ymax = this.boxEdge[1].ymax + (this.vertex[0].y - this.vertex[1].y)
             },
-            //calcul vertices en fct de a et de "center" pour rotation = 0
+            //calculates vertices fct of a and "center" for rotation = 0
             initRotZero: function (a, center) {
                 this.a = a;
                 this.moveTo(center, false);
-                // this.angle = 0;
-                // this.center.x = center.x;
-                // this.center.y = center.y;
-                // let half_a = 0.5 * this.a;
-                // //this.vertex = [{},{},{},{}];
-                // this.vertex[0].x = this.vertex[3].x = this.center.x - half_a;
-                // this.vertex[0].y = this.vertex[1].y  = this.center.y - half_a;
-                // this.vertex[1].x = this.vertex[2].x = this.center.x + half_a;
-                // this.vertex[2].y = this.vertex[3].y  = this.center.y + half_a;
             },
             //move the square and rotate it to the initial position (this.angle = 0)
             moveTo: function (M, majBox) {
@@ -110,6 +104,7 @@ export function getInitSquares(){
                 this.vertex[2].y = this.vertex[3].y  = this.center.y + half_a;
                 majBox && this.majBox();// translater les box plutot que de recalculer!?
             },
+            //translate the square 
             translate: function (u, majBox) {
                 this.center.x += u.x;  
                 this.center.y += u.y;  
@@ -119,6 +114,7 @@ export function getInitSquares(){
                 }
                 majBox && this.majBox();//translater les box plutot que de recalculer!?
             },
+            //rotate the square 
             rotate: function (angle, majBox) {// angle must be an integer in degres!
                 angle = angle < 0 ? 180*100 + angle : angle;
                 angle = angle - parseInt(angle/90)*90;
@@ -143,14 +139,16 @@ export function getInitSquares(){
                     majBox && this.majBox();
                 }
             },
+
+            //appy the parameters of another square to the current square
             copy: function (square) {
                 this.a = square.a;//edge length
                 this.center.x = square.center.x;
                 this.center.y = square.center.y;
                 this.angle = square.angle; 
                 for (let i=0;i<NB_VERTEX;i++){
-                    this.vertex[i].x += square.vertex[i].x;  
-                    this.vertex[i].y += square.vertex[i].y;  
+                    this.vertex[i].x = square.vertex[i].x; 
+                    this.vertex[i].y = square.vertex[i].y;  
                 }
                 this.box.xmin = square.box.xmin;
                 this.box.xmax = square.box.xmax;
@@ -158,6 +156,19 @@ export function getInitSquares(){
                 this.box.ymax = square.box.ymax;
             },
 
+            //appy the parameters of another square to the current square
+            copy2: function (square) {
+                this.a = square.a;//edge length
+                this.center.x = square.center.x;
+                this.center.y = square.center.y;
+                this.angle = square.angle; 
+                for (let i=0;i<NB_VERTEX;i++){
+                    this.vertex[i].x = square.vertex[i].x;  
+                    this.vertex[i].y = square.vertex[i].y;  
+                }            
+            },
+            
+            //Move a square to another position, change his size and his rotation. 
             changeState: function(M, a, angle){
                 //moveTo and resize if necessary
                 let half_a = 0.5 * a;
