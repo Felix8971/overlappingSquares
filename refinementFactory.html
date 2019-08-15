@@ -20,7 +20,7 @@
                         <button id="next-btn">>></button> 
                     </div>
                    
-                    <button id="export-svg-btn">Update json</button>
+                    <button id="update-json">Update json</button>
                     <!-- 
                     <div class='import-export-container'>                     
                         <button id="export-selection-btn">Export</button>   
@@ -290,6 +290,17 @@
             let I = arr.I;
             if (arr.valid && are_VI_Equivalents(arrangments[currentArr], arr) ) {
                 updateSVGSquare(sq,selectedSquare);
+                // Mettre a jour arrangments[currentArr]   
+                debugger;
+                let square = arrangments[currentArr].squares[selectedSquare];
+                square.a = sq.a;//edge length
+                square.center.x = sq.center.x;
+                square.center.y = sq.center.y;
+                square.angle = sq.angle; 
+                for (let i=0;i<NB_VERTEX;i++){
+                    square.vertex[i].x = sq.vertex[i].x; 
+                    square.vertex[i].y = sq.vertex[i].y;  
+                } 
             } else {
                 //Reverse the modification  
                 callback(sq);             
@@ -404,9 +415,19 @@
         });
 
         //export svg button
-        document.getElementById('export-svg-btn').addEventListener('click', function(event) {
-            saveSvg(svg, 'arr'+exportIndex+'.svg');
-            exportIndex++;
+        document.getElementById('update-json').addEventListener('click', function(event) {
+            let dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(arrangments));
+            let dlAnchorElem = document.getElementById('downloadAnchorElem');
+            var downloadLink = document.createElement("a");
+            document.body.appendChild(downloadLink);
+            document.body.removeChild(downloadLink);
+            downloadLink.setAttribute("href",dataStr);
+            let fileName = "arrangments-found-"+Date.now()+".json";
+            console.log(fileName);
+            downloadLink.setAttribute("download",fileName);
+            downloadLink.click();
+            // saveSvg(svg, 'arr'+exportIndex+'.svg');
+            // exportIndex++;
         });
 
 
@@ -467,7 +488,7 @@
         //Charge les arrangements contenues dans le fichier json 
         //et affiche le premier d'entre eux 
         document.getElementById('load-arr').addEventListener('click', function(event) {
-            fetch('http://localhost:8080/arrangments-found-1565853183188.json')
+            fetch('http://localhost:8080/arrangments-found-1565866855736.json')
             .then(response => response.text())
             .then((data) => { 
                 arrangments = JSON.parse(data);
@@ -510,8 +531,9 @@
         squares[2].majBox();
         //squares[1].translate({x:W/2, y:H/2})
         createSVGSquare(squares[2],2);
-        // document.getElementById('export-selection-btn').addEventListener('click', (event) => {
-        //     let dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(arrangmentsSelection));
+
+        // document.getElementById('export-arrs-btn').addEventListener('click', (event) => {
+        //     let dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(arrangments));
         //     let dlAnchorElem = document.getElementById('downloadAnchorElem');
         //     var downloadLink = document.createElement("a");
         //     document.body.appendChild(downloadLink);
@@ -640,7 +662,7 @@
         border-right:1px solid #d8d8d8;
         flex-direction: column;
     }
-    #export-svg-btn, #save-squares-btn, #load-arr {
+    #update-json, #save-squares-btn, #load-arr {
         width: 155px;
         height: 30px;
         font-size: 0.8em;
