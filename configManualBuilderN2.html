@@ -255,7 +255,6 @@
             translationStep = elem.value;
         });
         document.getElementById('go-up').addEventListener('click', function(event) {
-            debugger;
             let sq = squares[selectedSquare];
             sq.translate({x:0, y: -parseInt(translationStep)}, true);
             updateSVGSquare(sq,selectedSquare);

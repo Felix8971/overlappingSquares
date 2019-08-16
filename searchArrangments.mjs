@@ -55,7 +55,7 @@ var getArrsN3Length = (arrsN3) => {
     return sum;
 }
 
-//Extract the arrangments from arrsN3 to return a simplified array
+//Extract the arrangments from arrsN3 to return a simplified linear array
 var getArrsN3Array = (arrsN3) => {
     let n = arrsN3.length;
     let arrs = [];
@@ -63,8 +63,11 @@ var getArrsN3Array = (arrsN3) => {
         if (arrsN3[i]) {
             let p = arrsN3[i].length;
             for (let j=0;j<p;j++){
-                if (arrsN3[i][j]) {                 
-                    arrs.push(arrsN3[i][j][0]);                
+                if (arrsN3[i][j]) {  
+                    let k = arrsN3[i][j].length;   
+                    for (let m=0;m<k;m++){
+                        arrs.push(arrsN3[i][j][m]); 
+                    }              
                 }
             }
         }
@@ -98,7 +101,6 @@ var getArrsN3Array = (arrsN3) => {
         }
     });
     
-    debugger;
     // We remove unnecessary decimals, 4 digits after the decimal point should be ok
     n = arrsLigth.length;
     for (let i=0;i<n;i++){
@@ -195,7 +197,7 @@ export function searchArrangments_V1(squares) {
     };
     
     //const step = 5;//squares[0].a/20;
-    const step = 50;
+    const step = 5;
 
     //scan zone
     const nx = parseInt((scanArea.xmax - scanArea.xmin)/step);
@@ -209,10 +211,8 @@ export function searchArrangments_V1(squares) {
     //const angles = [0, 5, 10, 20, 30, 40, 50, 60, 70, 80];//getAngles(45, 90);
     //const sizes = [80.4, 60.3, 40.2, 20.3, 100.5, 10.1, 150.6, 2];
 
-
-    const angles = [0, 5];
-    const sizes = [80, 60];
-    
+    const angles = [0];
+    const sizes = [40];
 
     const n_angles = angles.length;
     const n_size = sizes.length;

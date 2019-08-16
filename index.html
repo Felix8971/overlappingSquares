@@ -10,7 +10,8 @@
             <button id="run-btn">RUN</button>
             <a href="configManualBuilderN2.html">Config Manual Builder N=2</a>
             <a href="configManualBuilderN3.html">Config Manual Builder N=3</a>
-            <a href="refinementFactory.html">Refinement Factory N=3</a>         
+            <a href="refinementFactory.html">Refinement Factory N=3</a> 
+            <a href="tryToFindNewArrangments.html">Try to find new arrangments N=3</a> 
         </div>
         <svg id="zone" height="1" width="1" style="border:3px solid blue"></svg> 
     </div>
@@ -20,7 +21,7 @@
         import { createSVGSquare, updateSVGSquare, drawPoint, drawBox } from './draw.mjs';
         import { MIN, MAX, W, H, NB_SQUARE, NB_VERTEX, COS, SIN } from './constants.mjs';
         //import { arrangement_to_VI } from './calculVI.mjs';
-        //import { are_VI_Equivalents } from './compare-arrangements.mjs';
+        import { are_VI_Equivalents } from './compare-arrangements.mjs';
         import { getInitSquares } from './initSquares.mjs';
         import { searchArrangments_V1 } from  './searchArrangments.mjs';
 
@@ -29,38 +30,32 @@
         document.getElementById('run-btn').addEventListener('click', function(event) {
             searchArrangments_V1(squares);
         });
-       
 
-        // //tests
+        //tests
         // let V0 = [
-        //     [0, 1, 0],
-        //     [1, 0, 0],
-        //     [0, 0, 0]
-        // ];
+        //     [0, 1, 2],
+        //     [1, 0, 1],
+        //     [0, 1, 0]
+        // ]; // 0, 1, 2
+        // let V1 = [
+        //     [0, 0, 1],
+        //     [2, 0, 1],
+        //     [1, 1, 0]
+        // ];//  permutation: 2, 0, 1
         // let I0 = [ 
-        //     [1, 0, 0],
-        //     [0, 1, 0],
-        //     [0, 1, 0],
-        //     [1, 0, 0],
+        //     [0, 2, 1],
+        //     [3, 1, 0],
+        //     [1, 0, 2],
+        //     [0, 1, 1],
         // ];
-        // let V2 = [
-        //     [0, 1, 0],
+        // let I1 = [ 
+        //     [1, 0, 1],
         //     [1, 0, 0],
-        //     [0, 0, 0]
-        // ];
-        // let I2 = [ 
-        //     [0, 1, 0],
-        //     [0, 1, 0],
-        //     [1, 0, 0],
-        //     [1, 0, 0],
-        // ];
+        //     [0, 3, 1],
+        //     [2, 1, 2],
+        // ]
 
-
-        //to do: generer un fichier json contenant les matrices V et I trouvées ainsi
-        //que les coordonnées des coins de chaque carres de l'arrangement
-        //exporter le svg de chaque arrangement
-
-        // console.log(are_VI_Equivalents({V:V0, I:I0}, {V:V2, I:I2}));
+        // console.log(are_VI_Equivalents({V:V0, I:I0}, {V:V1, I:I1}));
         
         //Simulation
         //on place le square 0 au centre, il restera invariant

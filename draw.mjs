@@ -45,7 +45,6 @@ export function createSVGSquare(square, id){//tested
 export function updateSVGSquare(square, id){//tested             
     let polygon = document.getElementById('square'+id);
     let points = "";
-    debugger;
     for(let i=0;i<4;i++){
         points += square.vertex[i].x + ',' +square.vertex[i].y + ' ';
     }

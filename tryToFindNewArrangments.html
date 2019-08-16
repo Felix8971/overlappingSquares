@@ -5,22 +5,14 @@
 </head>
 
 <body>
-    <h2>Refinement tool 3 squares overlapping</h2>    
+    <h2>Try to find new arrangments</h2>    
     <div id="container">
         <div id='result-zone'>
             <svg id="zone" height="1" width="1" style="border:1px solid #d8d8d8"></svg> 
             <div id="footer-container">
                 <div id="export-svg">
-                    <button id="load-arr">Load arrangments</button> 
-                    <div>Current arr:
-                        <input id="current-arr" type="text" name="current-arr"  value='0' >
-                    </div>
-                    <div class="nav">
-                        <button id="previous-btn"><<</button> 
-                        <button id="next-btn">>></button> 
-                    </div>
-                   
-                    <button id="update-json">Update json</button>
+                    <button id="load-arr">Load arrangments</button>              
+                    <button id="update-json">Test current arr</button>
                     <!-- 
                     <div class='import-export-container'>                     
                         <button id="export-selection-btn">Export</button>   
@@ -266,6 +258,7 @@
             })
         });
 
+
         //tranlation step
         document.getElementById('translation-step').addEventListener('change', function(event) { 
             translationStep = event.target.value;
@@ -281,63 +274,29 @@
             if ( elem.value < 0 ){ elem.value = 0; }
             translationStep = elem.value;
         });
-
-
-        var validMove = function(sq, callback){
-            //calcul nouvelle matrices V et I pour cette position
-            let arr = arrangement_to_VI(squares);
-            let V = arr.V;
-            let I = arr.I;
-            if (arr.valid && are_VI_Equivalents(arrangments[currentArr], arr) ) {
-                updateSVGSquare(sq,selectedSquare);
-                // Mettre a jour arrangments[currentArr]   
-                let square = arrangments[currentArr].squares[selectedSquare];
-                square.a = sq.a;//edge length
-                square.center.x = sq.center.x;
-                square.center.y = sq.center.y;
-                square.angle = sq.angle; 
-                for (let i=0;i<NB_VERTEX;i++){
-                    square.vertex[i].x = sq.vertex[i].x; 
-                    square.vertex[i].y = sq.vertex[i].y;  
-                } 
-            } else {
-                //Reverse the modification  
-                callback(sq);             
-            }
-        }
-
         document.getElementById('go-up').addEventListener('click', function(event) {
             let sq = squares[selectedSquare];
             sq.translate({x:0, y: -parseInt(translationStep)}, true);
-            validMove(sq, (elem)=>{
-                elem.translate({x:0, y: parseInt(translationStep)}, true);  
-                alert('nope!');
-            });                
+            updateSVGSquare(sq,selectedSquare);
+            updateMatrices();
         });
-
         document.getElementById('go-down').addEventListener('click', function(event) {
             let sq = squares[selectedSquare];
             sq.translate({x:0, y: parseInt(translationStep)}, true);
-            validMove(sq, (elem)=>{
-                elem.translate({x:0, y: -parseInt(translationStep)}, true);  
-                alert('nope!');
-            });   
+            updateSVGSquare(sq,selectedSquare);
+            updateMatrices();  
         });
         document.getElementById('go-left').addEventListener('click', function(event) {
             let sq = squares[selectedSquare];
             sq.translate({x: -parseInt(translationStep), y: 0}, true);
-            validMove(sq, (elem)=>{
-                sq.translate({x: parseInt(translationStep), y: 0}, true);
-                alert('nope!');
-            }); 
+            updateSVGSquare(sq,selectedSquare);   
+            updateMatrices();
         });
         document.getElementById('go-right').addEventListener('click', function(event) {
             let sq = squares[selectedSquare];
             sq.translate({x: parseInt(translationStep), y: 0}, true);
-            validMove(sq, (elem)=>{
-                sq.translate({x: -parseInt(translationStep), y: 0}, true);
-                alert('nope!');
-            });   
+            updateSVGSquare(sq, selectedSquare);   
+            updateMatrices();
         });
 
         //Rotation events
@@ -359,21 +318,15 @@
             let sq = squares[selectedSquare];
             sq.angle = sq.angle + parseInt(rotationStep);
             sq.rotate(sq.angle, true);
-            validMove(sq, (elem)=>{
-                sq.angle = sq.angle - parseInt(rotationStep);
-                sq.rotate(sq.angle, true);
-                alert('nope!');
-            }); 
+            updateSVGSquare(sq, selectedSquare);   
+            updateMatrices();
         });
         document.getElementById('rotate-moins').addEventListener('click', function(event) {
             let sq = squares[selectedSquare];
             sq.angle = sq.angle - parseInt(rotationStep);
             sq.rotate(sq.angle, true);
-            validMove(sq, (elem)=>{
-                sq.angle = sq.angle + parseInt(rotationStep);
-                sq.rotate(sq.angle, true);
-                alert('nope!');
-            }); 
+            updateSVGSquare(sq, selectedSquare);   
+            updateMatrices();
         });
 
 
@@ -396,67 +349,35 @@
             let sq = squares[selectedSquare];
             let a = sq.a + parseInt(resizeStep);
             sq.changeSize(a, true);
-            validMove(sq, (elem)=>{
-                let a = sq.a - parseInt(resizeStep);
-                sq.changeSize(a, true);
-                alert('nope!');
-            }); 
+            updateSVGSquare(sq,selectedSquare);
+            updateMatrices();
         });
         document.getElementById('resize-moins').addEventListener('click', function(event) {
             let sq = squares[selectedSquare];
             let a = sq.a - parseInt(resizeStep);
             sq.changeSize(a, true);
-            validMove(sq, (elem)=>{
-                let a = sq.a + parseInt(resizeStep);
-                sq.changeSize(a, true);
-                alert('nope!');
-            }); 
+            updateSVGSquare(sq, selectedSquare);
+            updateMatrices();
         });
 
         //export svg button
-        document.getElementById('update-json').addEventListener('click', function(event) {
-            let dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(arrangments));
-            let dlAnchorElem = document.getElementById('downloadAnchorElem');
-            var downloadLink = document.createElement("a");
-            document.body.appendChild(downloadLink);
-            document.body.removeChild(downloadLink);
-            downloadLink.setAttribute("href",dataStr);
-            let fileName = "arrangments-found-"+Date.now()+".json";
-            console.log(fileName);
-            downloadLink.setAttribute("download",fileName);
-            downloadLink.click();
-            // saveSvg(svg, 'arr'+exportIndex+'.svg');
-            // exportIndex++;
+        document.getElementById('update-json').addEventListener('click', function(event) {          
+            let arr = arrangement_to_VI(squares);
+            let found = false;
+            let n = arrangments.length;
+            
+            for (let i=0;i<n;i++){              
+                if (are_VI_Equivalents(arrangments[i], arr) ) {
+                    found = true;
+                    break;
+                }
+            }
+            if (!found && n > 0){
+                alert('new arrangment!');
+            } else{
+                console.log('not new...');
+            }
         });
-
-
-        // document.getElementById('import-selection-btn').addEventListener('click', (event) => {
-        //     //createSvgArr();         
-        //     let n = 4;//arrangments.length;
-        //     for (let i=0;i<n;i++){
-        //         let arr = arrangments[i];
-        //         let label = [];
-        //         for (let j=0;j<3;j++){
-        //             //debugger;
-        //             let polygon = document.getElementById('square'+j);
-        //             let points = "";
-        //             for(let k=0;k<4;k++){
-        //                 points += arr.squares[j].vertex[k].x + ',' +arr.squares[j].vertex[k].y + ' ';
-        //             }
-        //             polygon.setAttribute("points",points); 
-        //             polygon.style = squareStyle[j]; 
-        //             label[j] = document.getElementById('label'+j);                     
-        //             label[j].setAttributeNS(null, 'x', arr.squares[j].center.x-5);
-        //             label[j].setAttributeNS(null, 'y', arr.squares[j].center.y+5);
-                    
-        //             //mettre à jour l'objet squares local 
-        //             squares[j].copy2(arr.squares[j]);
-        //             squares[j].majBox();
-        //             updateMatrices();
-        //         }
-        //         //saveSvg(svg, 'arr'+i+'.svg');
-        //     }            
-        // });
 
 
         //Charge l'arrangement i: upadate squares objet with it and update displayed svg
@@ -486,9 +407,8 @@
 
         //Charge les arrangements contenues dans le fichier json 
         //et affiche le premier d'entre eux 
-        let t = '1565962925386';
         document.getElementById('load-arr').addEventListener('click', function(event) {
-            fetch('http://localhost:8080/arrangments-found-'+t+'.json')
+            fetch('http://localhost:8080/arrangments-found-1565866855736.json')
             .then(response => response.text())
             .then((data) => { 
                 arrangments = JSON.parse(data);
@@ -496,20 +416,6 @@
                 currentArr = 0;
                 loadArr(currentArr);
             });
-        });
-
-        document.getElementById('next-btn').addEventListener('click', function(event) {
-            if (currentArr < nbArr - 1){
-                currentArr++;
-                loadArr(currentArr);
-            }
-        });
-
-        document.getElementById('previous-btn').addEventListener('click', function(event) {
-            if (currentArr > 0 ){
-                currentArr--;
-                loadArr(currentArr);
-            }
         });
 
 
@@ -671,7 +577,7 @@
         display:flex;
         flex-direction: column;
     }
-    #import-selection-btn, #export-selection-btn, #previous-btn, #next-btn{
+    #import-selection-btn, #export-selection-btn{
         width: 76px;
         height: 30px;
         font-size: 0.8em;

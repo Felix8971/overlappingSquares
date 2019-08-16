@@ -61,7 +61,7 @@ var getEquivalent_V = function(V0) {//ok
     //Calcul des matrices V equivalentes à V0
     let a = V0[0][1]; let b = V0[1][0]; 
     let c = V0[0][2]; let d = V0[2][0]; 
-    let e = V0[1][2]; let f = V0[2][1]; 
+    let e = V0[1][2]; let f = V0[2][1];
 
     //let V0 = [ [ 0, a, c ], [ b, 0, e ], [ d, f, 0 ] ];//012
     //let V1 = [ [ 0, b, e], [ a, 0, c ], [ f, d, 0 ] ];//102
@@ -99,7 +99,7 @@ var getEquivalent_V = function(V0) {//ok
 }
 
 //Determine si V1 est dans la liste des matrices equivalentes de V0
-//Si oui on retourne la permutation correspondante par rapport à V0 (qui va servir à calculer I1)
+//Si oui on retourne la permutation de la forme equivalent par rapport à V0 
 //sinon on retourne false
 var are_V_Equivalent = function(V0, V1){
     let EquivalentsList = getEquivalent_V(V0);
@@ -123,7 +123,7 @@ export function are_VI_Equivalents(arr0, arr1) {
     // let V1 = arr1.V;
     // let I0 = arr0.I;
     // let I1 = arr1.I;
-
+    
     if ( areEqual(arr0.V, arr1.V) && areEqual(arr0.I, arr1.I) ){
         //console.log('Equivalentes !');
         return true;
@@ -135,88 +135,54 @@ export function are_VI_Equivalents(arr0, arr1) {
         return false;
     }
 
-    //idee: faire la somme de tous les elements des matrices V0 et V1
-    //si pas egales alors return false
-
-    //sinon
-    //faire la somme de tous les elements des matrices I0 et I1
-    //si pas egales alors return false     
-    //sinon
-
-    //comparer les matrices I (test preliminaire rapid avant test de permutation circulaire)
-    //pour I0
-    //faire somme elements colonne 0: s00
-    // const s00 = sumOnColumn(arr0.I, 0);
-    // //faire somme elements colonne 1: s01
-    // const s01 = sumOnColumn(arr0.I, 1);
-    // //faire somme elements colonne 2  s02
-    // const s02 = sumOnColumn(arr0.I, 2);
-
-    // let s0 = [
-    //     sumOnColumn(arr0.I, 0), 
-    //     sumOnColumn(arr0.I, 1),  
-    //     sumOnColumn(arr0.I, 2)
-    // ];
-
-    //pour I1
-    //faire somme element colonne 0: s10
-    // const s10 = sumOnColumn(arr1.I, 0);
-    // //faire somme element colonne 1: s11
-    // const s11 = sumOnColumn(arr1.I, 1);
-    // //faire somme element colonne 2  s12
-    // const s12 = sumOnColumn(arr1.I, 2);
-
-    // let s1 = [
-    //     sumOnColumn(arr1.I, 0), 
-    //     sumOnColumn(arr1.I, 1), 
-    //     sumOnColumn(arr1.I, 2)
-    // ];
-
-    // //descending sort
-    // s0.sort((a, b) => b - a); 
-    // s1.sort((a, b) => b - a); 
-
-    // for (let i=0;i<3;i++){
-    //     if ( s0[i] != s1[i] ) {
-    //         //console.log('non equivalentes'); 
-    //         return false;
-    //     }    
-    // }
-    
     //Le vrai test d'equivalence 
     //Pour comparer {V0, I0 } et {V1, I1 }
     let permutation = are_V_Equivalent(arr0.V, arr1.V);
     if ( permutation ){//on a trouvé V1 parmis les formes equivalents de V0
         //console.log(permutation);
         let per = permutation; //permutation à remettre sous la forme en [0,1,2]
-        //permuter les colonnes de I1 (qui est en per) selon la permutation de I0 [0,1,2]
-        const cloneI1 = [...arr1.I];
+        
+        //let cloneI0 = [...(arr10.I)];//pb !
+        //let cloneI0 = Object.assign({}, arr0.I);//pb !
+        let cloneI0 = [
+            [arr0.I[0][0],arr0.I[0][1],arr0.I[0][2]],
+            [arr0.I[1][0],arr0.I[1][1],arr0.I[1][2]],
+            [arr0.I[2][0],arr0.I[2][1],arr0.I[2][2]],
+            [arr0.I[3][0],arr0.I[3][1],arr0.I[3][2]], 
+        ];
+
+        //Permute les colonnes de I0 selon la permutation de I1 (variable per)
         for (let line=0;line< 4;line++){
             let pivot = [];
-            pivot[0] = cloneI1[line][0];
-            pivot[1] = cloneI1[line][1];
-            pivot[2] = cloneI1[line][2];
-            cloneI1[line][0] = pivot[per[0]]; 
-            cloneI1[line][1] = pivot[per[1]]; 
-            cloneI1[line][2] = pivot[per[2]];
+            pivot[0] = cloneI0[line][0];
+            pivot[1] = cloneI0[line][1];
+            pivot[2] = cloneI0[line][2];
+            cloneI0[line][0] = pivot[per[0]];
+            cloneI0[line][1] = pivot[per[1]];
+            cloneI0[line][2] = pivot[per[2]];
         }
         //Puis regarder si les permutations circulaires sur les colonnes de cloneI1 peuvent donner I0
         //const NB_SQUARE = 3;
         //const NB_VERTEX = 4;
         
         for (let col=0;col<NB_SQUARE;col++){
-            let cloneI1_col = [ cloneI1[0][col], cloneI1[1][col], cloneI1[2][col], cloneI1[3][col] ];
-            let I0_col = [ cloneI1[0][col], cloneI1[1][col], cloneI1[2][col], cloneI1[3][col] ];
+            let cloneI0_col = [ cloneI0[0][col], cloneI0[1][col], cloneI0[2][col], cloneI0[3][col] ];
+            let I1_col = [ arr1.I[0][col], arr1.I[1][col], arr1.I[2][col], arr1.I[3][col] ];
             let found = false;
-            for (let i=0; i<cloneI1_col.length;i++){
-                let a3 = cloneI1_col[3];
-                cloneI1_col.pop();
-                cloneI1_col.unshift(a3);
-                if ( arraysEqual(cloneI1_col, I0_col )  ){
-                    found = true;
-                }
-                //console.log(cloneI1_col);
-            } 
+
+            if ( arraysEqual(cloneI0_col, I1_col ) ){
+                found = true;
+            } else {
+                for (let i=0; i < cloneI0_col.length - 1;i++){
+                    let a3 = cloneI0_col[3];
+                    cloneI0_col.pop();// Remove an item from the end of the array
+                    cloneI0_col.unshift(a3);//Add a3 to the beginning of the array.
+                    if ( arraysEqual(cloneI0_col, I1_col )  ){
+                        found = true;
+                    }
+                    //console.log(cloneI0_col);
+                } 
+            }
             if ( !found ) {
                 //console.log('non equivalentes');
                 return false;
@@ -237,11 +203,4 @@ export function are_VI_Equivalents(arr0, arr1) {
         //arrangements equivalents.     
     //sinon {V0, I0 } != {V1, I1 }
 
-    /*a = [1,2,3,4];
-    for (let i=0; i<a.length;i++){
-        a3 = a[3];
-        a.pop();
-        a.unshift(a3);
-        console.log(a);
-    } */
 }
