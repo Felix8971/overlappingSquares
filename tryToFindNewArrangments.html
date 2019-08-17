@@ -407,8 +407,9 @@
 
         //Charge les arrangements contenues dans le fichier json 
         //et affiche le premier d'entre eux 
+        let t = '1566026773107';
         document.getElementById('load-arr').addEventListener('click', function(event) {
-            fetch('http://localhost:8080/arrangments-found-1565866855736.json')
+            fetch('http://localhost:8080/arrangments-found-'+t+'.json')
             .then(response => response.text())
             .then((data) => { 
                 arrangments = JSON.parse(data);

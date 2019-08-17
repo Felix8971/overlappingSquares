@@ -197,7 +197,7 @@ export function searchArrangments_V1(squares) {
     };
     
     //const step = 5;//squares[0].a/20;
-    const step = 5;
+    const step = 13;
 
     //scan zone
     const nx = parseInt((scanArea.xmax - scanArea.xmin)/step);

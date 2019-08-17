@@ -35,6 +35,10 @@ arrsN3 devient un array a 2 dimensions arrsN3[i][j]
 - mettre en place un outil qui va permettre de charger la liste des arrangments trouvés et de construire
 un nouvel arrangement pour verifier si il est dans la liste 
 
+
+are_VI_Equivalents est buggée: corrrctif => il faut sortir toutes le formes equilalents sous la forme d'une liste de couples (V,I)k puis verifier si 
+la nouvelle config (V,I) est presente
+
 ========= RESULT =========
 searchArrangments.mjs:222 step:7
 searchArrangments.mjs:223 angles:0,5,10,20,30,40,50,60,70,80

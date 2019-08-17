@@ -486,11 +486,11 @@
 
         //Charge les arrangements contenues dans le fichier json 
         //et affiche le premier d'entre eux 
-        let t = '1565962925386';
+        let t = '1566026773107';
         document.getElementById('load-arr').addEventListener('click', function(event) {
             fetch('http://localhost:8080/arrangments-found-'+t+'.json')
             .then(response => response.text())
-            .then((data) => { 
+            .then((data) => {
                 arrangments = JSON.parse(data);
                 nbArr = arrangments.length;
                 currentArr = 0;
@@ -502,6 +502,7 @@
             if (currentArr < nbArr - 1){
                 currentArr++;
                 loadArr(currentArr);
+                document.getElementById('current-arr').value = parseInt(currentArr);
             }
         });
 
@@ -509,9 +510,16 @@
             if (currentArr > 0 ){
                 currentArr--;
                 loadArr(currentArr);
+                document.getElementById('current-arr').value = parseInt(currentArr);
             }
         });
 
+        document.getElementById('current-arr').addEventListener('change', function(event) { 
+            if (event.target.value >= 0 && event.target.value <= nbArr - 1){
+                currentArr = event.target.value;
+                loadArr(currentArr);
+            }
+        });
 
         //on place les squares dans la zone
         //squares[0].initRotZero(100, {x:W/2-110, y:H/2-110});
