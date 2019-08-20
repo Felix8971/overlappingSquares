@@ -1,7 +1,8 @@
       
 import { NB_VERTEX } from './constants.mjs';
-  
-// Return true if the passed point is inside the box otherwise return false
+var arrangementValid = true;
+ 
+// Return true if point is inside the box otherwise return false
 var pointInBox = (point, box) => {//test ok
     if (point.x <= box.xmin || point.x >= box.xmax || point.y <= box.ymin || point.y >= box.ymax){
         return false;
@@ -9,7 +10,7 @@ var pointInBox = (point, box) => {//test ok
     return true;
 }
 
-// Return true if the passed point is inside the square (the square can be rotated) otherwise return false
+// Return true if point is inside the square (the square can be rotated) otherwise return false
 var pointInSquare = (point, square) => {//test ok
     const epsilon = 0;
     if ( !pointInBox(point, square.box) ){
@@ -32,7 +33,7 @@ var pointInSquare = (point, square) => {//test ok
 
 // Return true if the 2 boxes overlapp
 export function testBoxesOverlapping(boxA, boxB){//tested
-    return !(  boxA.xmin > boxB.xmax 
+    return !( boxA.xmin > boxB.xmax 
             || boxB.xmin > boxA.xmax 
             || boxA.ymin > boxB.ymax 
             || boxB.ymin > boxA.ymax );
@@ -44,7 +45,7 @@ var Det = (u, v) => {
   return u.x * v.y - u.y * v.x; 
 }
 
-//Test intersection egde kA of quareA and edget kB of squareB
+//Test intersection egde kA of quareA and edge kB of squareB
 var intersectionSegments = (squareA, kA0, squareB, kB0) => {
     //Notation: 
     // - vector AB for squareA edge kA
@@ -132,7 +133,7 @@ var intersectionSegments = (squareA, kA0, squareB, kB0) => {
 //     }
 // }
 
-// Calculates the number of vertexes of the square A in square B
+// Calculates the number of vertices of the square A in square B
 var nbVertexInside = (squareA, squareB) => {
     let n = 0;
     for(let i=0;i<NB_VERTEX;i++){
@@ -143,7 +144,6 @@ var nbVertexInside = (squareA, squareB) => {
     return n;
 }
 
-var arrangementValid = true;
 
 //Calculates the matrix V and I corresponding to a given arrangements of 3 squares
 export function arrangement_to_VI(squares) {
@@ -174,12 +174,12 @@ export function arrangement_to_VI(squares) {
                 V[j][i] = V[i][j] <= 2 ? nbVertexInside(squares[i], squares[j]) : 0;//à tester !             
                 
                 //Count intersections of the 2 squares edges 
-                for (let k=0;k<NB_VERTEX;k++){ //pour chaque segment k de i
+                for (let k=0;k<NB_VERTEX;k++){ //pour chaque segment k de square i
                     //console.log('k:'+k);
                     //si la box du segment k de i intercepte la box de square j
                     if ( testBoxesOverlapping(squares[i].boxEdge[k], squares[j].box) ){
                         //Test intersection du segment k avec les segments de j
-                        for (let p=0;p<NB_VERTEX;p++){
+                        for (let p=0;p<NB_VERTEX;p++){//pour chaque segment p de square j
                             if ( testBoxesOverlapping(squares[i].boxEdge[k], squares[j].boxEdge[p]) ){
                                 if ( intersectionSegments(squares[i],k,squares[j],p) ){
                                     //console.log('k:'+k+ ' p:' + p);

@@ -57,6 +57,7 @@ var getArrsN3Length = (arrsN3) => {
 
 //Extract the arrangments from arrsN3 to return a simplified linear array
 var getArrsN3Array = (arrsN3) => {
+
     let n = arrsN3.length;
     let arrs = [];
     for (let i=0;i<n;i++){
@@ -73,7 +74,7 @@ var getArrsN3Array = (arrsN3) => {
         }
     } 
 
-    // We only keep the information useful to draw the arrangement in svg
+    // We only keep the informations useful to draw the arrangement in svg
     let arrsLigth = arrs.map((elem)=>{
         return {
             V: elem.V,
@@ -97,7 +98,7 @@ var getArrsN3Array = (arrsN3) => {
                     angle: elem.squares[2].angle,
                     vertex: elem.squares[2].vertex,
                 },               
-            ]
+            ],
         }
     });
     
@@ -115,14 +116,15 @@ var getArrsN3Array = (arrsN3) => {
     return arrsLigth;
 }
 
-// Add the arr arrangement to the list arrsN3 if there is no equivalent already present
+// Add the arr arrangement arr to the list arrsN3 if there is no equivalent arrangment already present
 var updateArrsN3 = (arr, arrsN3) => {
     
     if ( arr.valid ){
        
         //For optimisation purpose we store each arrangement in a particular category. 
-        //When a new arrangment will be generated we will search his equivalent only inside his category.
-        //The category of an arrangment is defined by 2 integers calulated as following:
+        //When a new arrangment will be generated we will search his equivalent only inside this category.
+        //The category of an arrangment is defined by 2 integers nV and nI calulated as following 
+        //(they will serve as an entry of a 2 dimensional array):
 
         let sV = [
             sumOnColumn(arr.V, 0), 
@@ -164,7 +166,7 @@ var updateArrsN3 = (arr, arrsN3) => {
         } else {//we create a new arrangment category
             arrsN3[nV] = [];
             arrsN3[nV][nI] = [];
-            arrsN3[nV][nI].push(arr);        
+            arrsN3[nV][nI].push(arr);
         }
 
         //for(let i=0;i<n;i++){// comparer le temps execution dans chaque cas 
@@ -190,14 +192,14 @@ export function searchArrangments_V1(squares) {
     let arrsN3 = [];
   
     let scanArea = {
-        xmin: squares[0].box.xmin - squares[0].a/2,
-        xmax: squares[0].box.xmax + squares[0].a/2,
-        ymin: squares[0].box.ymin - squares[0].a/2,
-        ymax: squares[0].box.ymax + squares[0].a/2
+        xmin: squares[0].box.xmin - 3*squares[0].a/2,
+        xmax: squares[0].box.xmax + 3*squares[0].a/2,
+        ymin: squares[0].box.ymin - 3*squares[0].a/2,
+        ymax: squares[0].box.ymax + 3*squares[0].a/2
     };
     
     //const step = 5;//squares[0].a/20;
-    const step = 13;
+    const step = 15;
 
     //scan zone
     const nx = parseInt((scanArea.xmax - scanArea.xmin)/step);
@@ -208,11 +210,11 @@ export function searchArrangments_V1(squares) {
 
     let x2, y2, x3, y3;
 
-    //const angles = [0, 5, 10, 20, 30, 40, 50, 60, 70, 80];//getAngles(45, 90);
+    const angles = [0, 5, 10, 20, 30, 40, 50, 60, 70, 80];//getAngles(45, 90);
     //const sizes = [80.4, 60.3, 40.2, 20.3, 100.5, 10.1, 150.6, 2];
 
-    const angles = [0];
-    const sizes = [40];
+    //const angles = [0];
+    const sizes = [80];
 
     const n_angles = angles.length;
     const n_size = sizes.length;
@@ -236,7 +238,6 @@ export function searchArrangments_V1(squares) {
                     //let arr = arrangement_to_VI(squares);
                     //let n3 = arrsN3.length; 
                     //updateSVGSquare(squares[1],1);                      
-                    //updateArrsN3(arr, arrsN3); 
                     squares[1].changeState({x:x2,y:y2}, sizes[p], angles[k]);
                     for(let i1=i0;i1<nx;i1++){// i1=i0
                         x3 = scanArea.xmin + i1*step;
@@ -250,16 +251,18 @@ export function searchArrangments_V1(squares) {
                                     //squares[2].rotate(angles[m], true);   
                                     squares[2].changeState({x:x3,y:y3}, sizes[q], angles[m]);                                                                                                              
                                     //let arr = arrangement_to_VI(squares);
-                                    //let n3 = arrsN3.length; 
+                                    let n3 = getArrsN3Length(arrsN3)
                                     updateArrsN3(arrangement_to_VI(squares), arrsN3);
                                     //updateSVGSquare(squares[1],1);  
-                                    //updateSVGSquare(squares[2],2);      
+                                    //updateSVGSquare(squares[2],2);  
+                                    
                                     positionsTested++;                                                       
-                                    //if ( arrsN3.length > n3 ){ 
-                                        //updateSVGSquare(squares[1],1);  
-                                        //updateSVGSquare(squares[2],2);      
-                                        //console.log("xxxx");
-                                    //}
+                                    if ( getArrsN3Length(arrsN3) > n3 ){ 
+                                        console.log("xxxx");
+                                        // updateSVGSquare(squares[1],1);  
+                                        // updateSVGSquare(squares[2],2);   
+                                        // debugger;                   
+                                    }
                                 }
                             }
                         }
@@ -289,7 +292,100 @@ export function searchArrangments_V1(squares) {
     console.log(fileName);
     downloadLink.setAttribute("download",fileName);
     downloadLink.click();
+    console.log('========= END =========');
+}
 
+
+export function searchArrangments_V1_N2(squares) {// donne 12 arrangements
+    //Principle: we place a fixed square in the center of the simulation zone then sweep
+    //the the simulation zone with 2 other squares (by varying their size and their angle of rotation)
+    const t0 = Date.now(); 
+    //Liste of the N=3 arrangments found
+    let arrsN3 = [];
+  
+    let scanArea = {
+        xmin: squares[0].box.xmin - squares[0].a/2,
+        xmax: squares[0].box.xmax + squares[0].a/2,
+        ymin: squares[0].box.ymin - squares[0].a/2,
+        ymax: squares[0].box.ymax + squares[0].a/2
+    };
+    
+    const step = 5;//squares[0].a/20;
+    //const step = 13;
+
+    //scan zone
+    const nx = parseInt((scanArea.xmax - scanArea.xmin)/step);
+    const ny = parseInt((scanArea.ymax - scanArea.ymin)/step);
+    const nxny = nx*ny;
+    //const nx_half = Math.ceil(nx/2) + step;
+    //const ny_half = Math.ceil(ny/2) + step;
+
+    let x2, y2, x3, y3;
+
+    //const angles = getAngles(5, 90);
+    //const sizes = getSizes(5, 100);
+
+    const angles = [0, 5, 10, 20, 30, 40, 50, 60, 70, 80];
+    const sizes = [80];
+
+    const n_angles = angles.length;
+    const n_size = sizes.length;
+
+    let positionsTested = 0;
+    let count = 0;
+
+    for(let i0=0;i0<nx;i0++){
+        x2 = scanArea.xmin + i0*step;
+        for(let j0=0;j0<ny;j0++){
+            y2 = scanArea.ymin + j0*step;
+            count++;
+            let delta_t = parseFloat(((Date.now() - t0)/(1000*60)).toFixed(2))  ;
+            console.log(100*count/nxny + '% : '+ getArrsN3Length(arrsN3) + ' arrangments found in '+ delta_t + ' minutes');
+            //drawPoint({x:x2,y:y2});
+            //squares[1].moveTo({x:x2,y:y2}, false);
+            for(let p=0;p<n_size;p++){
+                //squares[1].changeSize(sizes[p], false);
+                for(let k=0;k<n_angles;k++){                                                       
+                    //squares[1].rotate(angles[k], true);
+                    //let arr = arrangement_to_VI(squares);
+                    //let n3 = arrsN3.length; 
+                    //updateSVGSquare(squares[1],1);                      
+                    //updateArrsN3(arr, arrsN3); 
+                    squares[1].changeState({x:x2,y:y2}, sizes[p], angles[k]);                
+                    updateArrsN3(arrangement_to_VI(squares), arrsN3);
+                    //updateSVGSquare(squares[1],1);  
+                    //updateSVGSquare(squares[2],2);      
+                    positionsTested++;                                                       
+                    //if ( arrsN3.length > n3 ){ 
+                        //updateSVGSquare(squares[1],1);  
+                        //updateSVGSquare(squares[2],2);      
+                        //console.log("xxxx");
+                    //}                           
+                }
+            }
+        }
+    }
+    console.log('========= RESULT =========');
+    
+    console.log('step:'+step);
+    console.log('angles:'+angles);
+    console.log('sizes:'+sizes);
+    let delta_t = (Date.now() - t0)/(1000*60);
+    console.log(positionsTested + ' positionsTested');
+    console.log(getArrsN3Length(arrsN3) + ' arrangments found in '+ delta_t + ' minutes');
+
+    //Export result 
+    console.log('Download result...');
+    let dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(getArrsN3Array(arrsN3)));
+    //let dlAnchorElem = document.getElementById('downloadAnchorElem');
+    var downloadLink = document.createElement("a");
+    document.body.appendChild(downloadLink);
+    document.body.removeChild(downloadLink);
+    downloadLink.setAttribute("href",dataStr);
+    let fileName = "arrangments-found-"+Date.now()+".json";
+    console.log(fileName);
+    downloadLink.setAttribute("download",fileName);
+    downloadLink.click();
     console.log('========= END =========');
 }
 
@@ -360,7 +456,7 @@ export function searchArrangments_V2(arrangmentsSelection) {
 
     let x3, y3;
 
-    let angles = getAngles(10, 90);//must be an integer ! //2
+    let angles = getAngles(10, 90);//must be integers
     let n_angles = angles.length;
 
     let nbArr = arrangmentsSelection.length;

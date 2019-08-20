@@ -23,39 +23,40 @@
         //import { arrangement_to_VI } from './calculVI.mjs';
         import { are_VI_Equivalents, getEquivalent_I_List } from './compare-arrangements.mjs';
         import { getInitSquares } from './initSquares.mjs';
-        import { searchArrangments_V1 } from  './searchArrangments.mjs';
+        import { searchArrangments_V1, searchArrangments_V1_N2 } from  './searchArrangments.mjs';
 
 
         let squares = getInitSquares(); 
         document.getElementById('run-btn').addEventListener('click', function(event) {
-            searchArrangments_V1(squares);
+            //searchArrangments_V1(squares);
+            searchArrangments_V1_N2(squares);
         });
 
         //tests
-        // let V0 = [
-        //     [0, 2, 4],
-        //     [0, 0, 0],
-        //     [0, 0, 0]
-        // ]; // 0, 1, 2
-        // let V1 = [
-        //     [0, 4, 2],
-        //     [0, 0, 0],
-        //     [0, 0, 0]
-        // ];//  permutation: all possible
-        // let I0 = [ 
-        //     [0, 1, 0],
-        //     [0, 0, 0],
-        //     [0, 1, 0],
-        //     [2, 0, 0],
-        // ];
-        // let I1 = [ 
-        //     [0, 0, 0],
-        //     [2, 0, 1],
-        //     [0, 0, 0],
-        //     [0, 0, 1],
-        // ];
+        let V0 = [
+            [0, 1, 2],
+            [1, 0, 0],
+            [0, 0, 0]
+        ]; // 0, 1, 2
+        let V1 = [
+            [0, 4, 2],
+            [0, 0, 0],
+            [0, 0, 0]
+        ];//  permutation: all possible
+        let I0 = [ 
+            [1, 0, 1],
+            [0, 1, 0],
+            [0, 1, 1],
+            [3, 0, 0],
+        ];
+        let I1 = [ 
+            [3, 0, 0],
+            [0, 1, 1],
+            [0, 1, 0],
+            [1, 0, 1],
+        ];
        
-        // console.log(are_VI_Equivalents({V:V0, I:I0}, {V:V1, I:I1}));
+        console.log(are_VI_Equivalents({V:V0, I:I0}, {V:V1, I:I1}));
 
         //console.log(getEquivalent_I_List(I0));
         
@@ -66,12 +67,12 @@
         createSVGSquare(squares[0],0);
 
         //Les deux autre squares vont bouger    
-        squares[1].initRotZero(100, {x:-9999, y:-9999});
+        squares[1].initRotZero(80, {x:-9999, y:-9999});
         squares[1].majBox();
         //squares[1].translate({x:W/2, y:H/2})
         createSVGSquare(squares[1],1);
 
-        squares[2].initRotZero(100, {x:9999,y:9999});
+        squares[2].initRotZero(80, {x:9999,y:9999});
         squares[2].majBox();
         createSVGSquare(squares[2],2);
 

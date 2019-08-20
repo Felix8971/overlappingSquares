@@ -24,7 +24,8 @@ export function getInitSquares(){
                 {xmin: 0, xmax: 0, ymin:0, ymax:0},
             ],
             //Methods
-            //When the square chaneg we update his bounding boxes
+
+            //When the square change we update his bounding boxes
             majBox: function() {
                 this.box.xmin = this.box.ymin = MAX;
                 this.box.xmax = this.box.ymax = MIN;
@@ -140,7 +141,7 @@ export function getInitSquares(){
                 }
             },
 
-            //appy the parameters of another square to the current square
+            //apply the parameters of another square to the current square
             copy: function (square) {
                 this.a = square.a;//edge length
                 this.center.x = square.center.x;
@@ -156,7 +157,7 @@ export function getInitSquares(){
                 this.box.ymax = square.box.ymax;
             },
 
-            //appy the parameters of another square to the current square
+            //apply the parameters of another square to the current square
             copy2: function (square) {
                 this.a = square.a;//edge length
                 this.center.x = square.center.x;
@@ -188,7 +189,6 @@ export function getInitSquares(){
                     this.vertex[i].x = this.center.x + (vx  - this.center.x)*COS[angle] - (this.vertex[i].y  - this.center.y)*SIN[angle]
                     this.vertex[i].y = this.center.y + (vx  - this.center.x)*SIN[angle] + (this.vertex[i].y  - this.center.y)*COS[angle]
                 }
-               
                 this.majBox();               
             }
 
