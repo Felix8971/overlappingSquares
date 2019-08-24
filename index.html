@@ -10,7 +10,7 @@
             <button id="run-btn">RUN</button>
             <a href="configManualBuilderN2.html">Config Manual Builder N=2</a>
             <a href="configManualBuilderN3.html">Config Manual Builder N=3</a>
-            <a href="refinementFactory.html">Refinement Factory N=3</a> 
+            <a href="refinementFactory.html">Refinement Factory N=3</a>
             <a href="tryToFindNewArrangments.html">Try to find new arrangments N=3</a> 
         </div>
         <svg id="zone" height="1" width="1" style="border:3px solid blue"></svg> 
@@ -28,8 +28,19 @@
 
         let squares = getInitSquares(); 
         document.getElementById('run-btn').addEventListener('click', function(event) {
-            //searchArrangments_V1(squares);
-            searchArrangments_V1_N2(squares);
+
+            //We load the arrangments already found and we continu the calcul   
+            fetch('http://localhost:8080/arrangments-found.json')
+            .then(response => response.text())
+            .then((data) => {
+                let arrangments = JSON.parse(data);
+                let nbArr = arrangments.length;
+                searchArrangments_V1(squares, arrangments, 0, 10);
+                //searchArrangments_V1(squares, arrangments, 1, 2);
+                //searchArrangments_V1(squares, arrangments, 2, 4);
+                //searchArrangments_V1(squares, arrangments, 4, 7);
+            });
+
         });
 
         //tests
@@ -39,8 +50,8 @@
             [0, 0, 0]
         ]; // 0, 1, 2
         let V1 = [
-            [0, 4, 2],
-            [0, 0, 0],
+            [0, 1, 2],
+            [1, 0, 0],
             [0, 0, 0]
         ];//  permutation: all possible
         let I0 = [ 
@@ -51,8 +62,8 @@
         ];
         let I1 = [ 
             [3, 0, 0],
-            [0, 1, 1],
             [0, 1, 0],
+            [0, 1, 1],
             [1, 0, 1],
         ];
        
@@ -161,10 +172,12 @@
             display:flex;
             flex-direction: column;
         }
+
         #run-btn{
             width: 60px;
             height: 36px;
             margin: 10px 10px 10px 0;
+            cursor: pointer;
         }
 
         #menu{

@@ -39,9 +39,10 @@ un nouvel arrangement a la main pour verifier si il est dans la liste
 - Ajouter un button "image miroir" a la palette de transformations + rotation d'ensenble de l'arrangement 
 (multi select ?)
 
+_ deee new projet: intersection de segments (position centre, tailles et angles variables)
 
 - idee new projet: calculer le nombre d'arrangements possibles de 2 polygones reguliers convexes:
-point, segment, triangle equilaterals, carrés, pentagones, hexagone, etc....
+triangle equilaterals, carrés, pentagones, hexagone, etc....
 Voir si il exite une formule U(n) = ...
 
 N=2 avec rotation et resize: 12
@@ -55,6 +56,7 @@ N=3 sans rotation avec resize: donne 47 arr
 N=3 sans rotation et sans resize: donne 6 arr
 
 http://www.ams.org/publicoutreach/feature-column/fc-2019-01
+https://www.researchgate.net/publication/321604192_Arrangements_of_Pseudocircles_On_Circularizability
 
 ========= RESULT =========
 searchArrangments.mjs:222 step:7

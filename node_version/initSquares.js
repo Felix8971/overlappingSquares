@@ -1,8 +1,10 @@
-import { MIN, MAX, W, H, NB_SQUARE, NB_VERTEX, COS, SIN } from './constants.mjs';
 
+const CTE = require('./constants.js');
+
+const  { MIN, MAX, NB_SQUARE, NB_VERTEX, COS, SIN } = CTE;
 //init simulation's squares
 
-export function getInitSquares(){ 
+exports.getInitSquares = function(){ 
     let _squares = [];
     for (let i=0;i<NB_SQUARE;i++) {
         _squares.push({

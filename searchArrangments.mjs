@@ -184,45 +184,53 @@ var updateArrsN3 = (arr, arrsN3) => {
     //return arrsN3;
 }
 
-export function searchArrangments_V1(squares) {
+export function searchArrangments_V1(squares, arrangments=[], i0_start=0, i0_end=32) {
     //Principle: we place a fixed square in the center of the simulation zone then sweep
     //the the simulation zone with 2 other squares (by varying their size and their angle of rotation)
-    const t0 = Date.now(); 
+    
     //Liste of the N=3 arrangments found
     let arrsN3 = [];
-  
+    for (let i=0;i<arrangments.length;i++){
+        arrangments[i].valid = true;
+        updateArrsN3(arrangments[i], arrsN3);
+    }
+    
+    const t0 = Date.now(); 
+   
     let scanArea = {
-        xmin: squares[0].box.xmin - 3*squares[0].a/2,
-        xmax: squares[0].box.xmax + 3*squares[0].a/2,
-        ymin: squares[0].box.ymin - 3*squares[0].a/2,
-        ymax: squares[0].box.ymax + 3*squares[0].a/2
+        xmin: squares[0].box.xmin - squares[0].a/2,
+        xmax: squares[0].box.xmax + squares[0].a/2,
+        ymin: squares[0].box.ymin - squares[0].a/2,
+        ymax: squares[0].box.ymax + squares[0].a/2
     };
     
     //const step = 5;//squares[0].a/20;
-    const step = 15;
-
+    const step = 20;
     //scan zone
     const nx = parseInt((scanArea.xmax - scanArea.xmin)/step);
     const ny = parseInt((scanArea.ymax - scanArea.ymin)/step);
-    const nxny = nx*ny;
+
+    let nx0 = i0_end - i0_start;
+
+    const nxny = nx0*ny;
     //const nx_half = Math.ceil(nx/2) + step;
     //const ny_half = Math.ceil(ny/2) + step;
 
     let x2, y2, x3, y3;
 
-    const angles = [0, 5, 10, 20, 30, 40, 50, 60, 70, 80];//getAngles(45, 90);
+    //const angles = [0, 5, 10, 20, 30, 40, 50, 60, 70, 80];//getAngles(45, 90);
     //const sizes = [80.4, 60.3, 40.2, 20.3, 100.5, 10.1, 150.6, 2];
 
-    //const angles = [0];
-    const sizes = [80];
-
+    const angles = [0, 40, 60];
+    const sizes = [20, 80];
+     
     const n_angles = angles.length;
     const n_size = sizes.length;
 
     let positionsTested = 0;
     let count = 0;
 
-    for(let i0=0;i0<nx;i0++){
+    for(let i0=i0_start;i0<i0_end/*nx*/;i0++){
         x2 = scanArea.xmin + i0*step;
         for(let j0=0;j0<ny;j0++){
             y2 = scanArea.ymin + j0*step;
@@ -230,39 +238,32 @@ export function searchArrangments_V1(squares) {
             let delta_t = parseFloat(((Date.now() - t0)/(1000*60)).toFixed(2))  ;
             console.log(100*count/nxny + '% : '+ getArrsN3Length(arrsN3) + ' arrangments found in '+ delta_t + ' minutes');
             //drawPoint({x:x2,y:y2});
-            //squares[1].moveTo({x:x2,y:y2}, false);
             for(let p=0;p<n_size;p++){
-                //squares[1].changeSize(sizes[p], false);
-                for(let k=0;k<n_angles;k++){                                                       
-                    //squares[1].rotate(angles[k], true);
-                    //let arr = arrangement_to_VI(squares);
-                    //let n3 = arrsN3.length; 
-                    //updateSVGSquare(squares[1],1);                      
+                for(let k=0;k<n_angles;k++){                                                          
                     squares[1].changeState({x:x2,y:y2}, sizes[p], angles[k]);
                     for(let i1=i0;i1<nx;i1++){// i1=i0
                         x3 = scanArea.xmin + i1*step;
                         for(let j1=j0;j1<ny;j1++){// j1=j0
                             y3 = scanArea.ymin + j1*step;
                             //drawPoint({x:x3,y:y3});
-                            //squares[2].moveTo({x:x3,y:y3}, false);   
-                            for(let q=0;q<n_size;q++){                       
-                                //squares[2].changeSize(sizes[q], false);
-                                for(let m=0;m<n_angles;m++){                                 
-                                    //squares[2].rotate(angles[m], true);   
+                            for(let q=0;q<n_size;q++){                                     
+                                for(let m=0;m<n_angles;m++){                                                              
                                     squares[2].changeState({x:x3,y:y3}, sizes[q], angles[m]);                                                                                                              
                                     //let arr = arrangement_to_VI(squares);
-                                    let n3 = getArrsN3Length(arrsN3)
+                                    //let n3 = getArrsN3Length(arrsN3)
+                                    
                                     updateArrsN3(arrangement_to_VI(squares), arrsN3);
-                                    //updateSVGSquare(squares[1],1);  
+                                    
+                                    //updateSVGSquare(squares[1],1);
                                     //updateSVGSquare(squares[2],2);  
                                     
                                     positionsTested++;                                                       
-                                    if ( getArrsN3Length(arrsN3) > n3 ){ 
-                                        console.log("xxxx");
-                                        // updateSVGSquare(squares[1],1);  
-                                        // updateSVGSquare(squares[2],2);   
-                                        // debugger;                   
-                                    }
+                                    // if ( getArrsN3Length(arrsN3) > n3 ){ 
+                                    //     console.log("xxxx");
+                                    //     updateSVGSquare(squares[1],1);  
+                                    //     updateSVGSquare(squares[2],2);   
+                                    //     debugger;                   
+                                    // }
                                 }
                             }
                         }
@@ -278,7 +279,8 @@ export function searchArrangments_V1(squares) {
     console.log('sizes:'+sizes);
     let delta_t = (Date.now() - t0)/(1000*60);
     console.log(positionsTested + ' positionsTested');
-    console.log(getArrsN3Length(arrsN3) + ' arrangments found in '+ delta_t + ' minutes');
+    const nbArrFound = getArrsN3Length(arrsN3);
+    console.log(nbArrFound + ' arrangments found in '+ delta_t + ' minutes');
 
     //Export result 
     console.log('Download result...');
@@ -288,7 +290,8 @@ export function searchArrangments_V1(squares) {
     document.body.appendChild(downloadLink);
     document.body.removeChild(downloadLink);
     downloadLink.setAttribute("href",dataStr);
-    let fileName = "arrangments-found-"+Date.now()+".json";
+    //let fileName = "arrangments-found-"+Date.now()+".json";
+    let fileName = "arrangments-found-"+nbArrFound+"-"+i0_start+"-"+i0_end+".json";
     console.log(fileName);
     downloadLink.setAttribute("download",fileName);
     downloadLink.click();

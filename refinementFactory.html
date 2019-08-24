@@ -488,7 +488,7 @@
         //et affiche le premier d'entre eux 
         let t = '1566198641310';
         document.getElementById('load-arr').addEventListener('click', function(event) {
-            fetch('http://localhost:8080/arrangments-found-'+t+'.json')
+            fetch('http://localhost:8080/node_version/arrangments-found-2797-1-3.json')
             .then(response => response.text())
             .then((data) => {
                 arrangments = JSON.parse(data);
