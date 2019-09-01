@@ -2,27 +2,25 @@
 - Lancer des calculs en faisant diminuer progressivement les parametres step, pas angulaire, etc 
 jusqu'a convergeance du nombre d'arrangements.
 
-- ajouter un selecteur de configuration "eyes friendly"
+idee : calculer le nombre de conf E3 engendrées par chaque conf E2 => bad idea
 
-- re-ecrire en C la partie searchArrangment
+- re-ecrire pour node.js la partie searchArrangment: done
 
 idee: regrouper moveto, rotate et resize en une seule fonction qui prend:
    - position x,y du centre du carre
    - size
    - angle rotation
+==> done
 
-idee optimisation: separer arrsN3 en plusieurs parties
+idee optimisation: separer arrsN3 en plusieurs parties ==> done
 
 arrsN3 devient un array a 2 dimensions arrsN3[i][j]
-
 - i correspond au nombre entier obtenu en faisant la somme de chaque colonne de V puis un tri croissant
-
 - j correspond au nombre entier obtenu en faisant la somme de chaque colonne de I puis un tri croissant
-
 
 - ecrire le code pour creer les svg a partir du fichier arrangments-found-*.json
 
-- creer les tests avec Jest
+- creer les tests avec Jest ?
 
 - optimisation: ne faire bouger qu'un seul carre à la fois afin de ne pas 
    recalculer inutilement les intersections entre les deux autres carres
@@ -30,20 +28,24 @@ arrsN3 devient un array a 2 dimensions arrsN3[i][j]
 - mettre en place un outil qui va permettre de charger chaque arrangments trouvé et de le rectifier 
   sans changer les matrice V et F afin de rendre le svg plus lisible (sans avoir a zoomer).
   A chaque step mettre en place un syteme qui controle si V et F restent constants et ne pas autoriser 
-  la modification. Creer un bouton pour mettre à jour le fichier svg de l'arrangement. ==> done
+  la modification. Creer un bouton pour mettre à jour le fichier svg de l'arrangement. 
+==> done but not tested
 
-- mettre en place un outil qui va permettre de charger la liste des arrangments trouvés et de construire
-un nouvel arrangement a la main pour verifier si il est dans la liste 
+- mettre en place un outil qui va permettre de charger la liste des arrangments trouvés et de
+ construire un nouvel arrangement a la main pour verifier si il est dans la liste 
+==> done
 
+- Ajouter un button "image miroir" a la palette de transformations + rotation d'ensenble des carrés
+- idee new projet: intersection de segments (position centre, tailles et angles variables)
 
-- Ajouter un button "image miroir" a la palette de transformations + rotation d'ensenble de l'arrangement 
-(multi select ?)
-
-_ deee new projet: intersection de segments (position centre, tailles et angles variables)
-
-- idee new projet: calculer le nombre d'arrangements possibles de 2 polygones reguliers convexes:
-triangle equilaterals, carrés, pentagones, hexagone, etc....
+- idee new projet: calculer le nombre d'arrangements possibles de n polygones reguliers convexes:
+triangles equilaterals, carrés, pentagones, hexagone, etc.
 Voir si il exite une formule U(n) = ...
+Ways to intersect regular convex polygons
+
+- ecrire une fct qui renvoie false si 2 segments ne se croisent pas sinon renvoyer le point d'intersection: done
+=> done
+- faire update fuzzy sur searchArrangments_V1_N2 et verifier que les arrangements sont meilleurs: à finir
 
 N=2 avec rotation et resize: 12
 N=2 sans resize avec rotation: donne 7 arr
@@ -51,18 +53,11 @@ N=2 sans rotation avec resize: donne 4 arr
 N=2 sans rotation et sans resize: donne 1 arr
 
 N=3 donne ... arr (> 4504)
-N=3 sans resize avec rotation:: donne 457 arr
+N=3 sans resize avec rotation:: donne 457 arr (la rotation a une grande influence sur le nombre d'arrangement trouvés)
 N=3 sans rotation avec resize: donne 47 arr
 N=3 sans rotation et sans resize: donne 6 arr
 
 http://www.ams.org/publicoutreach/feature-column/fc-2019-01
 https://www.researchgate.net/publication/321604192_Arrangements_of_Pseudocircles_On_Circularizability
 
-========= RESULT =========
-searchArrangments.mjs:222 step:7
-searchArrangments.mjs:223 angles:0,5,10,20,30,40,50,60,70,80
-searchArrangments.mjs:224 sizes:2,10.1,40.2,60.3,80.4,100.5,150.6
-searchArrangments.mjs:226 313644100 positionsTested
-searchArrangments.mjs:227 830 arrangments found in 581.1396666666667 minutes
-searchArrangments.mjs:230 Download result...
-searchArrangments.mjs:238 arrangments-found-1565662706511.json
+

@@ -82,6 +82,7 @@ var getArrsN3Array = (arrsN3) => {
         return {
             V: elem.V,
             I: elem.I,
+            //fuzzy: elem.fuzzy,
             squares: [
                 {
                     a: elem.squares[0].a,
@@ -119,15 +120,17 @@ var getArrsN3Array = (arrsN3) => {
     return arrsLigth;
 }
 
-// Add the arr arrangement arr to the list arrsN3 if there is no equivalent arrangment already present
+// Add the arr arrangement into the list arrsN3 if there is 
+// no equivalent arrangment already present
 var updateArrsN3 = (arr, arrsN3) => {
     
     if ( arr.valid ){
-       
+
         //For optimisation purpose we store each arrangement in a particular category. 
         //When a new arrangment will be generated we will search his equivalent only inside this category.
         //The category of an arrangment is defined by 2 integers nV and nI calulated as following 
-        //(they will serve as an entry of a 2 dimensional array):
+        //(they will serve as an entry of a 2 dimensional array)
+        // this method will reduce drastically the number of arrangement to compared
 
         let sV = [
             sumOnColumn(arr.V, 0), 
@@ -155,6 +158,11 @@ var updateArrsN3 = (arr, arrsN3) => {
                 for(let i=n-1;i>=0;i--){
                     if ( are_VI_Equivalents(arrsN3[nV][nI][i], arr) ){
                         found = true;
+                        debugger;
+                        // if ( arr.fuzzy < arrsN3[nV][nI][i].fuzzy ){
+                        //     //remplacer arrsN3[nV][nI][i] par arr                        
+                        //     arrsN3[nV][nI][i] = JSON.parse(JSON.stringify(arr));
+                        // }
                         break;
                     }
                 }
@@ -172,17 +180,6 @@ var updateArrsN3 = (arr, arrsN3) => {
             arrsN3[nV][nI].push(arr);
         }
 
-        //for(let i=0;i<n;i++){// comparer le temps execution dans chaque cas 
-        // for(let i=n-1;i>=0;i--){
-        //     if ( are_VI_Equivalents(arrsN3[i], arr) ){
-        //         found = true;
-        //         break;
-        //     }
-        // }
-        // if (!found){
-        //     arrsN3.push(arr);                  
-        //     //console.log(arrsN3.length + ' arrangments found');
-        // }
     }
     //return arrsN3;
 }
@@ -191,7 +188,7 @@ exports.searchArrangments = function (squares, arrangments=[], i0_start=0, i0_en
     //Principle: we place a fixed square in the center of the simulation zone then sweep
     //the the simulation zone with 2 other squares (by varying their size and their angle of rotation)
     
-    //Liste of the N=3 arrangments found
+    //List of the N=3 arrangments found
     let arrsN3 = [];
     for (let i=0;i<arrangments.length;i++){
         arrangments[i].valid = true;
@@ -206,13 +203,18 @@ exports.searchArrangments = function (squares, arrangments=[], i0_start=0, i0_en
         ymin: squares[0].box.ymin - squares[0].a/2,
         ymax: squares[0].box.ymax + squares[0].a/2
     };
+
+    //==> 80 * 2 = 160, 160/5 = 32
     
-    const step = 5;//squares[0].a/20;
+    //const step = 5;//squares[0].a/20;
+
+    const step = 5;
     
     //scan zone
     const nx = parseInt((scanArea.xmax - scanArea.xmin)/step);
     const ny = parseInt((scanArea.ymax - scanArea.ymin)/step);
 
+    //on ne balaye que l'intervalle specifié en x
     let nx0 = i0_end - i0_start;
 
     const nxny = nx0*ny;
@@ -224,8 +226,8 @@ exports.searchArrangments = function (squares, arrangments=[], i0_start=0, i0_en
     const angles = [0, 5, 10, 20, 30, 40, 50, 60, 70, 80];//getAngles(45, 90);
     const sizes = [80.4, 60.3, 40.2, 20.3, 100.5, 10.1, 150.6, 2];
 
-    //const angles = [0, 40, 60];
-    //const sizes = [20, 80];
+    //const angles = [0, 20, 40];
+    //const sizes = [40, 80];
      
     const n_angles = angles.length;
     const n_size = sizes.length;
@@ -273,22 +275,12 @@ exports.searchArrangments = function (squares, arrangments=[], i0_start=0, i0_en
     console.log(nbArrFound + ' arrangments found in '+ delta_t + ' minutes');
 
     //Export result 
-    console.log('Download result...');
+    console.log('Save result...');
     const result = getArrsN3Array(arrsN3);
     var log = (obj) => { console.log(util.inspect(obj, {showHidden: false, depth: null})) };
     //log(result);
     let fileName = "arrangments-found-"+nbArrFound+"-"+i0_start+"-"+i0_end+".json";
     fs.writeFileSync(fileName, JSON.stringify(result));
-    // let dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(getArrsN3Array(arrsN3)));
-    // //let dlAnchorElem = document.getElementById('downloadAnchorElem');
-    // var downloadLink = document.createElement("a");
-    // document.body.appendChild(downloadLink);
-    // document.body.removeChild(downloadLink);
-    // downloadLink.setAttribute("href",dataStr);
-    // //let fileName = "arrangments-found-"+Date.now()+".json";
-    // let fileName = "arrangments-found-"+nbArrFound+"-"+i0_start+"-"+i0_end+".json";
-    // console.log(fileName);
-    // downloadLink.setAttribute("download",fileName);
-    // downloadLink.click();
+  
     console.log('========= END =========');
 }

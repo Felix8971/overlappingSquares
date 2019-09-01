@@ -19,9 +19,10 @@ squares[0].majBox();
 //Les deux autre squares vont bouger    
 squares[1].initRotZero(80, {x:-9999, y:-9999});
 squares[1].majBox();
-squares[2].initRotZero(80, {x:9999,y:9999});
+squares[2].initRotZero(80, {x:9999, y:9999});
 squares[2].majBox();
 
-let data = fs.readFileSync('arrangments-found-2797-1-3.json');
+//let data = fs.readFileSync('./node_version/arrangments-found-0-0-0.json'); //for debug mode
+let data = fs.readFileSync('arrangments-found-4335-13-15.json');
 let arrangments = JSON.parse(data);
-searchArrangments(squares, arrangments, 3, 5);
+searchArrangments(squares, arrangments, 15, 17);

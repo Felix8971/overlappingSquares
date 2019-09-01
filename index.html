@@ -30,12 +30,12 @@
         document.getElementById('run-btn').addEventListener('click', function(event) {
 
             //We load the arrangments already found and we continu the calcul   
-            fetch('http://localhost:8080/arrangments-found.json')
+            fetch('http://localhost:8080/node_version/arrangments-found-0-0-0.json')
             .then(response => response.text())
             .then((data) => {
                 let arrangments = JSON.parse(data);
                 let nbArr = arrangments.length;
-                searchArrangments_V1(squares, arrangments, 0, 10);
+                searchArrangments_V1_N2(squares, arrangments, 0, 32);
                 //searchArrangments_V1(squares, arrangments, 1, 2);
                 //searchArrangments_V1(squares, arrangments, 2, 4);
                 //searchArrangments_V1(squares, arrangments, 4, 7);

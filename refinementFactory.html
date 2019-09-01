@@ -19,7 +19,9 @@
                         <button id="previous-btn"><<</button> 
                         <button id="next-btn">>></button> 
                     </div>
-                   
+                    <div class="nav">
+                        <button id="play-btn">play</button>                  
+                    </div>
                     <button id="update-json">Update json</button>
                     <!-- 
                     <div class='import-export-container'>                     
@@ -169,7 +171,7 @@
         //idee optimisation: pre calculer tous les gabari de carres (avec scales et rotations) puis les translater
         import { createSVGSquare, updateSVGSquare, drawPoint, drawBox, saveSvg, squareStyle, createSvgArr } from './draw.mjs';
         import { MIN, MAX, W, H, NB_SQUARE, NB_VERTEX, COS, SIN } from './constants.mjs';
-        import { arrangement_to_VI } from './calculVI.mjs';
+        import { arrangement_to_VI, nbVertexInside, pointInSquare, intersectionSegments } from './calculVI.mjs';
         import { are_VI_Equivalents } from './compare-arrangements.mjs';
         import { getInitSquares } from './initSquares.mjs';
         // import { searchArrangments_V2 } from  './searchArrangments.mjs';
@@ -200,7 +202,7 @@
         svg.setAttribute('width','500px');
         svg.setAttribute('height','353px');
 
-        var exportIndex = 0; 
+        var exportIndex = 0;
         var selectedSquare = 0;
         var translationStep = 5;
         var rotationStep = 5;
@@ -288,6 +290,7 @@
             let arr = arrangement_to_VI(squares);
             let V = arr.V;
             let I = arr.I;
+            debugger;
             if (arr.valid && are_VI_Equivalents(arrangments[currentArr], arr) ) {
                 updateSVGSquare(sq,selectedSquare);
                 // Mettre a jour arrangments[currentArr]   
@@ -484,19 +487,14 @@
             }         
         };
 
-        //Charge les arrangements contenues dans le fichier json 
-        //et affiche le premier d'entre eux 
-        let t = '1566198641310';
-        document.getElementById('load-arr').addEventListener('click', function(event) {
-            fetch('http://localhost:8080/node_version/arrangments-found-2797-1-3.json')
-            .then(response => response.text())
-            .then((data) => {
-                arrangments = JSON.parse(data);
-                nbArr = arrangments.length;
-                currentArr = 0;
-                loadArr(currentArr);
-            });
-        });
+
+        function match(elem) {
+            return ( ( elem.V[0][1] == 0 && elem.V[1][0] == 0 ) 
+              || ( elem.V[1][2] == 0 && elem.V[2][1] == 0 )
+              || ( elem.V[0][2] == 0 && elem.V[2][0] == 0 ) 
+            )
+        }
+
 
         document.getElementById('next-btn').addEventListener('click', function(event) {
             if (currentArr < nbArr - 1){
@@ -521,6 +519,36 @@
             }
         });
 
+        document.getElementById('play-btn').addEventListener('click', function(event) {
+            setInterval(()=>{
+                if (currentArr < nbArr - 1){
+                    currentArr++;
+                    loadArr(currentArr);
+                    document.getElementById('current-arr').value = parseInt(currentArr);
+                }
+            },200);
+        });
+
+
+          //Charge les arrangements contenues dans le fichier json 
+        //et affiche le premier d'entre eux 
+        document.getElementById('load-arr').addEventListener('click', function(event) {
+            fetch('http://localhost:8080/node_version/arrangments-found-2721-2-3.json')
+            .then(response => response.text())
+            .then((data) => {              
+                arrangments = JSON.parse(data);
+                // arrangments = arrangments.filter((elem)=>
+                // ( ( elem.V[0][1] == 0 && elem.V[1][0] == 0 ) 
+                //     || ( elem.V[1][2] == 0 && elem.V[2][1] == 0 )
+                //     || ( elem.V[0][2] == 0 && elem.V[2][0] == 0 ) 
+                // ));
+                nbArr = arrangments.length;
+                console.log(nbArr);
+                currentArr = 0;
+                loadArr(currentArr);
+            });
+        });
+
         //on place les squares dans la zone
         //squares[0].initRotZero(100, {x:W/2-110, y:H/2-110});
 
@@ -539,6 +567,44 @@
         squares[2].majBox();
         //squares[1].translate({x:W/2, y:H/2})
         createSVGSquare(squares[2],2);
+
+       
+        // let arr = arrangement_to_VI(squares);
+        // console.log(arr);
+
+        // squares[0].changeState({x:250,y:199}, 80, 0);
+        // squares[1].changeState({x:170,y:119}, 60.3, 30);
+        // squares[2].changeState({x:170,y:159}, 20.3, 30);
+
+        // let arr2 = arrangement_to_VI(squares);
+        // console.log(arr2);
+
+        // for(let i=0;i<squares[1].vertex.length;i++){
+        //     drawPoint({
+        //         x: squares[1].vertex[i].x,
+        //         y: squares[1].vertex[i].y,
+        //     });
+        // }
+        // for(let i=0;i<squares[2].vertex.length;i++){
+        //     drawPoint({
+        //         x: squares[2].vertex[i].x,
+        //         y: squares[2].vertex[i].y,
+        //     });
+        // }        
+        
+        // debugger;
+        // // // Calculates the number of vertices of the square 1 in square 2
+        // const n12 = nbVertexInside(squares[1], squares[2]);
+        // // // Calculates the number of vertices of the square 2 in square 1
+        // const n21 = nbVertexInside(squares[2], squares[1]);
+ 
+        // console.log(n12);
+        // console.log(n21);
+
+        // intersectionSegments(squares[1],1,squares[2],0);
+        // V=[[0,0,0],[0,0,1],[0,0,0]]
+        // I=[[0,0,0],[0,0,1],[0,2,0],[0,0,1]]
+       
 
         // document.getElementById('export-arrs-btn').addEventListener('click', (event) => {
         //     let dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(arrangments));
@@ -679,7 +745,7 @@
         display:flex;
         flex-direction: column;
     }
-    #import-selection-btn, #export-selection-btn, #previous-btn, #next-btn{
+    #import-selection-btn, #export-selection-btn, #previous-btn, #next-btn, #play-btn{
         width: 76px;
         height: 30px;
         font-size: 0.8em;

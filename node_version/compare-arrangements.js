@@ -98,7 +98,8 @@ V = [
 //     ];
 // }
 
-//Retourne les 6 formes equivalentes d'une matrice V0
+//Retourne les 6 formes equivalentes d'une matrice V
+//on donne aussi la matrice I (mais une seule forme pour chaque V)
 var getEquivalent_VI_List = function(V, I) {
     //Calcul des matrices V equivalentes à V0
     let a = V[0][1]; let b = V[1][0];
@@ -188,7 +189,8 @@ var getEquivalent_VI_List = function(V, I) {
 //renvoit les 128 formes equivalentes de I (circular permutations + mirror images)
 var getEquivalent_I_List =  function(I) {
     let equivalent_I_List = [];
-    //ecrire une fonction qui permute circulairement une colonne de I d'un cran vers le bas
+    //Fonction qui permute circulairement une colonne de I d'un cran vers le bas
+    //<=> on prend l'element en bas de la colonne et on le met en haut
     let permuteInColumn = function(k) {
         //pivots
         let a0 = I[0][k];
@@ -202,6 +204,7 @@ var getEquivalent_I_List =  function(I) {
         I[3][k] = a2;
     }
 
+    //4 permutations possibles per colum+ mirror images
     for (let i=0;i<4;i++){
         permuteInColumn(0);
         for (let j=0;j<4;j++){
@@ -227,32 +230,12 @@ var getEquivalent_I_List =  function(I) {
     return equivalent_I_List;
 }
 
-//Determine si V1 est dans la liste des matrices equivalentes de V0
-//Si oui on retourne la permutation de la forme equivalent par rapport à V0 
-//sinon on retourne false
-// var are_V_Equivalent = function(V0, V1){
-//     let EquivalentsList = getEquivalent_V(V0);
-//     //console.log("EquivalentsList V1:",EquivalentsList);
-//     for (var elem in EquivalentsList) {
-//         //console.log(EquivalentsList[elem]);
-//         if ( areEqual(V1, EquivalentsList[elem].matrix) ){
-//             return EquivalentsList[elem].permutation;
-//         }
-//     }
-//     return false;
-// }
-
 //Determine si une couple de matrice (V0, I0) est equivalent à un autre couple (V1, I1)
 //c'est à dire correspond à la meme configuration
 exports.are_VI_Equivalents = function(arr0, arr1) {
-    
-    // let V0 = arr0.V;
-    // let V1 = arr1.V;
-    // let I0 = arr0.I;
-    // let I1 = arr1.I;
 
     //Tester l'egalité stricte pour V0 == V1 et I0 == I1
-    //On va le plus souvent comparer des conf sctrictement egales lors du balayage donc
+    //On va souvent comparer des conf sctrictement egales lors du balayage donc
     //autant tester directement l'egalité stricte en premier
     if ( areEqual(arr0.V, arr1.V) && areEqual(arr0.I, arr1.I) ){
         //console.log('Equivalentes !');

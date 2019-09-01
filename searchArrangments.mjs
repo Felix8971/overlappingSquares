@@ -79,6 +79,7 @@ var getArrsN3Array = (arrsN3) => {
         return {
             V: elem.V,
             I: elem.I,
+            fuzzy: elem.fuzzy,
             squares: [
                 {
                     a: elem.squares[0].a,
@@ -152,6 +153,11 @@ var updateArrsN3 = (arr, arrsN3) => {
                 for(let i=n-1;i>=0;i--){
                     if ( are_VI_Equivalents(arrsN3[nV][nI][i], arr) ){
                         found = true;
+                        if ( arr.fuzzy < arrsN3[nV][nI][i].fuzzy ){
+                            //remplacer arrsN3[nV][nI][i] par arr
+                            debugger;
+                            arrsN3[nV][nI][i] = JSON.parse(JSON.stringify(arr));
+                        }
                         break;
                     }
                 }
@@ -313,8 +319,8 @@ export function searchArrangments_V1_N2(squares) {// donne 12 arrangements
         ymax: squares[0].box.ymax + squares[0].a/2
     };
     
-    const step = 5;//squares[0].a/20;
-    //const step = 13;
+    const step = 3;//squares[0].a/20;
+    
 
     //scan zone
     const nx = parseInt((scanArea.xmax - scanArea.xmin)/step);
@@ -328,8 +334,8 @@ export function searchArrangments_V1_N2(squares) {// donne 12 arrangements
     //const angles = getAngles(5, 90);
     //const sizes = getSizes(5, 100);
 
-    const angles = [0, 5, 10, 20, 30, 40, 50, 60, 70, 80];
-    const sizes = [80];
+    const angles = [0, 5, 10, 20, 30, 40, 50, 60, 70, 75, 80];
+    const sizes = [30, 40, 60, 70, 80, 85, 90, 95, 100, 110];
 
     const n_angles = angles.length;
     const n_size = sizes.length;
