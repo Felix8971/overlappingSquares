@@ -3,7 +3,6 @@ const util = require('util');
 const fs = require('fs');
 const _are_VI_Equivalents = require('./compare-arrangements.js');
 const _arrangement_to_VI = require('./calculVI.js');
-
 const { are_VI_Equivalents } = _are_VI_Equivalents;
 const { arrangement_to_VI } = _arrangement_to_VI;
 
@@ -184,10 +183,11 @@ var updateArrsN3 = (arr, arrsN3) => {
     //return arrsN3;
 }
 
-exports.searchArrangments = function (squares, arrangments=[], i0_start=0, i0_end=32) {
+var _searchArrangments = function (squares, params, arrangments=[], i0_start=0 ) {
     //Principle: we place a fixed square in the center of the simulation zone then sweep
     //the the simulation zone with 2 other squares (by varying their size and their angle of rotation)
-    
+    let { step, angles, sizes, scanArea, nx, ny, resultPath } = params;
+
     //List of the N=3 arrangments found
     let arrsN3 = [];
     for (let i=0;i<arrangments.length;i++){
@@ -195,40 +195,19 @@ exports.searchArrangments = function (squares, arrangments=[], i0_start=0, i0_en
         updateArrsN3(arrangments[i], arrsN3);
     }
     
-    const t0 = Date.now(); 
+    const t0 = Date.now();
    
-    let scanArea = {
-        xmin: squares[0].box.xmin - squares[0].a/2,
-        xmax: squares[0].box.xmax + squares[0].a/2,
-        ymin: squares[0].box.ymin - squares[0].a/2,
-        ymax: squares[0].box.ymax + squares[0].a/2
-    };
-
-    //==> 80 * 2 = 160, 160/5 = 32
-    
     //const step = 5;//squares[0].a/20;
-
-    const step = 5;
-    
-    //scan zone
-    const nx = parseInt((scanArea.xmax - scanArea.xmin)/step);
-    const ny = parseInt((scanArea.ymax - scanArea.ymin)/step);
+    //==> 80 * 2 = 160, 160/5 = 32
 
     //on ne balaye que l'intervalle specifié en x
+    let i0_end = i0_start + 1;
     let nx0 = i0_end - i0_start;
 
-    const nxny = nx0*ny;
-    //const nx_half = Math.ceil(nx/2) + step;
-    //const ny_half = Math.ceil(ny/2) + step;
+    const nxny = nx0*ny;//total number of points used to moves squares
 
     let x2, y2, x3, y3;
 
-    const angles = [0, 5, 10, 20, 30, 40, 50, 60, 70, 80];//getAngles(45, 90);
-    const sizes = [80.4, 60.3, 40.2, 20.3, 100.5, 10.1, 150.6, 2];
-
-    //const angles = [0, 20, 40];
-    //const sizes = [40, 80];
-     
     const n_angles = angles.length;
     const n_size = sizes.length;
 
@@ -280,7 +259,20 @@ exports.searchArrangments = function (squares, arrangments=[], i0_start=0, i0_en
     var log = (obj) => { console.log(util.inspect(obj, {showHidden: false, depth: null})) };
     //log(result);
     let fileName = "arrangments-found-"+nbArrFound+"-"+i0_start+"-"+i0_end+".json";
-    fs.writeFileSync(fileName, JSON.stringify(result));
+    
+    fs.writeFile(resultPath+'/'+fileName, JSON.stringify(result), function(err) {
+        if(err) {
+            return console.log(err);
+        }
+        console.log("File saved successfully!");
+        let data = fs.readFileSync(resultPath+'/'+fileName);
+        let _arrangments = JSON.parse(data);
+        if ( i0_end < nx ){
+            _searchArrangments(squares, params, _arrangments, i0_end);
+        }
+    });
   
     console.log('========= END =========');
 }
+
+exports.searchArrangments = _searchArrangments;
