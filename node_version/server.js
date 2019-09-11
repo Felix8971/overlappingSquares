@@ -13,20 +13,21 @@ let squares = getInitSquares();
 //console.log(squares);
 
 
- //Simulation
+//Simulation
 //on place le square 0 au centre, il restera invariant
 squares[0].initRotZero(80, {x:W/2, y:H/2});
 squares[0].majBox();
-//Les deux autre squares vont bouger    
+//Les deux autres squares vont bouger    
 squares[1].initRotZero(80, {x:-9999, y:-9999});
 squares[1].majBox();
 squares[2].initRotZero(80, {x:9999, y:9999});
 squares[2].majBox();
 
 let params = {
-    step: 15,
-    angles: [0, 30, 70, 80],
-    sizes: [60.3, 20.3, 10.1],
+    nbSquare: 3,
+    step: 5,
+    angles: [0, 20, 40, 60, 80],
+    sizes: [60.3, 20.3, 10.1, 5],
     scanArea: {
         xmin: squares[0].box.xmin - squares[0].a/2,
         xmax: squares[0].box.xmax + squares[0].a/2,
@@ -39,28 +40,41 @@ let params = {
 params.nx = parseInt((params.scanArea.xmax - params.scanArea.xmin)/params.step)
 params.ny = parseInt((params.scanArea.ymax - params.scanArea.ymin)/params.step)
 
+//save params
+let paramsFileName = "parameters.json";
+fs.writeFile(params.resultPath+'/'+paramsFileName, JSON.stringify(params), function(err) {
+    if(err) {
+        return console.log(err);
+    }
+    console.log("Parameters Ffle saved successfully!");
+});
+
+//To do the (not efficient) calcul with only 2 squares we just put the square 0 far away
+//so that it will never interact with the other squares
+if ( params.nbSquare == 2 ){
+    squares[0].initRotZero(2, {x:-8999, y: 8999});
+    squares[0].majBox();
+}
+
 //Find the last file calculated and start the calcul from there
 let lastFile = null;
-//passsing directoryPath and callback function
 fs.readdir(params.resultPath, function (err, files) {
     //handling error
     if (err) {
         return console.log('Unable to scan directory: ' + err);
     } 
-    //listing all result files 
-    //and find the last one
+    //Listing all result files and find the last one
     let i0_start = 0;
     files.forEach(function (file) {
-        // Do whatever you want to do with the file
         console.log(file); 
         let i = parseInt(file.split('.')[0].split('-')[3]);
-        if ( i > i0_start ) {
+        if ( i >= i0_start ) {
             i0_start = i;
             lastFile = file;
         }
     });
 
-    console.log('lastFile=',lastFile);
+    console.log('Last File=',lastFile);
     let data = fs.readFileSync(params.resultPath+'/'+lastFile);
     //let data = fs.readFileSync('arrangments-found-4337-29-31.json');
     let arrangments = JSON.parse(data);
