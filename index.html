@@ -1,91 +1,87 @@
 <html>
 
 <head>
-
 </head>
 
 <body>
     <div id="main-container">
         <div id="menu">
-            <button id="run-btn">RUN</button>
-            <a href="configManualBuilderN2.html">Config Manual Builder N=2</a>
+            <!-- <button id="run-btn">RUN</button> -->
             <a href="configManualBuilderN3.html">Config Manual Builder N=3</a>
             <a href="refinementFactory.html">Refinement Factory N=3</a>
             <a href="tryToFindNewArrangments.html">Try to find new arrangments N=3</a> 
         </div>
-        <svg id="zone" height="1" width="1" style="border:3px solid blue"></svg> 
+        <!-- <svg id="zone" height="1" width="1" style="border:3px solid blue"></svg>  -->
     </div>
     <script type="module">
 
-        //idee optimisation: pre calculer tous les gabari de carres (avec scales et rotations) puis les translater
-        import { createSVGSquare, updateSVGSquare, drawPoint, drawBox } from './draw.mjs';
-        import { MIN, MAX, W, H, NB_SQUARE, NB_VERTEX, COS, SIN } from './constants.mjs';
-        //import { arrangement_to_VI } from './calculVI.mjs';
-        import { are_VI_Equivalents, getEquivalent_I_List } from './compare-arrangements.mjs';
-        import { getInitSquares } from './initSquares.mjs';
-        import { searchArrangments_V1, searchArrangments_V1_N2 } from  './searchArrangments.mjs';
+        // import { createSVGSquare, updateSVGSquare, drawPoint, drawBox } from './draw.mjs';
+        // import { MIN, MAX, W, H, NB_SQUARE, NB_VERTEX, COS, SIN } from './constants.js';
+        // //import { arrangement_to_VI } from './calculVI.mjs';
+        // import { are_VI_Equivalents, getEquivalent_I_List } from './compare-arrangements.mjs';
+        // import { getInitSquares } from './initSquares.js';
+        // import { searchArrangments_V1, searchArrangments_V1_N2 } from  './searchArrangments.mjs';
 
+        // let squares = getInitSquares(); 
+        // document.getElementById('run-btn').addEventListener('click', function(event) {
 
-        let squares = getInitSquares(); 
-        document.getElementById('run-btn').addEventListener('click', function(event) {
+        //     //We load the arrangments already found and we continu the calcul   
+        //     fetch('http://localhost:8080/src/arrangments-found-0-0-0.json')
+        //     .then(response => response.text())
+        //     .then((data) => {
+        //         let arrangments = JSON.parse(data);
+        //         let nbArr = arrangments.length;
+        //         searchArrangments_V1_N2(squares, arrangments, 0, 32);
+        //         //searchArrangments_V1(squares, arrangments, 1, 2);
+        //         //searchArrangments_V1(squares, arrangments, 2, 4);
+        //         //searchArrangments_V1(squares, arrangments, 4, 7);
+        //     });
 
-            //We load the arrangments already found and we continu the calcul   
-            fetch('http://localhost:8080/node_version/arrangments-found-0-0-0.json')
-            .then(response => response.text())
-            .then((data) => {
-                let arrangments = JSON.parse(data);
-                let nbArr = arrangments.length;
-                searchArrangments_V1_N2(squares, arrangments, 0, 32);
-                //searchArrangments_V1(squares, arrangments, 1, 2);
-                //searchArrangments_V1(squares, arrangments, 2, 4);
-                //searchArrangments_V1(squares, arrangments, 4, 7);
-            });
+        // });
 
-        });
-
-        //tests
-        let V0 = [
-            [0, 2, 4],
-            [0, 0, 0],
-            [0, 0, 0]
-        ]; // 0, 1, 2
-        let V1 = [
-            [0, 2, 0],
-            [0, 0, 4],
-            [0, 0, 0]
-        ];//  permutation: all possible
-        let I0 = [ 
-            [0, 1, 0],
-            [2, 0, 0],
-            [0, 1, 0],
-            [0, 0, 0],
-        ];
-        let I1 = [ 
-            [0, 1, 0],
-            [2, 0, 0],
-            [0, 1, 0],
-            [0, 0, 0],
-        ];
+        // //tests
+        // let V0 = [
+        //     [0, 2, 4],
+        //     [0, 0, 0],
+        //     [0, 0, 0]
+        // ]; // 0, 1, 2
+        // let V1 = [
+        //     [0, 2, 0],
+        //     [0, 0, 4],
+        //     [0, 0, 0]
+        // ];//  permutation: all possible
+        // let I0 = [ 
+        //     [0, 1, 0],
+        //     [2, 0, 0],
+        //     [0, 1, 0],
+        //     [0, 0, 0],
+        // ];
+        // let I1 = [ 
+        //     [0, 1, 0],
+        //     [2, 0, 0],
+        //     [0, 1, 0],
+        //     [0, 0, 0],
+        // ];
         
-        console.log(are_VI_Equivalents({V:V0, I:I0}, {V:V1, I:I1}));
+        // console.log(are_VI_Equivalents({V:V0, I:I0}, {V:V1, I:I1}));
 
         //console.log(getEquivalent_I_List(I0));
         
         //Simulation
         //on place le square 0 au centre, il restera invariant
-        squares[0].initRotZero(80, {x:W/2, y:H/2});
-        squares[0].majBox();
-        createSVGSquare(squares[0],0);
+        // squares[0].initRotZero(80, {x:W/2, y:H/2});
+        // squares[0].majBox();
+        // createSVGSquare(squares[0],0);
 
-        //Les deux autre squares vont bouger    
-        squares[1].initRotZero(80, {x:-9999, y:-9999});
-        squares[1].majBox();
-        //squares[1].translate({x:W/2, y:H/2})
-        createSVGSquare(squares[1],1);
+        // //Les deux autre squares vont bouger    
+        // squares[1].initRotZero(80, {x:-9999, y:-9999});
+        // squares[1].majBox();
+        // //squares[1].translate({x:W/2, y:H/2})
+        // createSVGSquare(squares[1],1);
 
-        squares[2].initRotZero(80, {x:9999,y:9999});
-        squares[2].majBox();
-        createSVGSquare(squares[2],2);
+        // squares[2].initRotZero(80, {x:9999,y:9999});
+        // squares[2].majBox();
+        // createSVGSquare(squares[2],2);
 
         //scale [0.01, 2]
         //rotation [0, 89]

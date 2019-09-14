@@ -11,7 +11,7 @@ const txtStyle = [
     "stroke:red;",
 ]
 var svg = document.getElementsByTagName('svg')[0]; //Get svg element
-import { W, H } from './constants.mjs';
+//import { W, H } from './constants.js';
   
 svg.setAttribute('width','500px');
 svg.setAttribute('height','398px');

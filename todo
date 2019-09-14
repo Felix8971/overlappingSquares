@@ -52,8 +52,8 @@ N=2 sans resize avec rotation: donne 7 arr
 N=2 sans rotation avec resize: donne 4 arr
 N=2 sans rotation et sans resize: donne 1 arr
 
-N=3 donne ... arr (> 4504)
-N=3 sans resize avec rotation:: donne 457 arr (la rotation a une grande influence sur le nombre d'arrangement trouvés)
+N=3 donne ... arr (>= 4337)
+N=3 sans resize avec rotation:: donne 457 arr (la rotation a un impact fort sur le nombre d'arrangement trouvés)
 N=3 sans rotation avec resize: donne 47 arr
 N=3 sans rotation et sans resize: donne 6 arr
 
@@ -61,3 +61,11 @@ http://www.ams.org/publicoutreach/feature-column/fc-2019-01
 https://www.researchgate.net/publication/321604192_Arrangements_of_Pseudocircles_On_Circularizability
 
 
+Comment detecter un cycle ?
+Idee: calculer le polygon délimitant l'intérieur de la cage et tester si le carré 4 est à l'intérieur. 
+Pour un arrangement donné il faut trouver les cages et le polygon associés à chaque cage.  
+
+
+In relation to the Collatz conjecture Paul Erdos once said "Mathematics is not yet ready for such problems.'' 
+It might be possible that this problem doesn’t have any mathematical solution.
+Is this problem decidable ?

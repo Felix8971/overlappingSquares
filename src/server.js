@@ -5,17 +5,14 @@ const path = require('path');
 const _initSquares = require('./initSquares.js');
 const _searchArrangments = require('./searchArrangments.js');
 const CTE = require('./constants.js');
-const { W, H } = CTE;
 const { searchArrangments } = _searchArrangments;
 const { getInitSquares } =  _initSquares;
 
-let squares = getInitSquares(); 
-//console.log(squares);
-
+let squares = getInitSquares(CTE); 
 
 //Simulation
 //on place le square 0 au centre, il restera invariant
-squares[0].initRotZero(80, {x:W/2, y:H/2});
+squares[0].initRotZero(80, {x: CTE.W/2, y: CTE.H/2});
 squares[0].majBox();
 //Les deux autres squares vont bouger    
 squares[1].initRotZero(80, {x:-9999, y:-9999});
@@ -23,16 +20,19 @@ squares[1].majBox();
 squares[2].initRotZero(80, {x:9999, y:9999});
 squares[2].majBox();
 
+const excursion = 3*squares[0].a/2;
+
 let params = {
     nbSquare: 3,
-    step: 5,
-    angles: [0, 20, 40, 60, 80],
-    sizes: [60.3, 20.3, 10.1, 5],
+    step: 3,
+    angles: [0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 60, 70, 80],
+    sizes: [80.4, 60.3, 40.2, 20.3, 100.5, 10.1, 150.6, 10.1, 2],
+    excursion: squares[0].a/2,
     scanArea: {
-        xmin: squares[0].box.xmin - squares[0].a/2,
-        xmax: squares[0].box.xmax + squares[0].a/2,
-        ymin: squares[0].box.ymin - squares[0].a/2,
-        ymax: squares[0].box.ymax + squares[0].a/2
+        xmin: squares[0].box.xmin - excursion,
+        xmax: squares[0].box.xmax + excursion,
+        ymin: squares[0].box.ymin - excursion,
+        ymax: squares[0].box.ymax + excursion
     },
     resultPath: path.join(__dirname+'/result'),
 };
@@ -46,7 +46,7 @@ fs.writeFile(params.resultPath+'/'+paramsFileName, JSON.stringify(params), funct
     if(err) {
         return console.log(err);
     }
-    console.log("Parameters Ffle saved successfully!");
+    console.log("Parameters file saved successfully!");
 });
 
 //To do the (not efficient) calcul with only 2 squares we just put the square 0 far away
@@ -78,6 +78,7 @@ fs.readdir(params.resultPath, function (err, files) {
     let data = fs.readFileSync(params.resultPath+'/'+lastFile);
     //let data = fs.readFileSync('arrangments-found-4337-29-31.json');
     let arrangments = JSON.parse(data);
+    //i0_start = 51;//!!!!!!!
     searchArrangments(squares, params, arrangments, i0_start+1);
 });
 

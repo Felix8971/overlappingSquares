@@ -2,35 +2,13 @@
 const util = require('util');
 const fs = require('fs');
 const _are_VI_Equivalents = require('./compare-arrangements.js');
+const  NB_VERTEX  = 4;
 const _arrangement_to_VI = require('./calculVI.js');
 const { are_VI_Equivalents } = _are_VI_Equivalents;
 const { arrangement_to_VI } = _arrangement_to_VI;
 
-//Generate a liste of angles
-var getAngles = (step, max) => {
-    let angles = [];
-    let angle = 0;
-    while ( angle < max){
-        angles.push(angle);
-        angle += step;
-    }
-    return angles;
-}
-
-//Generate a list of size in pixel 
-var getSizes = (step, max) => {//sizes[i] can go beyond the max value 
-    let sizes = [];
-    let size = 0;
-    while ( size < max){
-        size += step;
-        sizes.push(size);
-    }
-    return sizes;
-}
-
-
-//Sum of the elements of column j on the matrix M
-var sumOnColumn = function(M, j) {//ok
+// Sum elements of js column in the matrix M
+var sumOnColumn = (M, j) => {
     const nbLine = M.length;
     let sum = 0;
     for (let i=0;i<nbLine;i++){ 
@@ -57,9 +35,8 @@ var getArrsN3Length = (arrsN3) => {
     return sum;
 }
 
-//Extract the arrangments from arrsN3 to return a simplified linear array
+// Extract the arrangments from arrsN3 to return a simplified linear array
 var getArrsN3Array = (arrsN3) => {
-
     let n = arrsN3.length;
     let arrs = [];
     for (let i=0;i<n;i++){
@@ -125,10 +102,10 @@ var updateArrsN3 = (arr, arrsN3) => {
     
     if ( arr.valid ){
 
-        //For optimisation purpose we store each arrangement in a particular category. 
-        //When a new arrangment will be generated we will search his equivalent only inside this category.
-        //The category of an arrangment is defined by 2 integers nV and nI calulated as following 
-        //(they will serve as an entry of a 2 dimensional array)
+        // For optimisation purpose we store each arrangement in a particular category. 
+        // When a new arrangment will be generated we will search his equivalent only inside this category.
+        // The category of an arrangment is defined by 2 integers nV and nI calulated as following 
+        // (they'll serve as an entry of a 2 dimensional array)
         // this method will reduce drastically the number of arrangement to compared
 
         let sV = [
@@ -156,8 +133,7 @@ var updateArrsN3 = (arr, arrsN3) => {
                 let found = false;
                 for(let i=n-1;i>=0;i--){
                     if ( are_VI_Equivalents(arrsN3[nV][nI][i], arr) ){
-                        found = true;
-                        debugger;
+                        found = true;          
                         // if ( arr.fuzzy < arrsN3[nV][nI][i].fuzzy ){
                         //     //remplacer arrsN3[nV][nI][i] par arr                        
                         //     arrsN3[nV][nI][i] = JSON.parse(JSON.stringify(arr));
@@ -187,7 +163,7 @@ var _searchArrangments = function (squares, params, arrangments=[], i0_start=0 )
     //Principle: we place a fixed square in the center of the simulation zone then sweep
     //the the simulation zone with 2 other squares (by varying their size and their angle of rotation)
     let { step, angles, sizes, scanArea, nx, ny, resultPath } = params;
-
+   
     //List of the N=3 arrangments found
     let arrsN3 = [];
     for (let i=0;i<arrangments.length;i++){
@@ -230,10 +206,9 @@ var _searchArrangments = function (squares, params, arrangments=[], i0_start=0 )
                             y3 = scanArea.ymin + j1*step;                      
                             for(let q=0;q<n_size;q++){                                     
                                 for(let m=0;m<n_angles;m++){                                                              
-                                    squares[2].changeState({x:x3,y:y3}, sizes[q], angles[m]);                                                                                                              
-                                    //let arr = arrangement_to_VI(squares);
-                                    //let n3 = getArrsN3Length(arrsN3)                                   
-                                    updateArrsN3(arrangement_to_VI(squares), arrsN3);                                   
+                                    squares[2].changeState({x:x3,y:y3}, sizes[q], angles[m]);                                  
+                                    //let n3 = getArrsN3Length(arrsN3)                                 
+                                    updateArrsN3(arrangement_to_VI(squares, NB_VERTEX), arrsN3);                                   
                                     positionsTested++;                                                                                        
                                 }
                             }
