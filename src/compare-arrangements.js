@@ -18,11 +18,11 @@
     //Calcul determinant d'une matrice 3x3
     var Det33 = function(V){//ok
         return V[0][0] * V[1][1] * V[2][2] 
-            + V[0][1] * V[1][2] * V[2][0]
-            + V[0][2] * V[1][0] * V[2][1] 
-            - V[1][1] * V[2][0] * V[0][2] 
-            - V[0][0] * V[2][1] * V[1][2] 
-            - V[2][2] * V[1][0] * V[0][1];
+             + V[0][1] * V[1][2] * V[2][0]
+             + V[0][2] * V[1][0] * V[2][1] 
+             - V[1][1] * V[2][0] * V[0][2] 
+             - V[0][0] * V[2][1] * V[1][2] 
+             - V[2][2] * V[1][0] * V[0][1];
     }
 
     /*
@@ -125,19 +125,14 @@
     //renvoit les 128 formes equivalentes de I (circular permutations + mirror images)
     var getEquivalent_I_List =  function(I) {
         let equivalent_I_List = [];
-        //Fonction qui permute circulairement une colonne de I d'un cran vers le bas
+        //Fonction qui permute circulairement une colonne k de I d'un cran vers le bas
         //<=> on prend l'element en bas de la colonne et on le met en haut
         let permuteInColumn = function(k) {
-            //pivots
-            let a0 = I[0][k];
-            let a1 = I[1][k];
-            let a2 = I[2][k];
-            let a3 = I[3][k];
-            //permutation circulaire
+            const a3 = I[3][k];//pivot
+            I[3][k] = I[2][k];
+            I[2][k] = I[1][k];
+            I[1][k] = I[0][k];
             I[0][k] = a3;
-            I[1][k] = a0;
-            I[2][k] = a1;
-            I[3][k] = a2;
         }
 
         //4 permutations possibles per colum + mirror images

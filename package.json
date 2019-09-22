@@ -1,0 +1,23 @@
+{
+  "name": "overlappingsquares",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.html",
+  "dependencies": {},
+  "devDependencies": {
+    "jest": "^24.9.0"
+  },
+  "scripts": {
+    "test": "jest"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Felix8971/overlappingSquares.git"
+  },
+  "author": "Felix DEBON",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Felix8971/overlappingSquares/issues"
+  },
+  "homepage": "https://github.com/Felix8971/overlappingSquares#readme"
+}

@@ -20,7 +20,7 @@ var pointInBox = (point, box) => {//test ok
     return true;
 }
 
-const epsilon = 0.001;
+
 // Return true if point is inside the square (the square can be rotated) otherwise return false
 var pointInSquare = (point, square) => {//test ok
     if ( !pointInBox(point, square.box) ){
@@ -31,41 +31,48 @@ var pointInSquare = (point, square) => {//test ok
     let k1 = (point.y - square.vertex[0].y )/aa;
     let alpha = k0*(square.vertex[1].x - square.vertex[0].x) + k1*(square.vertex[1].y - square.vertex[0].y);
 
-    if ( (alpha > -epsilon && alpha < epsilon) || ( alpha > 1-epsilon && alpha < 1+epsilon ) ) {
-        arrangementValid = false;
-        return false;
-    }
-    //console.log('alpha=',alpha);
-    if ( alpha < 0 || alpha >= 1 ){
-        return false;
-    }
+    //Too close to 0 or 1    
+    const epsilon = 0.0001;
+    const tooClose = x => (x > -epsilon && x < epsilon) || ( x > 1-epsilon && x < 1+epsilon );
 
+    //point trop proche des extremités
+    if ( tooClose(alpha) ) {
+        arrangementValid = false;
+    }
+    if ( alpha <= 0 || alpha >= 1 ){
+        return false;
+    }
     let beta = k0*(square.vertex[3].x - square.vertex[0].x) + k1*(square.vertex[3].y - square.vertex[0].y);
+    
     //console.log('beta=',beta);
-    if ( (beta > -epsilon && beta < epsilon) || ( beta > 1-epsilon && beta < 1+epsilon ) ) {
+    if ( tooClose(beta) ) {
         arrangementValid = false;
     }
-
-    if ( beta < 0 || beta >= 1 ){
+    if ( beta <= 0 || beta >= 1 ){
         return false;
     }
     //console.log(alpha, beta);
     return true;
 }
 
+exports.pointInSquare = pointInSquare;
+
 // Return true if the 2 boxes overlapp
-function testBoxesOverlapping(boxA, boxB){//tested
-    return !( boxA.xmin > boxB.xmax 
+function testBoxesOverlapping(boxA, boxB){
+    return !(  boxA.xmin > boxB.xmax 
             || boxB.xmin > boxA.xmax 
             || boxA.ymin > boxB.ymax 
             || boxB.ymin > boxA.ymax );
 }
 
 //Determinant for 2 vectors u and v 
-var Det = (u, v) => {
-  return u.x * v.y - u.y * v.x; 
-}
+// var Det = (u, v) => {
+//   return u.x * v.y - u.y * v.x; 
+// }
 
+
+// intersection segment [A1A2] with [A3A4]
+// notation : Ai = (xi,yi)
 var intersectionSegments = function(x1, x2, x3, x4, y1, y2, y3, y4){
     //produit vectoriel de A1A2 et A3A4
     let det = ((y4 - y3) * (x2 - x1) - (x4 - x3) * (y2 - y1));
@@ -80,12 +87,11 @@ var intersectionSegments = function(x1, x2, x3, x4, y1, y2, y3, y4){
     //Calcul ||A2I||/||A2A3|| length 
     let ub = ((x2 - x1) * (y1 - y3) - (y2 - y1) * (x1 - x3)) / det;
 
-   
-    // is the intersection along the segments
+    // is the intersection not along the segments
     if (ua < 0 || ua > 1 || ub < 0 || ub > 1) {
         return false;
     }
-    //Is the intersection a segment extremity ?
+    //Is the intersection not on a segment extremity ?
     if ( ua == 1 || ua == 0 || ub == 1 || ub == 0) {
         arrangementValid = false;
         return false;
@@ -96,6 +102,8 @@ var intersectionSegments = function(x1, x2, x3, x4, y1, y2, y3, y4){
 
     return {x, y, ua, ub}
 }
+
+exports.intersectionSegments = intersectionSegments;
 
 //fct qui renvoit false si 2 segments (de longueurs non nulles) ne se croisent pas 
 //sinon renvoit le point d'intersection
@@ -125,6 +133,121 @@ var intersectionEdges = (squareA, kA, squareB, kB, NB_VERTEX) => {
     //ua =  ||A1I||/||A1A2|| =  d[squareA.vertex[kA], I] / squareA.a
     //ub =  ||A3I||/||A3A4|| =  d[squareB.vertex[kB], I] / squareB.a
 }
+
+
+
+// Calculates the number of vertices of the square A in square B
+var nbVertexInside = (squareA, squareB, NB_VERTEX) => {
+    let n = 0;
+    for(let i=0;i<NB_VERTEX;i++){
+        if ( pointInSquare(squareA.vertex[i], squareB) ) {
+            n++;
+        }
+    }
+    return n;
+}
+
+exports.nbVertexInside = nbVertexInside;
+
+//Calculates the matrix V and I corresponding to a given arrangements of 3 squares
+exports.arrangement_to_VI = function(squares, NB_VERTEX, NB_SQUARE) {
+    let V = [ 
+        [0, 0, 0],
+        [0, 0, 0],
+        [0, 0, 0]
+    ];
+    let I = [
+        [0, 0, 0],
+        [0, 0, 0],
+        [0, 0, 0],
+        [0, 0, 0]
+    ];
+    // let U = [
+    //     [[], [], []],
+    //     [[], [], []],
+    //     [[], [], []],
+    //     [[], [], []],
+    // ];
+
+    arrangementValid = true;
+    
+    //Calculates nbVertexInside(i, j) for each permutation of 2 squares (i, j) 
+    for (let i=0;i<NB_SQUARE;i++){
+        for (let j=i+1;j<NB_SQUARE;j++){ 
+            if ( testBoxesOverlapping(squares[i].box, squares[j].box) ) {             
+                //calculates i vertices inside j 
+                V[i][j] = nbVertexInside(squares[j], squares[i], NB_VERTEX);
+                if ( !arrangementValid ) {
+                    return { valid: false }
+                }
+                //calculates j vertices inside i     
+                //optimisation: to be calculated only if V[i][j] <= 2  !
+                V[j][i] = V[i][j] <= 2 ? nbVertexInside(squares[i], squares[j], NB_VERTEX) : 0;//à tester !             
+                if ( !arrangementValid ) {
+                    return { valid: false }
+                }
+
+                let flag = false;
+
+                //Count intersections of the 2 squares edges 
+                for (let k=0;k<NB_VERTEX;k++){ //pour chaque segment k de square i
+                    //si la box du segment k de i intercepte la box de square j
+                    if ( testBoxesOverlapping(squares[i].boxEdge[k], squares[j].box) ){
+                        //Test intersection du segment k avec les segments de j
+                        for (let p=0;p<NB_VERTEX;p++){//pour chaque segment p de square j
+                            if ( testBoxesOverlapping(squares[i].boxEdge[k], squares[j].boxEdge[p]) ){
+                                let res = intersectionEdges(squares[i],k,squares[j],p, NB_VERTEX);
+                                if ( res ){
+                                    //console.log('k:'+k+ ' p:' + p);
+                                    I[k][i] += 1;
+                                    I[p][j] += 1;
+                                    flag = true;
+                                    // U[k][i].push(res.ua);
+                                    // U[p][j].push(res.ub);
+                                } 
+                            }
+                        }
+                    }
+                }
+               
+                if ( flag ){
+                    // if ( V[i][j] === 0 && V[j][i] === 0  ){                  
+                    //     console.log("0 ##################");
+                    // }
+                    if ( (V[i][j] === 4 || V[j][i] === 4)  ){
+                        console.log("4 ####### ERROR ########");                    
+                    }
+                }
+
+            }
+        }
+    }
+
+    //calcul fuzzy factor
+    //the smaller fuzzy factor is the better is the arrangment
+    //we will select the arrangment with the smallest fuzzy factor
+    // let fuzzy = 0;
+    // for (let i=0;i<N;i++){
+    //     for (let p=0;p<NB_VERTEX-1;p++){
+    //         if ( U[i][p].length > 0){
+    //             for (let j=0;j<U[i][p].length;j++){
+    //                 fuzzy += 1/U[i][p][j];
+    //             }
+    //         }
+    //     }
+    // }
+    return {
+        V,
+        I,
+        //fuzzy,
+        squares: JSON.parse(JSON.stringify(squares)),//we want to remove the methods from the object squares
+        valid: arrangementValid,
+    };
+}
+
+}(typeof exports === 'undefined' ? this.calculVI = {} : exports));
+
+
 
 
 //Test intersection egde kA of quareA and edge kB of squareB
@@ -185,101 +308,6 @@ var intersectionEdges = (squareA, kA, squareB, kB, NB_VERTEX) => {
 //     return true;
 // }
 
-// Calculates the number of vertices of the square A in square B
-var nbVertexInside = (squareA, squareB, NB_VERTEX) => {
-    let n = 0;
-    for(let i=0;i<NB_VERTEX;i++){
-        if ( pointInSquare(squareA.vertex[i], squareB, 0) ) {
-            n++;
-        }
-    }
-    return n;
-}
-
-exports.nbVertexInside = nbVertexInside;
-
-//Calculates the matrix V and I corresponding to a given arrangements of 3 squares
-exports.arrangement_to_VI = function(squares, NB_VERTEX) {
-    let V = [ 
-        [0, 0, 0],
-        [0, 0, 0],
-        [0, 0, 0]
-    ];
-    let I = [
-        [0, 0, 0],
-        [0, 0, 0],
-        [0, 0, 0],
-        [0, 0, 0]
-    ];
-    // let U = [
-    //     [[], [], []],
-    //     [[], [], []],
-    //     [[], [], []],
-    //     [[], [], []],
-    // ];
-    arrangementValid = true;
-
-    const N = 3;//squares.length;
-
-    //Calculates nbVertexInside(i, j) for each permutation of 2 squares (i, j) 
-    for (let i=0;i<N;i++){
-        for (let j=i+1;j<N;j++){ 
-            if ( testBoxesOverlapping(squares[i].box, squares[j].box) ) {             
-                //calculates i vertices inside j 
-                V[i][j] = nbVertexInside(squares[j], squares[i], NB_VERTEX);
-                if ( !arrangementValid ) {
-                    return { valid: false }
-                }
-                //calculates j vertices inside i     
-                //optimisation: to be calculated only if V[i][j] <= 2  !
-                V[j][i] = V[i][j] <= 2 ? nbVertexInside(squares[i], squares[j], NB_VERTEX) : 0;//à tester !             
-                if ( !arrangementValid ) {
-                    return { valid: false }
-                }
-                //Count intersections of the 2 squares edges 
-                for (let k=0;k<NB_VERTEX;k++){ //pour chaque segment k de square i
-                    //si la box du segment k de i intercepte la box de square j
-                    if ( testBoxesOverlapping(squares[i].boxEdge[k], squares[j].box) ){
-                        //Test intersection du segment k avec les segments de j
-                        for (let p=0;p<NB_VERTEX;p++){//pour chaque segment p de square j
-                            if ( testBoxesOverlapping(squares[i].boxEdge[k], squares[j].boxEdge[p]) ){
-                                let res = intersectionEdges(squares[i],k,squares[j],p, NB_VERTEX);
-                                if ( res ){
-                                    //console.log('k:'+k+ ' p:' + p);
-                                    I[k][i] += 1;
-                                    I[p][j] += 1;
-                                    // U[k][i].push(res.ua);
-                                    // U[p][j].push(res.ub);
-                                } 
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    //calcul fuzzy factor
-    //the smaller fuzzy factor is the better is the arrangment
-    //we will select the arrangment with the smallest fuzzy factor
-    // let fuzzy = 0;
-    // for (let i=0;i<N;i++){
-    //     for (let p=0;p<NB_VERTEX-1;p++){
-    //         if ( U[i][p].length > 0){
-    //             for (let j=0;j<U[i][p].length;j++){
-    //                 fuzzy += 1/U[i][p][j];
-    //             }
-    //         }
-    //     }
-    // }
-    return {
-        V,
-        I,
-        //fuzzy,
-        squares: JSON.parse(JSON.stringify(squares)),//we want to remove the methods from the object squares
-        valid: arrangementValid,
-    };
-}
 
 
 
@@ -319,10 +347,9 @@ exports.arrangement_to_VI = function(squares, NB_VERTEX) {
 // for (let i=0;i<W;i++){ 
 //     for (let j=0;j<H;j++){ 
 //         let box = {xmin:i, xmax: i+1, ymin:j, ymax:j+1};
-//         //if ( isPointInSquare({x:i, y:j}, square0, 0) ){
+//         //if ( isPointInSquare({x:i, y:j}, square0) ){
 //         if ( testBoxesOverlapping(box, square0.box) )  {
 //             drawPoint({x:i,y:j});
 //         }
 //     }
 // }
-}(typeof exports === 'undefined' ? this.calculVI = {} : exports));

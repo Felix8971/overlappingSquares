@@ -1,15 +1,12 @@
 
-// const CTE = require('./constants.js');
-// const  { MIN, MAX, NB_SQUARE, NB_VERTEX, COS, SIN } = CTE;
 //init simulation's squares
-
 
 (function(exports){
 
     //If we run this code in node window will be undefined
     //then we load NB_VERTEX via constants.js
-    //otherwise if we run in the browser we will load constants.js
-    //via <script type="text/javascript" src="./src/constants.js"></script>
+    //otherwise if we run in the browser we will load constants.js via
+    //<script type="text/javascript" src="./src/constants.js"></script>
     // if ( typeof window === 'undefined' ){
     //     //const CTE = require('./constants.js');
     //     var { MIN, MAX, NB_SQUARE, NB_VERTEX, COS, SIN } = require('./constants.js');
@@ -107,7 +104,7 @@
                 //calculates vertices fct of a and "center" for rotation = 0
                 initRotZero: function (a, center) {
                     this.a = a;
-                    this.moveTo(center, false);
+                    this.moveTo(center, true);
                 },
                 //move the square and rotate it to the initial position (this.angle = 0)
                 moveTo: function (M, majBox) {

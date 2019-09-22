@@ -2,32 +2,28 @@
 
 const fs = require('fs');
 const path = require('path');
-const _initSquares = require('./initSquares.js');
-const _searchArrangments = require('./searchArrangments.js');
+const { getInitSquares } = require('./initSquares.js');
 const CTE = require('./constants.js');
-const { searchArrangments } = _searchArrangments;
-const { getInitSquares } =  _initSquares;
+const { searchArrangments } = require('./searchArrangments.js');
 
-let squares = getInitSquares(CTE); 
+let squares = getInitSquares(CTE);
 
 //Simulation
-//on place le square 0 au centre, il restera invariant
+//We place the first square on the center, it will not change.
 squares[0].initRotZero(80, {x: CTE.W/2, y: CTE.H/2});
-squares[0].majBox();
-//Les deux autres squares vont bouger    
+//The 2 other square will change (position, size, angle)   
 squares[1].initRotZero(80, {x:-9999, y:-9999});
-squares[1].majBox();
 squares[2].initRotZero(80, {x:9999, y:9999});
-squares[2].majBox();
 
-const excursion = 3*squares[0].a/2;
+//Define how far the center of the moving squares can go from the first square
+const excursion = (3/4)*squares[0].a;
 
 let params = {
-    nbSquare: 3,
-    step: 3,
-    angles: [0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 60, 70, 80],
-    sizes: [80.4, 60.3, 40.2, 20.3, 100.5, 10.1, 150.6, 10.1, 2],
-    excursion: squares[0].a/2,
+    nbSquare: 2,
+    step: 5,
+    angles: [0, 20, 30, 40, 50, 60, 70, 80],
+    sizes: [80.1, 20.2, 60, 70.3, 100.4],
+    excursion,
     scanArea: {
         xmin: squares[0].box.xmin - excursion,
         xmax: squares[0].box.xmax + excursion,
@@ -36,7 +32,8 @@ let params = {
     },
     resultPath: path.join(__dirname+'/result'),
 };
-//scan zone
+
+//number od step on the scan zone
 params.nx = parseInt((params.scanArea.xmax - params.scanArea.xmin)/params.step)
 params.ny = parseInt((params.scanArea.ymax - params.scanArea.ymin)/params.step)
 
@@ -53,10 +50,9 @@ fs.writeFile(params.resultPath+'/'+paramsFileName, JSON.stringify(params), funct
 //so that it will never interact with the other squares
 if ( params.nbSquare == 2 ){
     squares[0].initRotZero(2, {x:-8999, y: 8999});
-    squares[0].majBox();
 }
 
-//Find the last file calculated and start the calcul from there
+//Find the last result file calculated and start the calcul from there
 let lastFile = null;
 fs.readdir(params.resultPath, function (err, files) {
     //handling error
@@ -66,11 +62,13 @@ fs.readdir(params.resultPath, function (err, files) {
     //Listing all result files and find the last one
     let i0_start = 0;
     files.forEach(function (file) {
-        console.log(file); 
-        let i = parseInt(file.split('.')[0].split('-')[3]);
-        if ( i >= i0_start ) {
-            i0_start = i;
-            lastFile = file;
+        if ( file.indexOf("arrangments-found") === 0 ){
+            console.log(file);
+            let i = parseInt(file.split('.')[0].split('-')[3]);
+            if ( i >= i0_start ) {
+                i0_start = i;
+                lastFile = file;
+            }
         }
     });
 
@@ -78,7 +76,6 @@ fs.readdir(params.resultPath, function (err, files) {
     let data = fs.readFileSync(params.resultPath+'/'+lastFile);
     //let data = fs.readFileSync('arrangments-found-4337-29-31.json');
     let arrangments = JSON.parse(data);
-    //i0_start = 51;//!!!!!!!
     searchArrangments(squares, params, arrangments, i0_start+1);
 });
 

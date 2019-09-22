@@ -1,11 +1,9 @@
       
 const util = require('util');
 const fs = require('fs');
-const _are_VI_Equivalents = require('./compare-arrangements.js');
-const  NB_VERTEX  = 4;
-const _arrangement_to_VI = require('./calculVI.js');
-const { are_VI_Equivalents } = _are_VI_Equivalents;
-const { arrangement_to_VI } = _arrangement_to_VI;
+const { NB_VERTEX, NB_SQUARE } = require('./constants.js');
+const { are_VI_Equivalents } = require('./compare-arrangements.js');
+const { arrangement_to_VI } = require('./calculVI.js');
 
 // Sum elements of js column in the matrix M
 var sumOnColumn = (M, j) => {
@@ -16,6 +14,7 @@ var sumOnColumn = (M, j) => {
     }
     return sum;
 }
+exports.sumOnColumn = sumOnColumn;
 
 // Sum sizes of all the arrsN3[nV][nI] defined
 // to get the total number of arrangement found
@@ -34,6 +33,7 @@ var getArrsN3Length = (arrsN3) => {
     } 
     return sum;
 }
+exports.getArrsN3Length = getArrsN3Length;
 
 // Extract the arrangments from arrsN3 to return a simplified linear array
 var getArrsN3Array = (arrsN3) => {
@@ -96,6 +96,8 @@ var getArrsN3Array = (arrsN3) => {
     return arrsLigth;
 }
 
+exports.getArrsN3Array = getArrsN3Array;
+
 // Add the arr arrangement into the list arrsN3 if there is 
 // no equivalent arrangment already present
 var updateArrsN3 = (arr, arrsN3) => {
@@ -121,6 +123,23 @@ var updateArrsN3 = (arr, arrsN3) => {
             sumOnColumn(arr.I, 2)
         ];
         sI.sort((a, b) => a - b);//ascending sort
+
+        // the sort is important if we want to save the equivalents arr in
+        // the same place in arrsN3
+        // sV et sI sont invariants au sein d'un groupe d'arrangements equivalents
+
+        //idée: faire le produit des elements non nulls de chaque colonne de V => 
+        /*
+         let pV = [
+           (arr.V[0][1] == 0 ? 1 : arr.V[0][1])*(arr.V[0][2] == 0 ? 1 : arr.V[0][2]),
+           (arr.V[1][0] == 0 ? 1 : arr.V[1][0])*(arr.V[0][2] == 0 ? 1 : arr.V[0][2]),
+           (arr.V[2][0] == 0 ? 1 : arr.V[2][0])*(arr.V[2][1] == 0 ? 1 : arr.V[2][1]),
+        ];
+        pV.sort((a, b) => a - b);//ascending sort
+
+        //puis ajouter pV comme une dimension supplementaire à arrsN3
+
+        */
 
         //convertion to a decimal number 
         let nV = sV[0]*100 + sV[1]*10 + sV[2];
@@ -156,7 +175,6 @@ var updateArrsN3 = (arr, arrsN3) => {
         }
 
     }
-    //return arrsN3;
 }
 
 var _searchArrangments = function (squares, params, arrangments=[], i0_start=0 ) {
@@ -208,7 +226,7 @@ var _searchArrangments = function (squares, params, arrangments=[], i0_start=0 )
                                 for(let m=0;m<n_angles;m++){                                                              
                                     squares[2].changeState({x:x3,y:y3}, sizes[q], angles[m]);                                  
                                     //let n3 = getArrsN3Length(arrsN3)                                 
-                                    updateArrsN3(arrangement_to_VI(squares, NB_VERTEX), arrsN3);                                   
+                                    updateArrsN3(arrangement_to_VI(squares,NB_VERTEX,NB_SQUARE), arrsN3);                                   
                                     positionsTested++;                                                                                        
                                 }
                             }
@@ -243,7 +261,7 @@ var _searchArrangments = function (squares, params, arrangments=[], i0_start=0 )
         let data = fs.readFileSync(resultPath+'/'+fileName);
         let _arrangments = JSON.parse(data);
         if ( i0_end < nx ){
-            _searchArrangments(squares, params, _arrangments, i0_end);
+          _searchArrangments(squares, params, _arrangments, i0_end);
         }
     });
   

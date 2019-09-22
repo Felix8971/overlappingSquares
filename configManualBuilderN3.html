@@ -185,7 +185,8 @@
 
         //Update the displayed matrice according to the value of the squares object
         var updateMatrices = function(){
-            let arr = arrangement_to_VI(squares, NB_VERTEX);
+            let arr = arrangement_to_VI(squares, NB_VERTEX, NB_SQUARE);
+            console.log(JSON.stringify(squares));
             let V = arr.V;
             let I = arr.I;
             if (arr.valid) {
@@ -396,18 +397,15 @@
         //squares[0].initRotZero(100, {x:W/2-110, y:H/2-110});
 
         squares[0].initRotZero(100, {x:W/2 - 130, y:H/2 - 110 + 30});
-        squares[0].majBox();
         createSVGSquare(squares[0],0);
         document.getElementById('square0').style.strokeWidth = 2;
 
         //Les deux autres squares vont bouger
         squares[1].initRotZero(80, {x:W/2, y:H/2 + 30});
-        squares[1].majBox();
         //squares[1].translate({x:W/2, y:H/2})
         createSVGSquare(squares[1],1);
 
         squares[2].initRotZero(60, {x:W/2 + 130, y:H/2 - 110 + 30});
-        squares[2].majBox();
         //squares[1].translate({x:W/2, y:H/2})
         createSVGSquare(squares[2],2);
 
