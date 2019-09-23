@@ -1,7 +1,7 @@
 # overlapping squares project 
 
 ### Pre-requirements
-- node & npm & Google Chrome
+- node & npm
 
 ### To get started
 

@@ -19,41 +19,54 @@ exports.sumOnColumn = sumOnColumn;
 // Sum sizes of all the arrsN3[nV][nI] defined
 // to get the total number of arrangement found
 var getArrsN3Length = (arrsN3) => {
-    let n = arrsN3.length;
+    //let n = arrsN3.length;
+    //let sum = 0;
+    // for (let i=0;i<n;i++){
+    //     if (arrsN3[i]) {
+    //         let p = arrsN3[i].length;
+    //         for (let j=0;j<p;j++){
+    //             if (arrsN3[i][j]) {
+    //                 sum += arrsN3[i][j].length;
+    //             }
+    //         }
+    //     }
+    // } 
+    // return sum;
+
     let sum = 0;
-    for (let i=0;i<n;i++){
-        if (arrsN3[i]) {
-            let p = arrsN3[i].length;
-            for (let j=0;j<p;j++){
-                if (arrsN3[i][j]) {
-                    sum += arrsN3[i][j].length;
-                }
-            }
-        }
-    } 
+    for ( let key in arrsN3 ){
+        sum += arrsN3[key].length;
+    }
     return sum;
 }
 exports.getArrsN3Length = getArrsN3Length;
 
 // Extract the arrangments from arrsN3 to return a simplified linear array
 var getArrsN3Array = (arrsN3) => {
-    let n = arrsN3.length;
+    //let n = arrsN3.length;
     let arrs = [];
-    for (let i=0;i<n;i++){
-        if (arrsN3[i]) {
-            let p = arrsN3[i].length;
-            for (let j=0;j<p;j++){
-                if (arrsN3[i][j]) {  
-                    let k = arrsN3[i][j].length;   
-                    for (let m=0;m<k;m++){
-                        arrs.push(arrsN3[i][j][m]); 
-                    }              
-                }
-            }
-        }
-    } 
+    // for (let i=0;i<n;i++){
+    //     if (arrsN3[i]) {
+    //         let p = arrsN3[i].length;
+    //         for (let j=0;j<p;j++){
+    //             if (arrsN3[i][j]) {  
+    //                 let k = arrsN3[i][j].length;   
+    //                 for (let m=0;m<k;m++){
+    //                     arrs.push(arrsN3[i][j][m]); 
+    //                 }              
+    //             }
+    //         }
+    //     }
+    // } 
 
-    // We only keep the informations useful to draw the arrangement in svg
+    for ( let key in arrsN3 ){
+        let n = arrsN3[key].length;
+        for (let i=0;i<n;i++){
+            arrs.push(arrsN3[key][i]);
+        }
+    }
+    
+    // We only keep the informations usefull to draw the arrangement in svg
     let arrsLigth = arrs.map((elem)=>{
         return {
             V: elem.V,
@@ -83,10 +96,10 @@ var getArrsN3Array = (arrsN3) => {
     });
     
     // We remove unnecessary decimals, 4 digits after the decimal point should be ok
-    n = arrsLigth.length;
+    const n = arrsLigth.length;
     for (let i=0;i<n;i++){
-        for (let j=0;j<3;j++){
-            for (let k=0;k<4;k++){
+        for (let j=0;j<NB_SQUARE;j++){
+            for (let k=0;k<NB_VERTEX;k++){
                 arrsLigth[i].squares[j].vertex[k].x = parseFloat(arrsLigth[i].squares[j].vertex[k].x.toFixed(4));
                 arrsLigth[i].squares[j].vertex[k].y = parseFloat(arrsLigth[i].squares[j].vertex[k].y.toFixed(4));
             }
@@ -144,47 +157,66 @@ var updateArrsN3 = (arr, arrsN3) => {
         //convertion to a decimal number 
         let nV = sV[0]*100 + sV[1]*10 + sV[2];
         let nI = sI[0]*100 + sI[1]*10 + sI[2];
-
-        if ( arrsN3[nV] ){
-            if ( arrsN3[nV][nI] ){//the category exist so we search an equivalent of arr inside
-                let n = arrsN3[nV][nI].length;
-                
-                let found = false;
-                for(let i=n-1;i>=0;i--){
-                    if ( are_VI_Equivalents(arrsN3[nV][nI][i], arr) ){
-                        found = true;          
-                        // if ( arr.fuzzy < arrsN3[nV][nI][i].fuzzy ){
-                        //     //remplacer arrsN3[nV][nI][i] par arr                        
-                        //     arrsN3[nV][nI][i] = JSON.parse(JSON.stringify(arr));
-                        // }
-                        break;
-                    }
+        let index = nV+"_"+nI;
+        if ( arrsN3[index] ){//the category exist so we search an equivalent of arr inside
+            let n = arrsN3[index].length;              
+            let found = false;
+            for(let i=n-1;i>=0;i--){
+                if ( are_VI_Equivalents(arrsN3[index][i], arr) ){
+                    found = true;                                            
+                    break;
                 }
-                if (!found){
-                    arrsN3[nV][nI].push(arr); 
-                    //console.log(arrsN3.length + ' arrangments found');
-                }
-            } else {//we create a new arrangment category
-                arrsN3[nV][nI] = [];
-                arrsN3[nV][nI].push(arr);      
+            }
+            if (!found){
+                arrsN3[index].push(arr); 
+                //console.log(arrsN3.length + ' arrangments found');
             }
         } else {//we create a new arrangment category
-            arrsN3[nV] = [];
-            arrsN3[nV][nI] = [];
-            arrsN3[nV][nI].push(arr);
+            arrsN3[index] = [];
+            arrsN3[index].push(arr);
         }
+        //idea improvment: do arrsN3 = {}; arrsN3["nV_nI"] = []; 
+        //(cleaner, simpler & will use less memory than the array method)
+
+        // if ( arrsN3[nV] ){
+        //     if ( arrsN3[nV][nI] ){//the category exist so we search an equivalent of arr inside
+        //         let n = arrsN3[nV][nI].length;
+                
+        //         let found = false;
+        //         for(let i=n-1;i>=0;i--){
+        //             if ( are_VI_Equivalents(arrsN3[nV][nI][i], arr) ){
+        //                 found = true;                                            
+        //                 break;
+        //             }
+        //         }
+        //         if (!found){
+        //             arrsN3[nV][nI].push(arr); 
+        //             //console.log(arrsN3.length + ' arrangments found');
+        //         }
+        //     } else {//we create a new arrangment category
+        //         arrsN3[nV][nI] = [];
+        //         arrsN3[nV][nI].push(arr);      
+        //     }
+        // } else {//we create a new arrangment category
+        //     arrsN3[nV] = [];
+        //     arrsN3[nV][nI] = [];
+        //     arrsN3[nV][nI].push(arr);
+        // }
 
     }
 }
+exports.updateArrsN3 = updateArrsN3;
+
 
 var _searchArrangments = function (squares, params, arrangments=[], i0_start=0 ) {
-    //Principle: we place a fixed square in the center of the simulation zone then sweep
-    //the the simulation zone with 2 other squares (by varying their size and their angle of rotation)
+    //Principle: we place a fixed square in the center of the simulation zone then we scan
+    //the simulation zone with 2 other squares (by varying their size and their angle of rotation)
     let { step, angles, sizes, scanArea, nx, ny, resultPath } = params;
    
     //List of the N=3 arrangments found
     let arrsN3 = [];
-    for (let i=0;i<arrangments.length;i++){
+    const n = arrangments.length;
+    for (let i=0;i<n;i++){
         arrangments[i].valid = true;
         updateArrsN3(arrangments[i], arrsN3);
     }
@@ -248,8 +280,9 @@ var _searchArrangments = function (squares, params, arrangments=[], i0_start=0 )
 
     //Export result 
     console.log('Save result...');
+    debugger;
     const result = getArrsN3Array(arrsN3);
-    var log = (obj) => { console.log(util.inspect(obj, {showHidden: false, depth: null})) };
+    //var log = (obj) => { console.log(util.inspect(obj, {showHidden: false, depth: null})) };
     //log(result);
     let fileName = "arrangments-found-"+nbArrFound+"-"+i0_start+"-"+i0_end+".json";
     

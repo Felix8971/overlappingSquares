@@ -204,7 +204,6 @@
                     }
                     this.majBox();               
                 }
-
             });
         }
         return _squares;

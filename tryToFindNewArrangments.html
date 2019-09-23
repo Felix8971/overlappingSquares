@@ -350,7 +350,7 @@
             let sq = squares[selectedSquare];
             let a = sq.a + parseInt(resizeStep);
             sq.changeSize(a, true);
-            updateSVGSquare(sq,selectedSquare);
+            updateSVGSquare(sq, selectedSquare);
             updateMatrices();
         });
         document.getElementById('resize-moins').addEventListener('click', function(event) {

@@ -5,9 +5,14 @@ const path = require('path');
 const { getInitSquares } = require('./initSquares.js');
 const CTE = require('./constants.js');
 const { searchArrangments } = require('./searchArrangments.js');
-
+const { tests } =  require('./test.js');
 let squares = getInitSquares(CTE);
 
+
+let nbError = tests();
+if ( nbError > 0 ){
+    return;
+}
 //Simulation
 //We place the first square on the center, it will not change.
 squares[0].initRotZero(80, {x: CTE.W/2, y: CTE.H/2});
@@ -19,10 +24,10 @@ squares[2].initRotZero(80, {x:9999, y:9999});
 const excursion = (3/4)*squares[0].a;
 
 let params = {
-    nbSquare: 2,
+    nbSquare: 3,
     step: 5,
-    angles: [0, 20, 30, 40, 50, 60, 70, 80],
-    sizes: [80.1, 20.2, 60, 70.3, 100.4],
+    angles: [0, 10, 20, 30, 40, 50, 60, 70, 80],
+    sizes: [2, 5, 10, 20, 30, 40, 50, 60, 70, 80, 160],
     excursion,
     scanArea: {
         xmin: squares[0].box.xmin - excursion,
@@ -76,6 +81,7 @@ fs.readdir(params.resultPath, function (err, files) {
     let data = fs.readFileSync(params.resultPath+'/'+lastFile);
     //let data = fs.readFileSync('arrangments-found-4337-29-31.json');
     let arrangments = JSON.parse(data);
+    debugger;
     searchArrangments(squares, params, arrangments, i0_start+1);
 });
 
