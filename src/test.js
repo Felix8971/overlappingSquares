@@ -6,6 +6,7 @@ const { getInitSquares } = require('./initSquares.js');
 const CTE = require('./constants.js');
 const { sumOnColumn, getArrsN3Length, getArrsN3Array, updateArrsN3 } = require('./searchArrangments.js');
 const { arrangement_to_VI, pointInSquare, nbVertexInside, intersectionSegments } = require('./calculVI.js');
+const { areEqual, det33, getEquivalent_VI_List, getEquivalent_I_List, are_VI_Equivalents } = require('./compare-arrangements.js');
 
 var tests = function(){ 
     let nbError = 0;
@@ -270,7 +271,35 @@ var tests = function(){
     }
     console.log("test: nbError found =",nbError);
     
+
+
+    let V0 = [ [0, 2, 4], [2, 0, 1], [5, 3, 0]]; 
+    let V1 = [ [0, 2, 4], [2, 0, 1], [5, 3, 0]];
+    let I0 = [ [0, 1, 0], [2, 0, 0], [0, 1, 0], [0, 0, 0]];
+    let I1 = [ [1, 1, 0], [2, 0, 0], [0, 1, 0], [0, 0, 0]];
+
+    if ( !areEqual(V0, V1)  ){
+        console.log("ERROR 34");
+        nbError++;
+    }
+    if ( areEqual(I0, I1)  ){
+        console.log("ERROR 35");
+        nbError++;
+    }
+
+    if ( det33([[0, 2, -1], [-3, 0, 6], [2, 0, 0]]) != 24 ){
+        console.log("ERROR 36");
+        nbError++;
+    }
+    if ( det33([ [0, 1, 2], [3, 0, 4], [5, 6, 0]]) != 56 ){
+        console.log("ERROR 37");
+        nbError++;
+    }
+
+    console.log(nbError > 0 ? "Tests failed !" : "All tests passed" )
     return nbError
 }
+
+tests();
 
 exports.tests = tests;

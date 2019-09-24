@@ -8,7 +8,6 @@ const { searchArrangments } = require('./searchArrangments.js');
 const { tests } =  require('./test.js');
 let squares = getInitSquares(CTE);
 
-
 let nbError = tests();
 if ( nbError > 0 ){
     return;
@@ -16,7 +15,7 @@ if ( nbError > 0 ){
 //Simulation
 //We place the first square on the center, it will not change.
 squares[0].initRotZero(80, {x: CTE.W/2, y: CTE.H/2});
-//The 2 other square will change (position, size, angle)   
+//The 2 other squares will change (position, size, angle)   
 squares[1].initRotZero(80, {x:-9999, y:-9999});
 squares[2].initRotZero(80, {x:9999, y:9999});
 
@@ -27,7 +26,7 @@ let params = {
     nbSquare: 3,
     step: 5,
     angles: [0, 10, 20, 30, 40, 50, 60, 70, 80],
-    sizes: [2, 5, 10, 20, 30, 40, 50, 60, 70, 80, 160],
+    sizes: [10, 20, 30, 40, 50, 60, 80, 90, 100, 110, 120, 130, 150, 2],
     excursion,
     scanArea: {
         xmin: squares[0].box.xmin - excursion,
@@ -57,6 +56,7 @@ if ( params.nbSquare == 2 ){
     squares[0].initRotZero(2, {x:-8999, y: 8999});
 }
 
+const t0 = Date.now();
 //Find the last result file calculated and start the calcul from there
 let lastFile = null;
 fs.readdir(params.resultPath, function (err, files) {

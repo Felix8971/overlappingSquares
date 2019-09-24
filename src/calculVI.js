@@ -149,7 +149,7 @@ var nbVertexInside = (squareA, squareB, NB_VERTEX) => {
 
 exports.nbVertexInside = nbVertexInside;
 
-//Calculates the matrix V and I corresponding to a given arrangements of 3 squares
+//Calculates the matrix V and I corresponding to a given arrangements of squares
 exports.arrangement_to_VI = function(squares, NB_VERTEX, NB_SQUARE) {
     let V = [ 
         [0, 0, 0],
@@ -162,12 +162,6 @@ exports.arrangement_to_VI = function(squares, NB_VERTEX, NB_SQUARE) {
         [0, 0, 0],
         [0, 0, 0]
     ];
-    // let U = [
-    //     [[], [], []],
-    //     [[], [], []],
-    //     [[], [], []],
-    //     [[], [], []],
-    // ];
 
     arrangementValid = true;
     
@@ -175,78 +169,77 @@ exports.arrangement_to_VI = function(squares, NB_VERTEX, NB_SQUARE) {
     for (let i=0;i<NB_SQUARE;i++){
         for (let j=i+1;j<NB_SQUARE;j++){ 
             if ( testBoxesOverlapping(squares[i].box, squares[j].box) ) {             
-                //calculates i vertices inside j 
+                //calculates vertices of square i inside square j     
                 V[i][j] = nbVertexInside(squares[j], squares[i], NB_VERTEX);
                 if ( !arrangementValid ) {
                     return { valid: false }
                 }
-                //calculates j vertices inside i     
-                //optimisation: to be calculated only if V[i][j] <= 2  !
-                V[j][i] = V[i][j] <= 2 ? nbVertexInside(squares[i], squares[j], NB_VERTEX) : 0;//à tester !             
+                //calculates vertices of square j inside square i     
+                //optimisation: to be calculated only if V[i][j] <= 2 else 0 !
+                V[j][i] = V[i][j] <= 2 ? nbVertexInside(squares[i], squares[j], NB_VERTEX) : 0;             
                 if ( !arrangementValid ) {
                     return { valid: false }
                 }
 
-                let flag = false;
-
-                //Count intersections of the 2 squares edges 
-                for (let k=0;k<NB_VERTEX;k++){ //pour chaque segment k de square i
-                    //si la box du segment k de i intercepte la box de square j
-                    if ( testBoxesOverlapping(squares[i].boxEdge[k], squares[j].box) ){
-                        //Test intersection du segment k avec les segments de j
-                        for (let p=0;p<NB_VERTEX;p++){//pour chaque segment p de square j
-                            if ( testBoxesOverlapping(squares[i].boxEdge[k], squares[j].boxEdge[p]) ){
-                                let res = intersectionEdges(squares[i],k,squares[j],p, NB_VERTEX);
-                                if ( res ){
-                                    //console.log('k:'+k+ ' p:' + p);
-                                    I[k][i] += 1;
-                                    I[p][j] += 1;
-                                    flag = true;
-                                    // U[k][i].push(res.ua);
-                                    // U[p][j].push(res.ub);
-                                } 
+                // If V[j][i] === 4 or V[i][j] === 4 there is not edge intersection
+                if ( V[j][i] != 4 && V[i][j] != 4 ){
+                    //Count intersections of the 2 squares edges 
+                    for (let k=0;k<NB_VERTEX;k++){ //pour chaque segment k de square i
+                        //si la box du segment k de i intercepte la box de square j
+                        if ( testBoxesOverlapping(squares[i].boxEdge[k], squares[j].box) ){
+                            //Test intersection du segment k avec les segments de j
+                            for (let p=0;p<NB_VERTEX;p++){//pour chaque segment p de square j
+                                if ( testBoxesOverlapping(squares[i].boxEdge[k], squares[j].boxEdge[p]) ){
+                                    //let res = intersectionEdges(squares[i],k,squares[j],p,NB_VERTEX);
+                                    if ( intersectionEdges(squares[i],k,squares[j],p,NB_VERTEX) ){
+                                        //console.log('k:'+k+ ' p:' + p);
+                                        I[k][i] += 1;
+                                        I[p][j] += 1;
+                                    } 
+                                }
                             }
                         }
                     }
                 }
-               
-                if ( flag ){
-                    // if ( V[i][j] === 0 && V[j][i] === 0  ){                  
-                    //     console.log("0 ##################");
-                    // }
-                    if ( (V[i][j] === 4 || V[j][i] === 4)  ){
-                        console.log("4 ####### ERROR ########");                    
-                    }
-                }
-
             }
         }
     }
 
-    //calcul fuzzy factor
-    //the smaller fuzzy factor is the better is the arrangment
-    //we will select the arrangment with the smallest fuzzy factor
-    // let fuzzy = 0;
-    // for (let i=0;i<N;i++){
-    //     for (let p=0;p<NB_VERTEX-1;p++){
-    //         if ( U[i][p].length > 0){
-    //             for (let j=0;j<U[i][p].length;j++){
-    //                 fuzzy += 1/U[i][p][j];
-    //             }
-    //         }
-    //     }
-    // }
+    //let _squares = JSON.parse(JSON.stringify(squares));//we want to remove the methods from the object squares       
+    let _squares = [];
+    //Deep copy of squares object (faster than JSON.parse(JSON.stringify(squares)))
+    for (let i=0;i<NB_SQUARE;i++){
+       _squares.push({
+            a: squares[i].a,
+            center: { x: squares[i].center.x, y: squares[i].center.y},
+            angle: squares[i].angle,
+            vertex:[ 
+                { x: squares[i].vertex[0].x, y: squares[i].vertex[0].y},
+                { x: squares[i].vertex[1].x, y: squares[i].vertex[1].y},
+                { x: squares[i].vertex[2].x, y: squares[i].vertex[2].y},
+                { x: squares[i].vertex[3].x, y: squares[i].vertex[3].y},
+            ], 
+            box: {xmin: squares[i].box.xmin, xmax: squares[i].box.xmax, ymin:squares[i].box.ymin, ymax:squares[i].box.ymax,}, 
+            boxEdge: [
+                {xmin: squares[i].boxEdge[0].xmin, xmax: squares[i].boxEdge[0].xmax, ymin:squares[i].boxEdge[0].ymin, ymax:squares[i].boxEdge[0].ymax},
+                {xmin: squares[i].boxEdge[1].xmin, xmax: squares[i].boxEdge[1].xmax, ymin:squares[i].boxEdge[1].ymin, ymax:squares[i].boxEdge[1].ymax},
+                {xmin: squares[i].boxEdge[2].xmin, xmax: squares[i].boxEdge[2].xmax, ymin:squares[i].boxEdge[2].ymin, ymax:squares[i].boxEdge[2].ymax},
+                {xmin: squares[i].boxEdge[3].xmin, xmax: squares[i].boxEdge[3].xmax, ymin:squares[i].boxEdge[3].ymin, ymax:squares[i].boxEdge[3].ymax},
+            ],             
+        }); 
+    }
+
     return {
+        valid: arrangementValid,
         V,
         I,
-        //fuzzy,
-        squares: JSON.parse(JSON.stringify(squares)),//we want to remove the methods from the object squares
-        valid: arrangementValid,
+        //squares: JSON.parse(JSON.stringify(squares)),//we want to remove the methods from the object squares
+        //JSON.parse(JSON.stringify... is extremely costly in computation time !
+        squares: _squares,
     };
 }
 
 }(typeof exports === 'undefined' ? this.calculVI = {} : exports));
-
 
 
 

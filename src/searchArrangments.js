@@ -1,5 +1,5 @@
       
-const util = require('util');
+//const util = require('util');
 const fs = require('fs');
 const { NB_VERTEX, NB_SQUARE } = require('./constants.js');
 const { are_VI_Equivalents } = require('./compare-arrangements.js');
@@ -136,73 +136,30 @@ var updateArrsN3 = (arr, arrsN3) => {
             sumOnColumn(arr.I, 2)
         ];
         sI.sort((a, b) => a - b);//ascending sort
-
         // the sort is important if we want to save the equivalents arr in
         // the same place in arrsN3
         // sV et sI sont invariants au sein d'un groupe d'arrangements equivalents
 
-        //idée: faire le produit des elements non nulls de chaque colonne de V => 
-        /*
-         let pV = [
-           (arr.V[0][1] == 0 ? 1 : arr.V[0][1])*(arr.V[0][2] == 0 ? 1 : arr.V[0][2]),
-           (arr.V[1][0] == 0 ? 1 : arr.V[1][0])*(arr.V[0][2] == 0 ? 1 : arr.V[0][2]),
-           (arr.V[2][0] == 0 ? 1 : arr.V[2][0])*(arr.V[2][1] == 0 ? 1 : arr.V[2][1]),
-        ];
-        pV.sort((a, b) => a - b);//ascending sort
-
-        //puis ajouter pV comme une dimension supplementaire à arrsN3
-
-        */
-
         //convertion to a decimal number 
         let nV = sV[0]*100 + sV[1]*10 + sV[2];
         let nI = sI[0]*100 + sI[1]*10 + sI[2];
-        let index = nV+"_"+nI;
-        if ( arrsN3[index] ){//the category exist so we search an equivalent of arr inside
-            let n = arrsN3[index].length;              
+        let key = nV+"_"+nI;
+        if ( arrsN3[key] ){//the category exist so we search an equivalent of arr inside
+            let n = arrsN3[key].length;              
             let found = false;
             for(let i=n-1;i>=0;i--){
-                if ( are_VI_Equivalents(arrsN3[index][i], arr) ){
+                if ( are_VI_Equivalents(arrsN3[key][i], arr, sumOnColumn) ){
                     found = true;                                            
                     break;
                 }
             }
             if (!found){
-                arrsN3[index].push(arr); 
-                //console.log(arrsN3.length + ' arrangments found');
+                arrsN3[key].push(arr); //console.log(arrsN3.length + ' arrangments found');
             }
         } else {//we create a new arrangment category
-            arrsN3[index] = [];
-            arrsN3[index].push(arr);
+            arrsN3[key] = [];
+            arrsN3[key].push(arr);
         }
-        //idea improvment: do arrsN3 = {}; arrsN3["nV_nI"] = []; 
-        //(cleaner, simpler & will use less memory than the array method)
-
-        // if ( arrsN3[nV] ){
-        //     if ( arrsN3[nV][nI] ){//the category exist so we search an equivalent of arr inside
-        //         let n = arrsN3[nV][nI].length;
-                
-        //         let found = false;
-        //         for(let i=n-1;i>=0;i--){
-        //             if ( are_VI_Equivalents(arrsN3[nV][nI][i], arr) ){
-        //                 found = true;                                            
-        //                 break;
-        //             }
-        //         }
-        //         if (!found){
-        //             arrsN3[nV][nI].push(arr); 
-        //             //console.log(arrsN3.length + ' arrangments found');
-        //         }
-        //     } else {//we create a new arrangment category
-        //         arrsN3[nV][nI] = [];
-        //         arrsN3[nV][nI].push(arr);      
-        //     }
-        // } else {//we create a new arrangment category
-        //     arrsN3[nV] = [];
-        //     arrsN3[nV][nI] = [];
-        //     arrsN3[nV][nI].push(arr);
-        // }
-
     }
 }
 exports.updateArrsN3 = updateArrsN3;
@@ -244,21 +201,21 @@ var _searchArrangments = function (squares, params, arrangments=[], i0_start=0 )
         x2 = scanArea.xmin + i0*step;
         for(let j0=0;j0<ny;j0++){
             y2 = scanArea.ymin + j0*step;
-            count++;
+            count++; 
             let delta_t = parseFloat(((Date.now() - t0)/(1000*60)).toFixed(2))  ;
-            console.log(100*count/nxny + '% : '+ getArrsN3Length(arrsN3) + ' arrangments found in '+ delta_t + ' minutes');
+            console.log(parseInt(1000*(count/nxny))/10 + '% : '+ getArrsN3Length(arrsN3) + ' arrangments found in '+ parseInt(100*(delta_t))/100   + ' minutes');
             for(let p=0;p<n_size;p++){
                 for(let k=0;k<n_angles;k++){                                                          
                     squares[1].changeState({x:x2,y:y2}, sizes[p], angles[k]);
                     for(let i1=i0;i1<nx;i1++){// i1=i0
                         x3 = scanArea.xmin + i1*step;
                         for(let j1=j0;j1<ny;j1++){// j1=j0
-                            y3 = scanArea.ymin + j1*step;                      
+                            y3 = scanArea.ymin + j1*step;                                    
                             for(let q=0;q<n_size;q++){                                     
                                 for(let m=0;m<n_angles;m++){                                                              
                                     squares[2].changeState({x:x3,y:y3}, sizes[q], angles[m]);                                  
                                     //let n3 = getArrsN3Length(arrsN3)                                 
-                                    updateArrsN3(arrangement_to_VI(squares,NB_VERTEX,NB_SQUARE), arrsN3);                                   
+                                    updateArrsN3(arrangement_to_VI(squares, NB_VERTEX, NB_SQUARE), arrsN3);                                   
                                     positionsTested++;                                                                                        
                                 }
                             }
@@ -270,6 +227,7 @@ var _searchArrangments = function (squares, params, arrangments=[], i0_start=0 )
     }
     console.log('========= RESULT =========');
     
+    
     console.log('step:'+step);
     console.log('angles:'+angles);
     console.log('sizes:'+sizes);
@@ -277,10 +235,10 @@ var _searchArrangments = function (squares, params, arrangments=[], i0_start=0 )
     console.log(positionsTested + ' positionsTested');
     const nbArrFound = getArrsN3Length(arrsN3);
     console.log(nbArrFound + ' arrangments found in '+ delta_t + ' minutes');
+    console.log('Global progression: ' + parseInt(1000*(i0_end/nx))/10 + '%');
 
     //Export result 
     console.log('Save result...');
-    debugger;
     const result = getArrsN3Array(arrsN3);
     //var log = (obj) => { console.log(util.inspect(obj, {showHidden: false, depth: null})) };
     //log(result);
@@ -295,6 +253,8 @@ var _searchArrangments = function (squares, params, arrangments=[], i0_start=0 )
         let _arrangments = JSON.parse(data);
         if ( i0_end < nx ){
           _searchArrangments(squares, params, _arrangments, i0_end);
+        } else {
+
         }
     });
   

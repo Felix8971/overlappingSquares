@@ -8,7 +8,7 @@
     "jest": "^24.9.0"
   },
   "scripts": {
-    "test": "jest"
+    "test": "node test"
   },
   "repository": {
     "type": "git",

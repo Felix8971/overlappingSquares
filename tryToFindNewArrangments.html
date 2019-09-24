@@ -415,7 +415,7 @@
         //Charge les arrangements contenus dans le fichier json 
         //et affiche le premier d'entre eux 
         document.getElementById('load-arr').addEventListener('click', function(event) {
-            fetch('http://localhost:8080/src/save_result/arrangments-found-4337-31-32.json')
+            fetch('http://localhost:8081/src/result/arrangments-found-3332-12-13.json')
             .then(response => response.text())
             .then((data) => { 
                 arrangments = JSON.parse(data);
