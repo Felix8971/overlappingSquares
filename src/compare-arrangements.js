@@ -41,28 +41,10 @@
     //we also give the I matrice (but only only one form per V matrice for the moment)
     var getEquivalent_VI_List = function(V, I) {
         //Calcul des matrices V equivalentes à V0
-        // let a = V[0][1]; 
-        // let b = V[1][0];
-        // let c = V[0][2];
-        // let d = V[2][0]; 
-        // let e = V[1][2]; 
-        // let f = V[2][1];
-
-        // let g = I[0][0];
-        // let h = I[1][0];
-        // let i = I[2][0];
-        // let j = I[3][0];
-
-        // let k = I[0][1];
-        // let l = I[1][1];
-        // let m = I[2][1];
-        // let n = I[3][1];
-
-        // let o = I[0][2];
-        // let p = I[1][2];
-        // let q = I[2][2];
-        // let r = I[3][2];
-
+        // let a = V[0][1]; let b = V[1][0];let c = V[0][2];let d = V[2][0]; let e = V[1][2]; let f = V[2][1];
+        // let g = I[0][0];let h = I[1][0];let i = I[2][0];let j = I[3][0];
+        // let k = I[0][1];let l = I[1][1];let m = I[2][1];let n = I[3][1];
+        // let o = I[0][2];let p = I[1][2];let q = I[2][2];let r = I[3][2];
         //let V0 = [ [ 0, a, c ], [ b, 0, e ], [ d, f, 0 ] ];//012
         //let V1 = [ [ 0, b, e], [ a, 0, c ], [ f, d, 0 ] ];//102
         //let V2 = [ [ 0, c, a], [ d, 0, f ], [ b, e, 0] ];//021
@@ -130,57 +112,27 @@
         // return [
         //     { 
         //         V: [ [ 0, a, c ], [ b, 0, e ], [ d, f, 0 ] ],//V0, 
-        //         I:  [
-        //             [g, k, o],
-        //             [h, l, p],
-        //             [i, m, q],
-        //             [j, n, r], 
-        //         ],
+        //         I:  [ [g, k, o], [h, l, p], [i, m, q], [j, n, r],],  
         //     },
         //     { 
         //         V: [ [ 0, b, e], [ a, 0, c ], [ f, d, 0 ] ],//V1, 
-        //         I:  [
-        //             [k, g, o],
-        //             [l, h, p],
-        //             [m, i, q],
-        //             [n, j, r], 
-        //         ],
+        //         I:  [ [k, g, o], [l, h, p], [m, i, q], ],
         //     },
         //     { 
         //         V: [ [ 0, c, a], [ d, 0, f ], [ b, e, 0] ],//V2, 
-        //         I:  [
-        //             [g, o, k],
-        //             [h, p, l],
-        //             [i, q, m],
-        //             [j, r, n],
-        //         ], 
+        //         I:  [ [g, o, k], [h, p, l],  [i, q, m],  [j, r, n],], 
         //     },
         //     { 
         //         V: [ [ 0, e, b], [ f, 0, d ], [ a, c, 0 ] ],//V3,
-        //         I:  [
-        //             [k, o, g],
-        //             [l, p, h],
-        //             [m, q, i],
-        //             [n, r, j], 
-        //         ],
+        //         I:  [[k, o, g],[l, p, h],[m, q, i], [n, r, j], ],
         //     },
         //     { 
         //         V: [ [ 0, f, d ], [ e, 0, b ], [ c, a, 0 ] ],//V4, 
-        //         I:  [
-        //             [o, k, g],
-        //             [p, l, h],
-        //             [q, m, i],
-        //             [r, n, j], 
-        //         ],
+        //         I:  [ [o, k, g],[p, l, h], [q, m, i], [r, n, j], ],
         //     },
         //     { 
         //         V: [ [ 0, d, f ], [ c, 0, a ], [ e, b, 0 ] ],//V5, 
-        //         I:  [
-        //             [o, g, k],
-        //             [p, h, l],
-        //             [q, i, m],
-        //             [r, j, n], 
-        //         ],
+        //         I:  [[o, g, k],[p, h, l], [q, i, m], [r, j, n], ],
         //     },
         // ];
     }
@@ -195,6 +147,7 @@
         I[1][k] = I[0][k];
         I[0][k] = a3;
     }
+    exports.permuteInColumn = permuteInColumn; 
 
     //Return  the 128 equivalent for for I (circular permutations + mirror images)
     var getEquivalent_I_List =  function(I) {

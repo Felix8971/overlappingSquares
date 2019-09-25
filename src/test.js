@@ -6,7 +6,7 @@ const { getInitSquares } = require('./initSquares.js');
 const CTE = require('./constants.js');
 const { sumOnColumn, getArrsN3Length, getArrsN3Array, updateArrsN3 } = require('./searchArrangments.js');
 const { arrangement_to_VI, pointInSquare, nbVertexInside, intersectionSegments } = require('./calculVI.js');
-const { areEqual, det33, getEquivalent_VI_List, getEquivalent_I_List, are_VI_Equivalents } = require('./compare-arrangements.js');
+const { areEqual, det33, permuteInColumn, getEquivalent_VI_List, getEquivalent_I_List, are_VI_Equivalents } = require('./compare-arrangements.js');
 
 var tests = function(){ 
     let nbError = 0;
@@ -296,9 +296,121 @@ var tests = function(){
         nbError++;
     }
 
-    console.log(nbError > 0 ? "Tests failed !" : "All tests passed" )
+   
+    (()=>{
+        let I = [ 
+            [1, 1, 0],
+            [2, 0, 0], 
+            [3, 1, 0], 
+            [4, 0, 0]
+        ];
+        permuteInColumn(I,0);
+        
+        if ( JSON.stringify(I) != "[[4,1,0],[1,0,0],[2,1,0],[3,0,0]]" ){
+            console.log("ERROR 38");
+            nbError++;
+        }
+    })();
+
+    (()=>{
+        let I = [ 
+            [1, 1, 3],
+            [2, 0, 2], 
+            [3, 1, 0], 
+            [4, 0, 3]
+        ];
+        for (let i=0;i<4;i++){
+            permuteInColumn(I, 0);
+        }
+        
+        if ( JSON.stringify(I) != "[[1,1,3],[2,0,2],[3,1,0],[4,0,3]]" ){
+            console.log("ERROR 39");
+            nbError++;
+        }
+    })();
+
+    (()=>{
+        let I = [ 
+            [1, 1, 3],
+            [2, 0, 2], 
+            [3, 1, 0], 
+            [4, 0, 3]
+        ];
+        let list = getEquivalent_I_List(I);
+
+        if ( list.length != 128 ){
+            console.log("ERROR 40");
+            nbError++;
+        }
+    })();
+    
+    
+    (()=>{
+        let V0 = [
+            [0, 3, 5],
+            [8, 0, 7],
+            [1, 4, 0]
+        ]; // 0, 1, 2
+        let V1 = [
+            [0, 8, 7],
+            [3, 0, 5],
+            [4, 1, 0]
+        ]; //1, 0, 2
+        let I0 = [ 
+            [0, 1, 0],
+            [2, 0, 1],
+            [0, 1, 1],
+            [0, 0, 1],
+        ];
+        let I1 = [ 
+            [0, 0, 1],
+            [1, 0, 0],
+            [0, 0, 1],
+            [1, 2, 1],
+        ];
+        let I1_mirror_image = [ 
+            [1, 2, 1],
+            [0, 0, 1],
+            [1, 0, 0],
+            [0, 0, 1],
+        ];        
+        if ( !are_VI_Equivalents({V:V0, I:I0}, {V:V1, I:I1}) ){
+            console.log("ERROR 41");
+            nbError++;
+        }
+        if ( !are_VI_Equivalents({V:V0, I:I0}, {V:V1, I:I1_mirror_image}) ){
+            console.log("ERROR 42");
+            nbError++;
+        }
+      
+    })();
+
+
+    (()=>{
+        let V0 = [
+            [0, 3, 5],
+            [8, 0, 7],
+            [1, 4, 0]
+        ]; // 0, 1, 2
+        let I0 = [ 
+            [1, 1, 0],
+            [2, 0, 0],
+            [3, 1, 0],
+            [4, 0, 0],
+        ];
+        let list = getEquivalent_VI_List(V0, I0);
+
+        if ( JSON.stringify(list) != '[{"V":[[0,3,5],[8,0,7],[1,4,0]],"I":[[1,1,0],[2,0,0],[3,1,0],[4,0,0]]},{"V":[[0,8,7],[3,0,5],[4,1,0]],"I":[[1,1,0],[0,2,0],[1,3,0],[0,4,0]]},{"V":[[0,5,3],[1,0,4],[8,7,0]],"I":[[1,0,1],[2,0,0],[3,0,1],[4,0,0]]},{"V":[[0,7,8],[4,0,1],[3,5,0]],"I":[[1,0,1],[0,0,2],[1,0,3],[0,0,4]]},{"V":[[0,4,1],[7,0,8],[5,3,0]],"I":[[0,1,1],[0,0,2],[0,1,3],[0,0,4]]},{"V":[[0,1,4],[5,0,3],[7,8,0]],"I":[[0,1,1],[0,2,0],[0,3,1],[0,4,0]]}]' ){
+            console.log("ERROR 43");
+            nbError++;
+        }
+    })();
+    console.log(nbError > 0 ? "Tests failed !" : "--- All tests passed ----" );
     return nbError
 }
+
+
+
 
 tests();
 
