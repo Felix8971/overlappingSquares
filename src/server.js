@@ -15,18 +15,15 @@ if ( nbError > 0 ){
 //Simulation
 //We place the first square on the center, it will not change.
 squares[0].initRotZero(80, {x: CTE.W/2, y: CTE.H/2});
-//The 2 other squares will change (position, size, angle)   
-squares[1].initRotZero(80, {x:-9999, y:-9999});
-squares[2].initRotZero(80, {x:9999, y:9999});
 
-//Define how far the center of the moving squares can go from the first square
+//Define how far the center of the moving squares can go from the fixed central square
 const excursion = (3/4)*squares[0].a;
 
 let params = {
     nbSquare: 3,
-    step: 5,
+    step: 10,
     angles: [0, 10, 20, 30, 40, 50, 60, 70, 80],
-    sizes: [10, 20, 30, 40, 50, 60, 80, 90, 100, 110, 120, 130, 150, 2],
+    sizes: [30, 40, 50, 80, 90, 100, 110],
     excursion,
     scanArea: {
         xmin: squares[0].box.xmin - excursion,
@@ -37,6 +34,10 @@ let params = {
     resultPath: path.join(__dirname+'/result'),
 };
 
+//The 2 other squares will change overtime (position, size, angle)  
+for (let i=1;i<params.nbSquare;i++){ 
+  squares[i].initRotZero(80, {x:0, y:0});
+}
 //number od step on the scan zone
 params.nx = parseInt((params.scanArea.xmax - params.scanArea.xmin)/params.step)
 params.ny = parseInt((params.scanArea.ymax - params.scanArea.ymin)/params.step)
@@ -53,7 +54,7 @@ fs.writeFile(params.resultPath+'/'+paramsFileName, JSON.stringify(params), funct
 //To do the (not efficient) calcul with only 2 squares we just put the square 0 far away
 //so that it will never interact with the other squares
 if ( params.nbSquare == 2 ){
-    squares[0].initRotZero(2, {x:-8999, y: 8999});
+    squares[0].initRotZero(2, {x:-9999, y:9999});
 }
 
 const t0 = Date.now();
@@ -81,7 +82,6 @@ fs.readdir(params.resultPath, function (err, files) {
     let data = fs.readFileSync(params.resultPath+'/'+lastFile);
     //let data = fs.readFileSync('arrangments-found-4337-29-31.json');
     let arrangments = JSON.parse(data);
-    debugger;
     searchArrangments(squares, params, arrangments, i0_start+1);
 });
 

@@ -4,9 +4,7 @@
   "description": "",
   "main": "index.html",
   "dependencies": {},
-  "devDependencies": {
-    "jest": "^24.9.0"
-  },
+  "devDependencies": {},
   "scripts": {
     "test": "node test"
   },

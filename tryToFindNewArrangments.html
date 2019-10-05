@@ -160,7 +160,7 @@
     <script type="module">
 
         //idee optimisation: pre calculer tous les gabari de carres (avec scales et rotations) puis les translater
-        import { createSVGSquare, updateSVGSquare, drawPoint, drawBox, saveSvg, squareStyle, createSvgArr } from './draw.js';
+        import { createSVGSquare, updateSVGSquare, drawPoint, drawBox, saveSvg, squareStyle } from './draw.js';
         const { W, H, NB_SQUARE, NB_VERTEX} = constants;
         const are_VI_Equivalents = compareArrangments.are_VI_Equivalents;
         const arrangement_to_VI = calculVI.arrangement_to_VI;
@@ -387,13 +387,11 @@
             testCurrentArrangment();
         });
 
-        //Charge l'arrangement i: upadate squares objet with it and update displayed svg
-        function loadArr(i){
-            //createSvgArr();         
+        //Charge l'arrangement i: update squares objet with it and update displayed svg
+        function loadArr(i){            
             let arr = arrangments[i];
             let label = [];
-            for (let j=0;j<3;j++){
-                //debugger;
+            for (let j=0;j<3;j++){              
                 let polygon = document.getElementById('square'+j);
                 let points = "";
                 for(let k=0;k<4;k++){

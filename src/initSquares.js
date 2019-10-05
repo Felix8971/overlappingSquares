@@ -182,7 +182,15 @@
                     }            
                 },
                 
-                //Move a square to another position, change his size and his angle. 
+                //apply the parameters of another square to the current square
+                copy3: function (square) {
+                    this.a = square.a;//edge length
+                    this.center.x = square.center.x;
+                    this.center.y = square.center.y;
+                    this.angle = square.angle;                           
+                },
+                
+                //Move a square to a position M, change his size and his angle. 
                 changeState: function(M, a, angle){
                     //moveTo and resize if necessary
                     let half_a = 0.5 * a;

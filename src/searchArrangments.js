@@ -19,20 +19,6 @@ exports.sumOnColumn = sumOnColumn;
 // Sum sizes of all the arrsN3[nV][nI] defined
 // to get the total number of arrangement found
 var getArrsN3Length = (arrsN3) => {
-    //let n = arrsN3.length;
-    //let sum = 0;
-    // for (let i=0;i<n;i++){
-    //     if (arrsN3[i]) {
-    //         let p = arrsN3[i].length;
-    //         for (let j=0;j<p;j++){
-    //             if (arrsN3[i][j]) {
-    //                 sum += arrsN3[i][j].length;
-    //             }
-    //         }
-    //     }
-    // } 
-    // return sum;
-
     let sum = 0;
     for ( let key in arrsN3 ){
         sum += arrsN3[key].length;
@@ -41,24 +27,10 @@ var getArrsN3Length = (arrsN3) => {
 }
 exports.getArrsN3Length = getArrsN3Length;
 
-// Extract the arrangments from arrsN3 to return a simplified linear array
+// Extract the arrangments from arrsN3 to return a simplified one dimension array
 var getArrsN3Array = (arrsN3) => {
     //let n = arrsN3.length;
     let arrs = [];
-    // for (let i=0;i<n;i++){
-    //     if (arrsN3[i]) {
-    //         let p = arrsN3[i].length;
-    //         for (let j=0;j<p;j++){
-    //             if (arrsN3[i][j]) {  
-    //                 let k = arrsN3[i][j].length;   
-    //                 for (let m=0;m<k;m++){
-    //                     arrs.push(arrsN3[i][j][m]); 
-    //                 }              
-    //             }
-    //         }
-    //     }
-    // } 
-
     for ( let key in arrsN3 ){
         let n = arrsN3[key].length;
         for (let i=0;i<n;i++){
@@ -77,34 +49,34 @@ var getArrsN3Array = (arrsN3) => {
                     a: elem.squares[0].a,
                     center: elem.squares[0].center,
                     angle: elem.squares[0].angle,
-                    vertex: elem.squares[0].vertex,
+                    //vertex: elem.squares[0].vertex,
                 },
                 {
                     a: elem.squares[1].a,
                     center: elem.squares[1].center,
                     angle: elem.squares[1].angle,
-                    vertex: elem.squares[1].vertex,
+                    //vertex: elem.squares[1].vertex,
                 },
                 {
                     a: elem.squares[2].a,
                     center: elem.squares[2].center,
                     angle: elem.squares[2].angle,
-                    vertex: elem.squares[2].vertex,
+                    //vertex: elem.squares[2].vertex,
                 },               
             ],
         }
     });
     
     // We remove unnecessary decimals, 4 digits after the decimal point should be ok
-    const n = arrsLigth.length;
-    for (let i=0;i<n;i++){
-        for (let j=0;j<NB_SQUARE;j++){
-            for (let k=0;k<NB_VERTEX;k++){
-                arrsLigth[i].squares[j].vertex[k].x = parseFloat(arrsLigth[i].squares[j].vertex[k].x.toFixed(4));
-                arrsLigth[i].squares[j].vertex[k].y = parseFloat(arrsLigth[i].squares[j].vertex[k].y.toFixed(4));
-            }
-        }
-    }
+    // const n = arrsLigth.length;
+    // for (let i=0;i<n;i++){
+    //     for (let j=0;j<NB_SQUARE;j++){
+    //         for (let k=0;k<NB_VERTEX;k++){
+    //             arrsLigth[i].squares[j].vertex[k].x = parseFloat(arrsLigth[i].squares[j].vertex[k].x.toFixed(4));
+    //             arrsLigth[i].squares[j].vertex[k].y = parseFloat(arrsLigth[i].squares[j].vertex[k].y.toFixed(4));
+    //         }
+    //     }
+    // }
    
     return arrsLigth;
 }
@@ -118,9 +90,9 @@ var updateArrsN3 = (arr, arrsN3) => {
     if ( arr.valid ){
 
         // For optimisation purpose we store each arrangement in a particular category. 
-        // When a new arrangment will be generated we will search his equivalent only inside this category.
+        // When a new arrangment will be generated we'll search his equivalent only inside this category.
         // The category of an arrangment is defined by 2 integers nV and nI calulated as following 
-        // (they'll serve as an entry of a 2 dimensional array)
+        // (they'll serve as the entries of a 2 dimensional array)
         // this method will reduce drastically the number of arrangement to compared
 
         let sV = [
@@ -196,6 +168,21 @@ var _searchArrangments = function (squares, params, arrangments=[], i0_start=0 )
 
     let positionsTested = 0;
     let count = 0;
+    
+    // switch(params.nbSquare) {
+    //     case 2:
+    //       // code block
+    //       break;
+    //     case 3:
+    //       // code block
+    //       break;
+    //     case 4:
+    //         // code block
+    //         //matrices V et F + 
+    //         break;
+    //     default:
+    //       // code block
+    //   } 
 
     for(let i0=i0_start;i0<i0_end/*nx*/;i0++){
         x2 = scanArea.xmin + i0*step;
@@ -245,7 +232,7 @@ var _searchArrangments = function (squares, params, arrangments=[], i0_start=0 )
     let fileName = "arrangments-found-"+nbArrFound+"-"+i0_start+"-"+i0_end+".json";
     
     fs.writeFile(resultPath+'/'+fileName, JSON.stringify(result), function(err) {
-        if(err) {
+        if (err) {
             return console.log(err);
         }
         console.log("File saved successfully!");

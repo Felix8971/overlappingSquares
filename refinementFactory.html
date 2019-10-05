@@ -9,13 +9,16 @@
     <h2>Refinement tool 3 squares overlapping</h2>    
     <div id="container">
         <div id='result-zone'>
-            <svg id="zone" height="1" width="1" style="border:1px solid #d8d8d8"></svg> 
+            <div id="msg">Invalid move</div>
+            <div id="current-arr-container">Current arrangment:
+                <input id="current-arr" type="text" name="current-arr"  value='1' >
+                / <span id="nbArr"></span>
+            </div>
+            <svg id="zone" height="1" width="1">
+            </svg> 
             <div id="footer-container">
                 <div id="export-svg">
-                    <button id="load-arr">Load arrangments</button> 
-                    <div>Current arr:
-                        <input id="current-arr" type="text" name="current-arr"  value='0' >
-                    </div>
+                   
                     <div class="nav">
                         <button id="previous-btn"><<</button> 
                         <button id="next-btn">>></button> 
@@ -170,16 +173,15 @@
     <script type="module">
 
         //idee optimisation: pre calculer tous les gabari de carres (avec scales et rotations) puis les translater
-        import { createSVGSquare, updateSVGSquare, drawPoint, drawBox, saveSvg, squareStyle, createSvgArr } from './draw.js';
+        import { createSVGSquare, updateSVGSquare, drawPoint, drawBox, saveSvg, squareStyle, fadeIn, fadeOut } from './draw.js';
         const { W, H, NB_SQUARE, NB_VERTEX} = constants;
         const are_VI_Equivalents = compareArrangments.are_VI_Equivalents;
-        
         const arrangement_to_VI = calculVI.arrangement_to_VI;
         const getInitSquares = initSquares.getInitSquares;
         var squares = getInitSquares(constants);
 
-        let arrangments = [];    
-        let nbArr;
+        let arrangments = [];
+        let nbArr = null;
 
         let currentArr = 0;
         let currV = [ 
@@ -194,10 +196,6 @@
             [0, 0, 0]
         ];
         
-        //List of arrangments that we will select and export to use later in a simulation
-        //contains center, vertices and size (a), boxes will be recalculaed later
-        //var arrangmentsSelection = [];
-
         var svg = document.getElementsByTagName('svg')[0]; //Get svg element
         svg.setAttribute('width','500px');
         svg.setAttribute('height','353px');
@@ -210,7 +208,6 @@
 
         //Update the displayed matrices according to the value of the squares object
         var updateMatrices = function(){
-            debugger;
             let arr = arrangement_to_VI(squares, NB_VERTEX, NB_SQUARE);
             let V = arr.V;
             let I = arr.I;
@@ -261,9 +258,9 @@
             ['square0','square1','square2',].map((square)=>{
                 document.getElementById(square).addEventListener('click', function(event) { 
                     selectedSquare = event.target.id.split("square")[1];
-                    document.getElementById('square0').style.strokeWidth = '0.5';
-                    document.getElementById('square1').style.strokeWidth = '0.5';
-                    document.getElementById('square2').style.strokeWidth = '0.5';
+                    document.getElementById('square0').style.strokeWidth = '0.8';
+                    document.getElementById('square1').style.strokeWidth = '0.8';
+                    document.getElementById('square2').style.strokeWidth = '0.8';
                     document.getElementById('square'+selectedSquare).style.strokeWidth = 2;
                 });
             })
@@ -287,18 +284,18 @@
 
         var validMove = function(sq, callback){
             //calcul nouvelle matrices V et I pour cette position
-            let arr = arrangement_to_VI(squares, NB_VERTEX, NB_SQUARE);
-            let V = arr.V;
-            let I = arr.I;         
+            let arr = arrangement_to_VI(squares, NB_VERTEX, NB_SQUARE);     
             if (arr.valid && are_VI_Equivalents(arrangments[currentArr], arr) ) {
-                updateSVGSquare(sq,selectedSquare);
-                // Mettre a jour arrangments[currentArr]   
+                updateSVGSquare(sq, selectedSquare);
+                // Mettre a jour arrangments[currentArr] pour pouvoir exporter la modif plus tard
                 let square = arrangments[currentArr].squares[selectedSquare];
-                square.a = sq.a;//edge length
+                square.a = sq.a; //edge length
                 square.center.x = sq.center.x;
                 square.center.y = sq.center.y;
                 square.angle = sq.angle; 
+                square.vertex = [];
                 for (let i=0;i<NB_VERTEX;i++){
+                    square.vertex[i] = {};
                     square.vertex[i].x = sq.vertex[i].x; 
                     square.vertex[i].y = sq.vertex[i].y;  
                 } 
@@ -313,7 +310,8 @@
             sq.translate({x:0, y: -parseInt(translationStep)}, true);
             validMove(sq, (elem)=>{
                 elem.translate({x:0, y: parseInt(translationStep)}, true);  
-                alert('nope!');
+                //alert('nope!');
+                fadeOut(document.getElementById('msg'), null);
             });                
         });
 
@@ -322,7 +320,7 @@
             sq.translate({x:0, y: parseInt(translationStep)}, true);
             validMove(sq, (elem)=>{
                 elem.translate({x:0, y: -parseInt(translationStep)}, true);  
-                alert('nope!');
+                fadeOut(document.getElementById('msg'), null);
             });   
         });
         document.getElementById('go-left').addEventListener('click', function(event) {
@@ -330,7 +328,7 @@
             sq.translate({x: -parseInt(translationStep), y: 0}, true);
             validMove(sq, (elem)=>{
                 sq.translate({x: parseInt(translationStep), y: 0}, true);
-                alert('nope!');
+                fadeOut(document.getElementById('msg'), null);
             }); 
         });
         document.getElementById('go-right').addEventListener('click', function(event) {
@@ -338,7 +336,7 @@
             sq.translate({x: parseInt(translationStep), y: 0}, true);
             validMove(sq, (elem)=>{
                 sq.translate({x: -parseInt(translationStep), y: 0}, true);
-                alert('nope!');
+                fadeOut(document.getElementById('msg'), null);
             });   
         });
 
@@ -364,7 +362,7 @@
             validMove(sq, (elem)=>{
                 sq.angle = sq.angle - parseInt(rotationStep);
                 sq.rotate(sq.angle, true);
-                alert('nope!');
+                fadeOut(document.getElementById('msg'), null);
             }); 
         });
         document.getElementById('rotate-moins').addEventListener('click', function(event) {
@@ -374,7 +372,7 @@
             validMove(sq, (elem)=>{
                 sq.angle = sq.angle + parseInt(rotationStep);
                 sq.rotate(sq.angle, true);
-                alert('nope!');
+                fadeOut(document.getElementById('msg'), null);
             }); 
         });
 
@@ -401,7 +399,7 @@
             validMove(sq, (elem)=>{
                 let a = sq.a - parseInt(resizeStep);
                 sq.changeSize(a, true);
-                alert('nope!');
+                fadeOut(document.getElementById('msg'), null);
             }); 
         });
         document.getElementById('resize-moins').addEventListener('click', function(event) {
@@ -411,7 +409,7 @@
             validMove(sq, (elem)=>{
                 let a = sq.a + parseInt(resizeStep);
                 sq.changeSize(a, true);
-                alert('nope!');
+                fadeOut(document.getElementById('msg'), null);
             }); 
         });
 
@@ -432,75 +430,19 @@
         });
 
 
-        // document.getElementById('import-selection-btn').addEventListener('click', (event) => {
-        //     //createSvgArr();         
-        //     let n = 4;//arrangments.length;
-        //     for (let i=0;i<n;i++){
-        //         let arr = arrangments[i];
-        //         let label = [];
-        //         for (let j=0;j<3;j++){
-        //             //debugger;
-        //             let polygon = document.getElementById('square'+j);
-        //             let points = "";
-        //             for(let k=0;k<4;k++){
-        //                 points += arr.squares[j].vertex[k].x + ',' +arr.squares[j].vertex[k].y + ' ';
-        //             }
-        //             polygon.setAttribute("points",points); 
-        //             polygon.style = squareStyle[j]; 
-        //             label[j] = document.getElementById('label'+j);                     
-        //             label[j].setAttributeNS(null, 'x', arr.squares[j].center.x-5);
-        //             label[j].setAttributeNS(null, 'y', arr.squares[j].center.y+5);
-                    
-        //             //mettre à jour l'objet squares local 
-        //             squares[j].copy2(arr.squares[j]);
-        //             squares[j].majBox();
-        //             updateMatrices();
-        //         }
-        //         //saveSvg(svg, 'arr'+i+'.svg');
-        //     }            
-        // });
-
-
-        //Charge l'arrangement i: upadate squares objet with it and update displayed svg
-        function loadArr(i){
-            //createSvgArr();         
-            let arr = arrangments[i];
-            debugger;
-            let label = [];
-            for (let j=0;j<3;j++){
-                //debugger;
-                let polygon = document.getElementById('square'+j);
-                let points = "";
-                for(let k=0;k<4;k++){
-                    points += arr.squares[j].vertex[k].x + ',' +arr.squares[j].vertex[k].y + ' ';
-                }
-                polygon.setAttribute("points",points); 
-                polygon.style = squareStyle[j]; 
-                label[j] = document.getElementById('label'+j);                     
-                label[j].setAttributeNS(null, 'x', arr.squares[j].center.x-5);
-                label[j].setAttributeNS(null, 'y', arr.squares[j].center.y+5);
-                
-                //mettre à jour l'objet squares local 
-                squares[j].copy2(arr.squares[j]);
-                squares[j].majBox();
-                updateMatrices();
-            }         
-        };
-
-
-        function match(elem) {
-            return ( ( elem.V[0][1] == 0 && elem.V[1][0] == 0 ) 
-              || ( elem.V[1][2] == 0 && elem.V[2][1] == 0 )
-              || ( elem.V[0][2] == 0 && elem.V[2][0] == 0 ) 
-            )
-        }
+        // function match(elem) {
+        //     return ( ( elem.V[0][1] == 0 && elem.V[1][0] == 0 ) 
+        //       || ( elem.V[1][2] == 0 && elem.V[2][1] == 0 )
+        //       || ( elem.V[0][2] == 0 && elem.V[2][0] == 0 ) 
+        //     )
+        // }
 
 
         document.getElementById('next-btn').addEventListener('click', function(event) {
             if (currentArr < nbArr - 1){
                 currentArr++;
                 loadArr(currentArr);
-                document.getElementById('current-arr').value = parseInt(currentArr);
+                document.getElementById('current-arr').value = parseInt(currentArr + 1);
             }
         });
 
@@ -508,14 +450,14 @@
             if (currentArr > 0 ){
                 currentArr--;
                 loadArr(currentArr);
-                document.getElementById('current-arr').value = parseInt(currentArr);
+                document.getElementById('current-arr').value = parseInt(currentArr + 1);
             }
         });
 
         document.getElementById('current-arr').addEventListener('change', function(event) { 
-            if (event.target.value >= 0 && event.target.value <= nbArr - 1){
-                currentArr = event.target.value;
-                loadArr(currentArr);
+            if (event.target.value >= 1 && event.target.value <= nbArr ){
+                currentArr = event.target.value - 1;
+                loadArr(currentArr + 1);
             }
         });
 
@@ -524,127 +466,114 @@
                 if (currentArr < nbArr - 1){
                     currentArr++;
                     loadArr(currentArr);
-                    document.getElementById('current-arr').value = parseInt(currentArr);
+                    document.getElementById('current-arr').value = parseInt(currentArr + 1);
                 }
             },200);
         });
 
 
-          //Charge les arrangements contenues dans le fichier json 
-        //et affiche le premier d'entre eux 
-        document.getElementById('load-arr').addEventListener('click', function(event) {
-            fetch('http://localhost:8081/src/result/arrangments-found-3332-12-13.json')
+        //Load arrangement i: update the local squares objet with it and update displayed svg
+        function loadArr(i){                
+            let arr = arrangments[i];           
+            let label = [];
+            let xmin=999, xmax=-999, ymin=999, ymax=-999;
+            for (let j=0;j<3;j++){
+                //We apply the geometric parameters of arr.squares[j] to squares[j] 
+                //and we update the svg polygon        
+                squares[j].changeState({
+                    x: arr.squares[j].center.x, 
+                    y: arr.squares[j].center.y}, 
+                    arr.squares[j].a, 
+                    arr.squares[j].angle
+                );
+                debugger;
+                if ( squares[j].box.xmin < xmin ){
+                    xmin = squares[j].box.xmin;                   
+                }
+                if ( squares[j].box.ymin < ymin ){
+                    ymin = squares[j].box.ymin;                   
+                }
+                if ( squares[j].box.xmax > xmax ){
+                    xmax = squares[j].box.xmax;                   
+                }
+                if ( squares[j].box.ymax > ymax ){
+                    ymax = squares[j].box.ymax;                   
+                }
+                let polygon = document.getElementById('square'+j);
+                let points = "";
+                for(let k=0;k<4;k++){
+                    points += squares[j].vertex[k].x + ',' +squares[j].vertex[k].y + ' ';
+                }
+                polygon.setAttribute("points",points); 
+                polygon.style = squareStyle[j]; 
+                label[j] = document.getElementById('label'+j);                     
+                label[j].setAttributeNS(null, 'x', squares[j].center.x-5);
+                label[j].setAttributeNS(null, 'y', squares[j].center.y+5);
+                
+                updateMatrices();
+            }   
+            
+            var svg = document.getElementsByTagName('svg')[0]; //Get svg element
+            xmin = xmin - 20;
+            xmax = xmax + 20;
+            ymin = ymin - 20;
+            ymax = ymax + 20;
+            let w = xmax - xmin;
+            let h = ymax - ymin;
+            let viewbox = xmin + " " + ymin + " " + w + " " + h;
+            svg.setAttribute('viewBox',viewbox);
+            
+        };
+
+
+        const loadArrangments = (url)=>{
+            fetch(url)
             .then(response => response.text())
             .then((data) => {
-                arrangments = JSON.parse(data);
-                debugger;
+                arrangments = JSON.parse(data);               
                 // arrangments = arrangments.filter((elem)=>
                 // ( ( elem.V[0][1] == 0 && elem.V[1][0] == 0 ) 
                 //     || ( elem.V[1][2] == 0 && elem.V[2][1] == 0 )
                 //     || ( elem.V[0][2] == 0 && elem.V[2][0] == 0 ) 
                 // ));
                 nbArr = arrangments.length;
+                document.getElementById('nbArr').innerHTML = nbArr;
                 console.log(nbArr);
                 currentArr = 0;
                 loadArr(currentArr);
             });
-        });
+        }
+
+        //Charge les arrangements contenues dans le fichier json 
+        //et affiche le premier d'entre eux 
+        // document.getElementById('load-arr').addEventListener('click', function(event) {
+        //     loadArrangments('http://localhost:8080/src/result/arrangments-found-3574-19-20.json');
+        // });
 
         //on place les squares dans la zone
-        //squares[0].initRotZero(100, {x:W/2-110, y:H/2-110});
-
-        squares[0].initRotZero(100, {x:W/2 - 150, y:H/2 - 110});
+        squares[0].initRotZero(100, {x:999, y:999});
         createSVGSquare(squares[0],0);
         document.getElementById('square0').style.strokeWidth = 2;
 
         //Les deux autres squares vont bouger
-        squares[1].initRotZero(100, {x:W/2 - 20, y:H/2});
+        squares[1].initRotZero(100, {x:999, y:999});
         //squares[1].translate({x:W/2, y:H/2})
         createSVGSquare(squares[1],1);
 
-        squares[2].initRotZero(100, {x:W/2 + 110, y:H/2 - 110});
+        squares[2].initRotZero(100, {x:999, y:999});
         //squares[1].translate({x:W/2, y:H/2})
         createSVGSquare(squares[2],2);
 
-       
-        //let arr = arrangement_to_VI(squares, NB_VERTEX, NB_SQUARE);
-        //console.log(arr);
-
-        // squares[0].changeState({x:250,y:199}, 80, 0);
-        // updateSVGSquare(squares[0],0);
-        // squares[1].changeState({x:170,y:119}, 60, 30);
-        // updateSVGSquare(squares[1],1);
-        // squares[2].changeState({x:170,y:159}, 30, 30);
-        // updateSVGSquare(squares[2],2);
-        
-        // let arr2 = arrangement_to_VI(squares, NB_VERTEX, NB_SQUARE);
-        // console.log(arr2);
-        // updateMatrices();
-
-        // for(let i=0;i<squares[1].vertex.length;i++){
-        //     drawPoint({
-        //         x: squares[1].vertex[i].x,
-        //         y: squares[1].vertex[i].y,
-        //     });
-        // }
-        // for(let i=0;i<squares[2].vertex.length;i++){
-        //     drawPoint({
-        //         x: squares[2].vertex[i].x,
-        //         y: squares[2].vertex[i].y,
-        //     });
-        // }        
-        
-        // debugger;
-        // // // Calculates the number of vertices of the square 1 in square 2
-        // const n12 = nbVertexInside(squares[1], squares[2]);
-        // // // Calculates the number of vertices of the square 2 in square 1
-        // const n21 = nbVertexInside(squares[2], squares[1]);
- 
-        // console.log(n12);
-        // console.log(n21);
-
-        // intersectionSegments(squares[1],1,squares[2],0);
-        // V=[[0,0,0],[0,0,1],[0,0,0]]
-        // I=[[0,0,0],[0,0,1],[0,2,0],[0,0,1]]
-       
-
-        // document.getElementById('export-arrs-btn').addEventListener('click', (event) => {
-        //     let dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(arrangments));
-        //     let dlAnchorElem = document.getElementById('downloadAnchorElem');
-        //     var downloadLink = document.createElement("a");
-        //     document.body.appendChild(downloadLink);
-        //     document.body.removeChild(downloadLink);
-        //     downloadLink.setAttribute("href",dataStr);
-        //     let fileName = "arr-selection-"+Date.now()+".json";
-        //     console.log(fileName);
-        //     downloadLink.setAttribute("download",fileName);
-        //     downloadLink.click();
-        // });
-       
-        // document.getElementById('import-selection-btn').addEventListener('click', (event) => {
-        //     fetch('arr-selection-1565085578378.json')
-        //     .then(response => response.text())
-        //     .then((text) => { 
-        //         console.log(text);
-        //         arrangmentsSelection = JSON.parse(text);
-        //         debugger;
-        //     })
-        // });
-
-        //save square object button
-        // document.getElementById('save-squares-btn').addEventListener('click', (event) => {
-        //     let _squares = JSON.parse(JSON.stringify(squares));
-        //     //const _squares = Object.assign([], squares);
-        //     //_squares.pop();//remove the third square which is not used
-        //     arrangmentsSelection.push(_squares);
-        //     console.log(arrangmentsSelection);
-        // });
+        loadArrangments('http://localhost:8081/src/result/arrangments-found-3602-1-2.json');
 
     </script>
     <script type="text/javascript" src="./src/calculVI.js"></script>
     <script type="text/javascript" src="./src/initSquares.js"></script>
 
 <style>
+    body {
+        font-family: monospace;
+    }
     #container {
         display:flex;
         flex-direction: row;
@@ -668,6 +597,7 @@
         text-align: center;
         height: 22px;
     }
+
     .radio-button {
         display: flex;
         flex-direction: row;
@@ -716,6 +646,32 @@
         flex-direction: column;
         justify-content: space-evenly;
         align-items: center;
+        position: relative;
+    }
+
+    #msg {
+        position: absolute;
+        color:white;
+        font-size: 2em;
+        top: 0;
+        opacity:0;
+    }
+
+    #current-arr-container{
+        position: absolute;
+        color:white;
+        top: 328px;
+        left: 8px;
+    }
+    #current-arr{
+        border:none;
+        font-size: 0.8em;
+        color: white;
+        width: 46px;
+        background-color: black;
+    }
+    #zone{
+        background-color: black;
     }
     h2 {
         text-align: center;
@@ -737,7 +693,7 @@
         border-right:1px solid #d8d8d8;
         flex-direction: column;
     }
-    #update-json, #save-squares-btn, #load-arr {
+    #update-json, #save-squares-btn {
         width: 155px;
         height: 30px;
         font-size: 0.8em;
@@ -801,6 +757,7 @@
         top: 30px;
         display:none;
     }
+
     #square0, #square1 , #square2{
         cursor: pointer;
     }

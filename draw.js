@@ -1,14 +1,15 @@
 
 const nameSpaceURI = "http://www.w3.org/2000/svg";
+
 export const squareStyle = [
-    "stroke:blue; stroke-width:0.5;fill-opacity:0;",
-    "stroke:green;stroke-width:0.5;fill-opacity:0;",
-    "stroke:red;  stroke-width:0.5;fill-opacity:0;",
+    "stroke:#03a9f4;stroke-width:0.8;fill-opacity:0;",
+    "stroke:#00ff00;stroke-width:0.8;fill-opacity:0;",
+    "stroke:#ff0000;stroke-width:0.8;fill-opacity:0;",
 ]
 const txtStyle = [
-    "stroke:blue;",
-    "stroke:green;",
-    "stroke:red;",
+    "stroke:#03a9f4;",
+    "stroke:#00ff00;",
+    "stroke:#ff0000;",
 ]
 var svg = document.getElementsByTagName('svg')[0]; //Get svg element
 //import { W, H } from './constants.js';
@@ -42,6 +43,7 @@ export function createSVGSquare(square, id){//tested
     label[id].setAttributeNS(null, 'x', square.center.x-5);
     label[id].setAttributeNS(null, 'y', square.center.y+5);
 }
+
 export function updateSVGSquare(square, id){//tested             
     let polygon = document.getElementById('square'+id);
     let points = "";
@@ -92,29 +94,26 @@ export function saveSvg(svgEl, name) {
     document.body.removeChild(downloadLink);
 }
 
+export function fadeIn(el, display){
+    el.style.opacity = 0;
+    //el.style.display = display || "block";
 
-export function createSvgArr() {
-    fetch('http://localhost:8080/arrangments-found-1565748053448.json')
-    .then(response => response.text())
-    .then((data) => { 
-        
-        let arrangments = JSON.parse(data);
-        let n = 5;//arrangments.length;
-        for (let i=0;i<n;i++){
-            let arr = arrangments[i];
-            for (let j=0;j<3;j++){
-                let polygon = document.getElementById('square'+j);
-                let points = "";
-                for(let k=0;k<4;k++){
-                    points += arr.squares[j][k].x + ',' +arr.squares[j][k].y + ' ';
-                }
-                polygon.setAttribute("points",points); 
-                polygon.style = squareStyle[j]; 
-                label[j].setAttributeNS(null, 'x',  arr.squares[j][0].x-10);
-                label[j].setAttributeNS(null, 'y', arr.squares[j][0].y-10);                   
-            }
-           
-            //saveSvg(svg, 'arr'+i+'.svg');
-        }            
-    })
-}
+    (function fade() {
+        var val = parseFloat(el.style.opacity);
+        if (!((val += .005) > 1)) {
+            el.style.opacity = val;
+            requestAnimationFrame(fade);
+        }
+    })();
+};
+
+export function fadeOut(el){
+    el.style.opacity = 1;
+    (function fade() {
+        if ((el.style.opacity -= .005) < 0) {
+            //el.style.display = "none";
+        } else {
+            requestAnimationFrame(fade);
+        }
+    })();
+};
