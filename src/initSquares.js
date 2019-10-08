@@ -36,6 +36,7 @@
                     {xmin: 0, xmax: 0, ymin:0, ymax:0},
                     {xmin: 0, xmax: 0, ymin:0, ymax:0},
                 ],
+                svg: null,
                 //Methods
 
                 //When the square change we update his bounding boxes

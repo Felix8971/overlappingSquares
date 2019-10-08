@@ -4,7 +4,7 @@
     exports.MIN = -999999;
     exports.MAX = 999999;
     exports.W = 500;
-    exports.H = 398;
+    exports.H = 500;
     exports.NB_SQUARE = 3;
     exports.NB_VERTEX = 4;//nb vertex per square
 

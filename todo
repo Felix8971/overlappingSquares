@@ -56,15 +56,13 @@ http://www.ams.org/publicoutreach/feature-column/fc-2019-01
 https://www.researchgate.net/publication/321604192_Arrangements_of_Pseudocircles_On_Circularizability
 
 
-
 Faire un calcul complementare pour chaque arr n3 deja trouvés: 
 - enlever un des carré 
 - puis detecter tous les polygons et y introduire un carré de taille nulle afin de 
 verifier si on a pas oublié certaines configurations. 
 
-Relancer la calcul (en mode reprise) entre 0 et 5% avec des pas plus fins et voir 
+Relancer le calcul (en mode reprise) entre 0 et 5% avec des pas plus fins et voir 
 si on trouve de nouveaux arrangements
 
-
-Lancer un premier calcul avec des carrés de tailles similaires afin qu'ils soient plus presentables graphiquement
-Puis utiliser la proprieté viewBox dans la balise svg afin de zoomer sur la partie interressante ?
+Lancer un premier calcul avec des carrés de tailles similaires afin qu'ils soient plus presentables 
+graphiquement. Puis utiliser la proprieté viewBox dans la balise svg afin de zoomer sur la partie interressante ?

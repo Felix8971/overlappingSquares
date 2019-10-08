@@ -67,7 +67,7 @@ var getArrsN3Array = (arrsN3) => {
         }
     });
     
-    // We remove unnecessary decimals, 4 digits after the decimal point should be ok
+    // // We remove unnecessary decimals, 4 digits after the decimal point should be ok
     // const n = arrsLigth.length;
     // for (let i=0;i<n;i++){
     //     for (let j=0;j<NB_SQUARE;j++){
@@ -110,7 +110,7 @@ var updateArrsN3 = (arr, arrsN3) => {
         sI.sort((a, b) => a - b);//ascending sort
         // the sort is important if we want to save the equivalents arr in
         // the same place in arrsN3
-        // sV et sI sont invariants au sein d'un groupe d'arrangements equivalents
+        // sV and sI are invariants inside and group of equivalent arrangements
 
         //convertion to a decimal number 
         let nV = sV[0]*100 + sV[1]*10 + sV[2];
@@ -190,7 +190,7 @@ var _searchArrangments = function (squares, params, arrangments=[], i0_start=0 )
             y2 = scanArea.ymin + j0*step;
             count++; 
             let delta_t = parseFloat(((Date.now() - t0)/(1000*60)).toFixed(2))  ;
-            console.log(parseInt(1000*(count/nxny))/10 + '% : '+ getArrsN3Length(arrsN3) + ' arrangments found in '+ parseInt(100*(delta_t))/100   + ' minutes');
+            console.log(parseInt(1000*(count/nxny))/10 + '% : '+ getArrsN3Length(arrsN3) + ' arrangments found in '+ parseInt(100*(delta_t))/100 + ' minutes');
             for(let p=0;p<n_size;p++){
                 for(let k=0;k<n_angles;k++){                                                          
                     squares[1].changeState({x:x2,y:y2}, sizes[p], angles[k]);

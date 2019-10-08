@@ -2,40 +2,41 @@
 const nameSpaceURI = "http://www.w3.org/2000/svg";
 
 export const squareStyle = [
-    "stroke:#03a9f4;stroke-width:0.8;fill-opacity:0;",
-    "stroke:#00ff00;stroke-width:0.8;fill-opacity:0;",
-    "stroke:#ff0000;stroke-width:0.8;fill-opacity:0;",
+    "stroke:#03a9f4;stroke-width:0.6;fill-opacity:0;",
+    "stroke:#00ff00;stroke-width:0.6;fill-opacity:0;",
+    "stroke:#ff0000;stroke-width:0.6;fill-opacity:0;",
 ]
 const txtStyle = [
-    "stroke:#03a9f4;",
-    "stroke:#00ff00;",
-    "stroke:#ff0000;",
+    "stroke:#03a9f4;stroke-width:0.3;",
+    "stroke:#00ff00;stroke-width:0.3;",
+    "stroke:#ff0000;stroke-width:0.3;",
 ]
+
 var svg = document.getElementsByTagName('svg')[0]; //Get svg element
 //import { W, H } from './constants.js';
   
-svg.setAttribute('width','500px');
-svg.setAttribute('height','398px');
+// svg.setAttribute('width','800px');
+// svg.setAttribute('height','398px');
 
 //Create label for the squares
-let label = [];
-for (let i=0;i<3;i++){
-    label[i] = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-    label[i].setAttributeNS(null, 'x', 0);
-    label[i].setAttributeNS(null, 'y', 0);
-    label[i].setAttributeNS(null, 'id', 'label'+i);
-    let txt = document.createTextNode(i+'');
-    label[i].appendChild(txt);
-    label[i].style = txtStyle[i]; 
-    svg.appendChild(label[i]);
-}
+// let label = [];
+// for (let i=0;i<3;i++){
+//     label[i] = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+//     label[i].setAttributeNS(null, 'x', 0);
+//     label[i].setAttributeNS(null, 'y', 0);
+//     label[i].setAttributeNS(null, 'id', 'label'+i);
+//     let txt = document.createTextNode(i+'');
+//     label[i].appendChild(txt);
+//     label[i].style = txtStyle[i]; 
+//     svg.appendChild(label[i]);
+// }
 
 export function createSVGSquare(square, id){//tested             
     let polygon = document.createElementNS(nameSpaceURI, 'polygon'); //Create a path in SVG's namespace
     polygon.setAttribute("id",'square'+id); 
     let points = "";
     for(let i=0;i<4;i++){
-        points += square.vertex[i].x+ ',' +square.vertex[i].y + ' ';
+        points += square.vertex[i].x + ',' + square.vertex[i].y + ' ';
     }
     polygon.setAttribute("points",points);
     polygon.style = squareStyle[id];

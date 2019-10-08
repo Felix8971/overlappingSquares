@@ -3,6 +3,7 @@
 <head>
     <script type="text/javascript" src="./src/constants.js"></script>
     <script type="text/javascript" src="./src/compare-arrangements.js"></script>
+    <script type="text/javascript" src="raphael.min.js"></script>
 </head>
 
 <body>
@@ -10,98 +11,120 @@
     <div id="container">
         <div id='result-zone'>
             <div id="msg">Invalid move</div>
+            <div id="slide-container">
+                <input class="custom-slider" type="range" value="50">
+            </div>
+            <div id="btn-control">
+                <div id="play-pause-btn">
+                    <img id="play-btn" src="play-button.svg" width="30" height="30" alt="Play" title="Play">   
+                    <img id="pause-btn" src="pause-button.svg" width="30" height="30" alt="Pause" title="Pause">                  
+                </div>    
+                <div id="stop-btn">
+                    <img id="stop-btn" src="stop-button.svg" width="30" height="30" alt="Stop" title="Stop">                 
+                </div>   
+                <div id="previous-btn">
+                    <img src="next-button.svg" width="30" height="30" alt="Previous" title="Previous">                 
+                </div> 
+                <div id="next-btn">
+                    <img src="next-button.svg" width="30" height="30" alt="Next" title="Next">                 
+                </div>  
+                <div id="zoom-out-btn">
+                    <img id="zoom-out-btn" src="zoom-out-button.svg" width="35" height="35" alt="Zoom-out" title="Zoom-out">                 
+                </div>  
+                <div id="zoom-in-btn">
+                    <img src="zoom-in-button.svg" width="35" height="35" alt="Zoom-in" title="Zoom-in">  
+                </div>     
+            </div>
+
+            <div id="legend">
+                <div class="legend-line">
+                    <div class="line-0"></div>
+                    <div class="value">0</div>
+                </div>
+                <div class="legend-line">
+                    <div class="line-1"></div>
+                    <div class="value">1</div>
+                </div>
+                <div class="legend-line">
+                    <div class="line-2"></div>
+                    <div class="value">2</div>
+                </div>
+            </div>
+            <div id="nb-arr-container">Total arrangments:
+                <span id="nbArr"></span>
+            </div>   
             <div id="current-arr-container">Current arrangment:
                 <input id="current-arr" type="text" name="current-arr"  value='1' >
-                / <span id="nbArr"></span>
             </div>
-            <svg id="zone" height="1" width="1">
-            </svg> 
-            <div id="footer-container">
-                <div id="export-svg">
-                   
-                    <div class="nav">
-                        <button id="previous-btn"><<</button> 
-                        <button id="next-btn">>></button> 
-                    </div>
-                    <div class="nav">
-                        <button id="play-btn">play</button>                  
-                    </div>
-                    <button id="update-json">Update json</button>
-                    <!-- 
-                    <div class='import-export-container'>                     
-                        <button id="export-selection-btn">Export</button>   
-                    </div>
-                    <button id="save-squares-btn">Save current object</button> 
-                    -->                                
+
+            <div id='matrices'>          
+                <div class="header">
+                    <div class="column-result">V</div>
+                    <div class="column-result">F</div>
                 </div>
-                <div id='matrices'>          
-                    <div class="header">
-                        <div class="column-result">V</div>
-                        <div class="column-result">F</div>
+                <div class="body">
+                    <div class="column-result" id="v-matrix">
+                        <div class="line-matrix-group">
+                            <div class="line-matrix">
+                                <div class="m-square border-left border-top"></div>
+                                <div id="v00" class="m-square">0</div>
+                                <div id="v01" class="m-square">0</div>
+                                <div id="v02" class="m-square">0</div>
+                                <div class="m-square border-right border-top"></div>
+                            </div>
+                            <div class="line-matrix"> 
+                                <div class="m-square border-left"></div>
+                                <div id="v10" class="m-square">0</div>
+                                <div id="v11" class="m-square">0</div>
+                                <div id="v12" class="m-square">0</div>
+                                <div class="m-square border-right"></div>
+                            </div>                            
+                            <div class="line-matrix">
+                                <div class="m-square border-left border-bottom"></div>
+                                <div id="v20" class="m-square">0</div>
+                                <div id="v21" class="m-square">0</div>
+                                <div id="v22" class="m-square">0</div>
+                                <div class="m-square border-right border-bottom"></div>
+                            </div>                                  
+                        </div> 
+                        <div id="v-illegal">illegal!</div>                         
                     </div>
-                    <div class="body">
-                        <div class="column-result" id="v-matrix">
-                            <div class="line-matrix-group">
-                                <div class="line-matrix">
-                                    <div class="m-square border-left border-top"></div>
-                                    <div id="v00" class="m-square">0</div>
-                                    <div id="v01" class="m-square">0</div>
-                                    <div id="v02" class="m-square">0</div>
-                                    <div class="m-square border-right border-top"></div>
-                                </div>
-                                <div class="line-matrix"> 
-                                    <div class="m-square border-left"></div>
-                                    <div id="v10" class="m-square">0</div>
-                                    <div id="v11" class="m-square">0</div>
-                                    <div id="v12" class="m-square">0</div>
-                                    <div class="m-square border-right"></div>
-                                </div>                            
-                                <div class="line-matrix">
-                                    <div class="m-square border-left border-bottom"></div>
-                                    <div id="v20" class="m-square">0</div>
-                                    <div id="v21" class="m-square">0</div>
-                                    <div id="v22" class="m-square">0</div>
-                                    <div class="m-square border-right border-bottom"></div>
-                                </div>                                  
-                            </div> 
-                            <div id="v-illegal">illegal!</div>                         
-                        </div>
-                        <div class="column-result" id="f-matrix">
-                            <div class="line-matrix-group">
-                                <div class="line-matrix">
-                                    <div class="m-square border-left border-top"></div>
-                                    <div id="f00" class="m-square">0</div>
-                                    <div id="f01" class="m-square">0</div>
-                                    <div id="f02" class="m-square">0</div>                                 
-                                    <div class="m-square border-right border-top"></div>
-                                </div>
-                                <div class="line-matrix"> 
-                                    <div class="m-square border-left"></div>
-                                    <div id="f10" class="m-square">0</div>
-                                    <div id="f11" class="m-square">0</div>
-                                    <div id="f12" class="m-square">0</div>                                 
-                                    <div class="m-square border-right"></div>
-                                </div>    
-                                <div class="line-matrix"> 
-                                    <div class="m-square border-left"></div>
-                                    <div id="f20" class="m-square">0</div>
-                                    <div id="f21" class="m-square">0</div>
-                                    <div id="f22" class="m-square">0</div>                                 
-                                    <div class="m-square border-right"></div>
-                                </div>                           
-                                <div class="line-matrix">
-                                    <div class="m-square border-left border-bottom"></div>
-                                    <div id="f30" class="m-square">0</div>
-                                    <div id="f31" class="m-square">0</div>
-                                    <div id="f32" class="m-square">0</div>                                
-                                    <div class="m-square border-right border-bottom"></div>
-                                </div>                                  
-                            </div> 
-                            <div id="f-illegal">illegal!</div>                                 
-                        </div>
-                    </div>                                      
-                </div>  
+                    <div class="column-result" id="f-matrix">
+                        <div class="line-matrix-group">
+                            <div class="line-matrix">
+                                <div class="m-square border-left border-top"></div>
+                                <div id="f00" class="m-square">0</div>
+                                <div id="f01" class="m-square">0</div>
+                                <div id="f02" class="m-square">0</div>                                 
+                                <div class="m-square border-right border-top"></div>
+                            </div>
+                            <div class="line-matrix"> 
+                                <div class="m-square border-left"></div>
+                                <div id="f10" class="m-square">0</div>
+                                <div id="f11" class="m-square">0</div>
+                                <div id="f12" class="m-square">0</div>                                 
+                                <div class="m-square border-right"></div>
+                            </div>    
+                            <div class="line-matrix"> 
+                                <div class="m-square border-left"></div>
+                                <div id="f20" class="m-square">0</div>
+                                <div id="f21" class="m-square">0</div>
+                                <div id="f22" class="m-square">0</div>                                 
+                                <div class="m-square border-right"></div>
+                            </div>                           
+                            <div class="line-matrix">
+                                <div class="m-square border-left border-bottom"></div>
+                                <div id="f30" class="m-square">0</div>
+                                <div id="f31" class="m-square">0</div>
+                                <div id="f32" class="m-square">0</div>                                
+                                <div class="m-square border-right border-bottom"></div>
+                            </div>                                  
+                        </div> 
+                        <div id="f-illegal">illegal!</div>                                 
+                    </div>
+                </div>                                      
             </div>   
+            
         </div>     
         <div>
             <div class='line' id='active-square'>
@@ -167,19 +190,22 @@
                         <button id="resize-plus">+</button>
                     </div>            
             </div>
+            <div class='line'>
+                <button id="update-json">Update json</button>                         
+            </div>
         </div>
     </div>
+    <div style="opacity: 0;">Icons made by <a href="https://www.flaticon.com/authors/smashicons" title="Smashicons">Smashicons</a> from <a href="https://www.flaticon.com/"  title="Flaticon">www.flaticon.com</a></div>
 
     <script type="module">
 
         //idee optimisation: pre calculer tous les gabari de carres (avec scales et rotations) puis les translater
-        import { createSVGSquare, updateSVGSquare, drawPoint, drawBox, saveSvg, squareStyle, fadeIn, fadeOut } from './draw.js';
+        import { createSVGSquare, updateSVGSquare, drawPoint, drawBox, saveSvg, fadeIn, fadeOut } from './draw.js';
         const { W, H, NB_SQUARE, NB_VERTEX} = constants;
         const are_VI_Equivalents = compareArrangments.are_VI_Equivalents;
         const arrangement_to_VI = calculVI.arrangement_to_VI;
         const getInitSquares = initSquares.getInitSquares;
-        var squares = getInitSquares(constants);
-
+        
         let arrangments = [];
         let nbArr = null;
 
@@ -195,16 +221,20 @@
             [0, 0, 0],
             [0, 0, 0]
         ];
-        
-        var svg = document.getElementsByTagName('svg')[0]; //Get svg element
-        svg.setAttribute('width','500px');
-        svg.setAttribute('height','353px');
-
+       
         var exportIndex = 0;
-        var selectedSquare = 0;
+        var selectedSquareIndex = 0;
         var translationStep = 1;
         var rotationStep = 1;
         var resizeStep = 1;
+        var playPauseBtnState = null;
+        var zoomBtnState = null;
+        var zoomValue = 0;
+        var playLoopId = null;
+        const zoomStep = W/20;
+        var ANIMATION_DURATION = 200;
+        var TRANSITION_DELAY = 400;
+
 
         //Update the displayed matrices according to the value of the squares object
         var updateMatrices = function(){
@@ -244,27 +274,20 @@
         var radio = document.getElementsByName('square-selected');
         for (var i = 0; i < radio.length; i++) {
             radio[i].addEventListener('change', function(event) { 
-                selectedSquare = event.target.value;
-                console.log(selectedSquare);
-                document.getElementById('square0').style.strokeWidth = '0.5';
-                document.getElementById('square1').style.strokeWidth = '0.5';
-                document.getElementById('square2').style.strokeWidth = '0.5';
-                document.getElementById('square'+selectedSquare).style.strokeWidth = 2;
+                selectedSquareIndex = event.target.value;
+                for (let j=0;j<3;j++){
+                    squares[j].svg.attr({ 
+                        //'stroke-width': 0.8,
+                        "fill-opacity": 0
+                    });
+                }                  
+                squares[selectedSquareIndex].svg.attr({
+                    //'stroke-width': 1.5,
+                    "fill-opacity": 0.2
+                });              
             });
         }
 
-        //Define event when click a svg square
-        document.addEventListener("DOMContentLoaded", function() {
-            ['square0','square1','square2',].map((square)=>{
-                document.getElementById(square).addEventListener('click', function(event) { 
-                    selectedSquare = event.target.id.split("square")[1];
-                    document.getElementById('square0').style.strokeWidth = '0.8';
-                    document.getElementById('square1').style.strokeWidth = '0.8';
-                    document.getElementById('square2').style.strokeWidth = '0.8';
-                    document.getElementById('square'+selectedSquare).style.strokeWidth = 2;
-                });
-            })
-        });
 
         //translation step
         document.getElementById('translation-step').addEventListener('change', function(event) { 
@@ -282,57 +305,35 @@
             translationStep = elem.value;
         });
 
-        var validMove = function(sq, callback){
-            //calcul nouvelle matrices V et I pour cette position
-            let arr = arrangement_to_VI(squares, NB_VERTEX, NB_SQUARE);     
-            if (arr.valid && are_VI_Equivalents(arrangments[currentArr], arr) ) {
-                updateSVGSquare(sq, selectedSquare);
-                // Mettre a jour arrangments[currentArr] pour pouvoir exporter la modif plus tard
-                let square = arrangments[currentArr].squares[selectedSquare];
-                square.a = sq.a; //edge length
-                square.center.x = sq.center.x;
-                square.center.y = sq.center.y;
-                square.angle = sq.angle; 
-                square.vertex = [];
-                for (let i=0;i<NB_VERTEX;i++){
-                    square.vertex[i] = {};
-                    square.vertex[i].x = sq.vertex[i].x; 
-                    square.vertex[i].y = sq.vertex[i].y;  
-                } 
-            } else {
-                //Reverse the modification  
-                callback(sq);             
-            }
-        }
-
         document.getElementById('go-up').addEventListener('click', function(event) {
-            let sq = squares[selectedSquare];
+            let sq = squares[selectedSquareIndex];
             sq.translate({x:0, y: -parseInt(translationStep)}, true);
             validMove(sq, (elem)=>{
-                elem.translate({x:0, y: parseInt(translationStep)}, true);  
-                //alert('nope!');
+                elem.translate({x:0, y: parseInt(translationStep)}, true);
                 fadeOut(document.getElementById('msg'), null);
             });                
         });
 
         document.getElementById('go-down').addEventListener('click', function(event) {
-            let sq = squares[selectedSquare];
+            let sq = squares[selectedSquareIndex];
             sq.translate({x:0, y: parseInt(translationStep)}, true);
             validMove(sq, (elem)=>{
                 elem.translate({x:0, y: -parseInt(translationStep)}, true);  
                 fadeOut(document.getElementById('msg'), null);
             });   
         });
+
         document.getElementById('go-left').addEventListener('click', function(event) {
-            let sq = squares[selectedSquare];
+            let sq = squares[selectedSquareIndex];
             sq.translate({x: -parseInt(translationStep), y: 0}, true);
             validMove(sq, (elem)=>{
                 sq.translate({x: parseInt(translationStep), y: 0}, true);
                 fadeOut(document.getElementById('msg'), null);
             }); 
         });
+
         document.getElementById('go-right').addEventListener('click', function(event) {
-            let sq = squares[selectedSquare];
+            let sq = squares[selectedSquareIndex];
             sq.translate({x: parseInt(translationStep), y: 0}, true);
             validMove(sq, (elem)=>{
                 sq.translate({x: -parseInt(translationStep), y: 0}, true);
@@ -356,7 +357,7 @@
             rotationStep = elem.value;
         });
         document.getElementById('rotate-plus').addEventListener('click', function(event) {
-            let sq = squares[selectedSquare];
+            let sq = squares[selectedSquareIndex];
             sq.angle = sq.angle + parseInt(rotationStep);
             sq.rotate(sq.angle, true);
             validMove(sq, (elem)=>{
@@ -366,7 +367,7 @@
             }); 
         });
         document.getElementById('rotate-moins').addEventListener('click', function(event) {
-            let sq = squares[selectedSquare];
+            let sq = squares[selectedSquareIndex];
             sq.angle = sq.angle - parseInt(rotationStep);
             sq.rotate(sq.angle, true);
             validMove(sq, (elem)=>{
@@ -393,7 +394,7 @@
             resizeStep = elem.value;
         });
         document.getElementById('resize-plus').addEventListener('click', function(event) {
-            let sq = squares[selectedSquare];
+            let sq = squares[selectedSquareIndex];
             let a = sq.a + parseInt(resizeStep);
             sq.changeSize(a, true);
             validMove(sq, (elem)=>{
@@ -403,7 +404,7 @@
             }); 
         });
         document.getElementById('resize-moins').addEventListener('click', function(event) {
-            let sq = squares[selectedSquare];
+            let sq = squares[selectedSquareIndex];
             let a = sq.a - parseInt(resizeStep);
             sq.changeSize(a, true);
             validMove(sq, (elem)=>{
@@ -413,7 +414,42 @@
             }); 
         });
 
-        
+
+        var validMove = function(sq, callback){
+            //calcul nouvelle matrices V et I pour cette position
+            let arr = arrangement_to_VI(squares, NB_VERTEX, NB_SQUARE);     
+            if (arr.valid && are_VI_Equivalents(arrangments[currentArr], arr) ) {
+                //updateSVGSquare(sq, selectedSquareIndex);
+                //and we update the svg square  
+                let x = sq.center.x - 0.5*sq.a;
+                let y = sq.center.y - 0.5*sq.a;
+                squares[selectedSquareIndex].svg.animate({ 
+                    x,
+                    y,
+                    width: sq.a,
+                    height: sq.a,
+                    transform: "r"+sq.angle,
+                    delay: 1000
+                }, 200); 
+
+                // Mettre a jour arrangments[currentArr] pour pouvoir exporter la modif plus tard
+                let square = arrangments[currentArr].squares[selectedSquareIndex];
+                square.a = sq.a; //edge length
+                square.center.x = sq.center.x;
+                square.center.y = sq.center.y;
+                square.angle = sq.angle; 
+                square.vertex = [];
+                for (let i=0;i<NB_VERTEX;i++){
+                    square.vertex[i] = {};
+                    square.vertex[i].x = sq.vertex[i].x; 
+                    square.vertex[i].y = sq.vertex[i].y;  
+                } 
+            } else {
+                //Reverse the modification  
+                callback(sq);             
+            }
+        }
+
         document.getElementById('update-json').addEventListener('click', function(event) {
             let dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(arrangments));
             let dlAnchorElem = document.getElementById('downloadAnchorElem');
@@ -437,12 +473,10 @@
         //     )
         // }
 
-
         document.getElementById('next-btn').addEventListener('click', function(event) {
             if (currentArr < nbArr - 1){
                 currentArr++;
                 loadArr(currentArr);
-                document.getElementById('current-arr').value = parseInt(currentArr + 1);
             }
         });
 
@@ -450,43 +484,126 @@
             if (currentArr > 0 ){
                 currentArr--;
                 loadArr(currentArr);
-                document.getElementById('current-arr').value = parseInt(currentArr + 1);
             }
         });
 
         document.getElementById('current-arr').addEventListener('change', function(event) { 
-            if (event.target.value >= 1 && event.target.value <= nbArr ){
-                currentArr = event.target.value - 1;
-                loadArr(currentArr + 1);
+            let value = parseInt(event.target.value);
+            if (value >= 1 && value <= nbArr ){
+                currentArr = value - 1;
+                loadArr(currentArr);
             }
         });
 
-        document.getElementById('play-btn').addEventListener('click', function(event) {
-            setInterval(()=>{
-                if (currentArr < nbArr - 1){
-                    currentArr++;
-                    loadArr(currentArr);
-                    document.getElementById('current-arr').value = parseInt(currentArr + 1);
-                }
-            },200);
+        document.getElementById('play-pause-btn').addEventListener('click', function(event) {
+            if ( playPauseBtnState == null || playPauseBtnState == "pause" ){
+                playPauseBtnState = "play";
+                document.getElementById('play-btn').style.display = "none";
+                document.getElementById('pause-btn').style.display = "block";
+                playLoopId = setInterval(()=>{
+                    if (currentArr < nbArr - 1){
+                        currentArr++;
+                        loadArr(currentArr);
+                    }
+                }, TRANSITION_DELAY);
+            } else {
+                playPauseBtnState = "pause";
+                document.getElementById('play-btn').style.display = "block";
+                document.getElementById('pause-btn').style.display = "none";
+                clearInterval(playLoopId);
+            }
         });
 
+        document.getElementById('stop-btn').addEventListener('click', function(event) { 
+            clearInterval(playLoopId);
+            document.getElementById('play-btn').style.display = "block";
+            document.getElementById('pause-btn').style.display = "none";
+            playPauseBtnState = null;
+            currentArr = 0;
+            loadArr(currentArr);
+        });
+
+        function setZoom(zoomValue){ 
+            const xmin = zoomValue * zoomStep;
+            const ymin = zoomValue * zoomStep;
+            const _w = W - 2 * zoomValue * zoomStep;
+            const _h = H - 2 * zoomValue * zoomStep;
+            if ( _w > 0 && _h > 0 && _w <= W && _h <= H)
+            paper.setViewBox(xmin, ymin, _w, _h);
+            for (let k=0;k<3;k++){
+                squares[k].svg.attr({'stroke-width': 1 - zoomValue/14});
+            }
+        }
+
+        document.getElementById('zoom-in-btn').addEventListener('click', function(event) {          
+            zoomValue = zoomValue < 7 ? zoomValue + 1 : 7;
+            setZoom(zoomValue);
+        });
+
+        document.getElementById('zoom-out-btn').addEventListener('click', function(event) {          
+            zoomValue = zoomValue > 0 ? zoomValue - 1 : 0;
+            setZoom(zoomValue);
+        });
+        // function zoomIn(){
+        //     document.getElementById('zoom-in-btn').style.display = "none";
+        //     document.getElementById('zoom-out-btn').style.display = "block";
+        //     zoomBtnState = "out";
+        //     let box = getArrangmentBox(squares);
+        //     box.xmin -= 20;
+        //     box.ymin -= 20;
+        //     box.xmax += 20;
+        //     box.ymax += 20;
+        //     let w = box.xmax - box.xmin;
+        //     let h = box.ymax - box.ymin;
+        //     paper.setViewBox(box.xmin, box.ymin, w, h);
+        //     for (let k=0;k<3;k++){
+        //         squares[k].svg.attr({'stroke-width': 0.5});
+        //     }
+        // }
+
+        // function zoomOut(){
+        //     document.getElementById('zoom-in-btn').style.display = "block";
+        //     document.getElementById('zoom-out-btn').style.display = "none";
+        //     zoomBtnState = "in";
+        //     paper.setViewBox(0, 0, W, H);
+        //     for (let k=0;k<3;k++){
+        //         squares[k].svg.attr({'stroke-width': 1});
+        //     }
+        // }
+
+        function getArrangmentBox(squares){
+            let xmin=999, xmax=-999, ymin=999, ymax=-999;
+            for (let j=0;j<3;j++){
+                if ( squares[j].box.xmin < xmin ){
+                    xmin = squares[j].box.xmin;                   
+                }
+                if ( squares[j].box.ymin < ymin ){
+                    ymin = squares[j].box.ymin;                   
+                }
+                if ( squares[j].box.xmax > xmax ){
+                    xmax = squares[j].box.xmax;                   
+                }
+                if ( squares[j].box.ymax > ymax ){
+                    ymax = squares[j].box.ymax;           
+                }
+            }
+            return {xmin, xmax, ymin, ymax};
+        }
 
         //Load arrangement i: update the local squares objet with it and update displayed svg
         function loadArr(i){                
             let arr = arrangments[i];           
             let label = [];
             let xmin=999, xmax=-999, ymin=999, ymax=-999;
+            //zoomOut();
             for (let j=0;j<3;j++){
                 //We apply the geometric parameters of arr.squares[j] to squares[j] 
-                //and we update the svg polygon        
                 squares[j].changeState({
                     x: arr.squares[j].center.x, 
                     y: arr.squares[j].center.y}, 
                     arr.squares[j].a, 
                     arr.squares[j].angle
-                );
-                debugger;
+                );             
                 if ( squares[j].box.xmin < xmin ){
                     xmin = squares[j].box.xmin;                   
                 }
@@ -499,30 +616,33 @@
                 if ( squares[j].box.ymax > ymax ){
                     ymax = squares[j].box.ymax;                   
                 }
-                let polygon = document.getElementById('square'+j);
-                let points = "";
-                for(let k=0;k<4;k++){
-                    points += squares[j].vertex[k].x + ',' +squares[j].vertex[k].y + ' ';
-                }
-                polygon.setAttribute("points",points); 
-                polygon.style = squareStyle[j]; 
-                label[j] = document.getElementById('label'+j);                     
-                label[j].setAttributeNS(null, 'x', squares[j].center.x-5);
-                label[j].setAttributeNS(null, 'y', squares[j].center.y+5);
+               
+                //and we update the svg square   
+                let x = squares[j].center.x - 0.5*squares[j].a;
+                let y = squares[j].center.y - 0.5*squares[j].a;
+                squares[j].svg.animate({ 
+                    x,
+                    y,
+                    width: squares[j].a,
+                    height: squares[j].a,
+                    transform: "r"+squares[j].angle,
+                }, ANIMATION_DURATION, "ease-in-out"); 
+
+                // label[j] = document.getElementById('label'+j);                     
+                // label[j].setAttributeNS(null, 'x', squares[j].center.x-5);
+                // label[j].setAttributeNS(null, 'y', squares[j].center.y+5); 
                 
+                document.getElementById('current-arr').value = parseInt(i + 1);
                 updateMatrices();
             }   
             
-            var svg = document.getElementsByTagName('svg')[0]; //Get svg element
-            xmin = xmin - 20;
-            xmax = xmax + 20;
-            ymin = ymin - 20;
-            ymax = ymax + 20;
-            let w = xmax - xmin;
-            let h = ymax - ymin;
-            let viewbox = xmin + " " + ymin + " " + w + " " + h;
-            svg.setAttribute('viewBox',viewbox);
-            
+            // xmin -= 20;
+            // ymin -= 20;
+            // xmax += 20;
+            // ymax += 20;
+            // let w = xmax - xmin;
+            // let h = ymax - ymin;
+            // paper.setViewBox(xmin, ymin, w, h);
         };
 
 
@@ -531,45 +651,76 @@
             .then(response => response.text())
             .then((data) => {
                 arrangments = JSON.parse(data);               
-                // arrangments = arrangments.filter((elem)=>
-                // ( ( elem.V[0][1] == 0 && elem.V[1][0] == 0 ) 
-                //     || ( elem.V[1][2] == 0 && elem.V[2][1] == 0 )
-                //     || ( elem.V[0][2] == 0 && elem.V[2][0] == 0 ) 
-                // ));
+                //  arrangments = arrangments.filter((elem)=>
+                //  (( elem.V[0][1] + elem.V[0][2] == 0 ) && ( elem.I[0][0] + elem.I[1][0] + elem.I[2][0] + elem.I[3][0] == 0 ) ));
                 nbArr = arrangments.length;
                 document.getElementById('nbArr').innerHTML = nbArr;
                 console.log(nbArr);
                 currentArr = 0;
                 loadArr(currentArr);
+                zoomValue = 4;
+                setZoom(zoomValue);
             });
         }
 
-        //Charge les arrangements contenues dans le fichier json 
-        //et affiche le premier d'entre eux 
-        // document.getElementById('load-arr').addEventListener('click', function(event) {
-        //     loadArrangments('http://localhost:8080/src/result/arrangments-found-3574-19-20.json');
-        // });
+        //contient l'etat courant des carrés
+        var squares = getInitSquares(constants);
+        
+        var paper = Raphael(document.getElementById('result-zone'), W, H); 
+        //xmin":150,"xmax":350,"ymin":99,"ymax":299
+        
+        //make a rectangle that fills the whole canvas area:
+        var rect = paper.rect(0, 0, W, H);
 
-        //on place les squares dans la zone
-        squares[0].initRotZero(100, {x:999, y:999});
-        createSVGSquare(squares[0],0);
-        document.getElementById('square0').style.strokeWidth = 2;
+        //paper.setViewBox(xmin, ymin, w, h);
 
-        //Les deux autres squares vont bouger
-        squares[1].initRotZero(100, {x:999, y:999});
-        //squares[1].translate({x:W/2, y:H/2})
-        createSVGSquare(squares[1],1);
-
-        squares[2].initRotZero(100, {x:999, y:999});
-        //squares[1].translate({x:W/2, y:H/2})
-        createSVGSquare(squares[2],2);
-
-        loadArrangments('http://localhost:8081/src/result/arrangments-found-3602-1-2.json');
-
+        rect.attr("fill", "black")
+        .click(function() {
+            selectedSquareIndex = 0;
+            //selectedSquareIndex = selectedSquareIndex < 2 ? selectedSquareIndex + 1 : 0;         
+            for (let k=0;k<3;k++){
+                squares[k].svg.attr({"fill-opacity": 0});
+            }
+            //squares[selectedSquareIndex].svg.attr({"fill-opacity": 0.2});
+        });
+       
+        let squareStyle = [
+            {stroke:'#0000FF', fill:"#0000FF"},
+            {stroke:'#00ff00', fill:"#00ff00"},
+            {stroke:'#ff0000', fill:"#ff0000"},
+        ];
+        squareStyle = squareStyle.map((elem)=>{
+            return {...elem, 'stroke-width': 1, 'fill-opacity':0, 'cursor':'pointer'}          
+        });
+       
+        for (let j=0;j<3;j++){
+            squares[j].svg = paper.rect(250, 200, 1, 1).attr(squareStyle[j])
+            .click(function(){ //Define event when click a svg square        
+                selectedSquareIndex = j;
+                for (let k=0;k<3;k++){
+                    squares[k].svg.attr({"fill-opacity": 0});
+                }
+                this.attr({"fill-opacity": 0.2}); 
+            });
+            
+            //add glow effect on hover
+            let g;
+            squares[j].svg.hover(function() {
+                g = squares[j].svg.glow().attr('stroke',squareStyle[j].stroke);
+            }, function() {// removing the glow        
+                g.remove();
+            });
+        }
+        
+        //Load the arrangments from the json file 
+        //and display the fist one
+        loadArrangments('http://localhost:8081/src/result/arrangments-found-3305-0-0.json');
+        //setTimeout(()=>{setZoom(4);},1000)
+        
     </script>
     <script type="text/javascript" src="./src/calculVI.js"></script>
     <script type="text/javascript" src="./src/initSquares.js"></script>
-
+   
 <style>
     body {
         font-family: monospace;
@@ -593,7 +744,7 @@
     }
     input {
         width: 44px;
-        font-size: 1.1em;
+        font-size: 1em;
         text-align: center;
         height: 22px;
     }
@@ -653,22 +804,32 @@
         position: absolute;
         color:white;
         font-size: 2em;
-        top: 0;
+        top: 33%;
         opacity:0;
+        cursor: default;
+        pointer-events:none;
     }
 
     #current-arr-container{
         position: absolute;
         color:white;
-        top: 328px;
-        left: 8px;
+        top: 466px;
+        left: 16px;
+    }
+    #nb-arr-container{
+        position: absolute;
+        color:white;
+        top: 453px;
+        left: 16px;
     }
     #current-arr{
         border:none;
-        font-size: 0.8em;
         color: white;
-        width: 46px;
+        width: 30px;
         background-color: black;
+        margin-left: -3px;
+        font-size: 13px;
+        font-family: monospace;
     }
     #zone{
         background-color: black;
@@ -702,20 +863,56 @@
         display:flex;
         flex-direction: column;
     }
-    #import-selection-btn, #export-selection-btn, #previous-btn, #next-btn, #play-btn{
+    #import-selection-btn, #export-selection-btn{
         width: 76px;
         height: 30px;
         font-size: 0.8em;
     }
+    #previous-btn {
+        transform: scaleX(-1);
+    }
+    #next-btn, #previous-btn, #stop-btn, #play-pause-btn, #zoom-in-btn, #zoom-out-btn{
+        cursor: pointer;
+    }
+    #btn-control {
+        position: absolute;
+        top: 453px;
+        right: 47px;
+        display:flex;
+        justify-content: space-between;
+        width: 232px;
+        transform: scale(1.2);
+    }
+    #zoom-in-btn{
+        display: block;
+        margin-left: -6px;
+    }
+    #zoom-out-btn{
+        display: block;
+    }
+
+    #pause-btn{
+        display: none;
+    }
+
+    #play-btn{
+        display: block;
+    }
+    #pause-btn{
+        display: none;
+    }
     #matrices{
-        width: 80%;
-        height: 100%;
+        position: absolute;
+        top: 30px;
+        right: 16px;
+        color:white;
         display: flex;
         flex-direction: column;
+        pointer-events: none;
     }
     .column-result{
         width:50%;
-        border: 1px solid #d8d8d8;
+        /* border: 1px solid #d8d8d8; */
         display: flex;
         justify-content: center;
     }
@@ -738,18 +935,18 @@
         padding: 2px 5px;
     }
     .border-left{
-        border-left: 1px solid black;
+        border-left: 1px solid white;
         padding: 2px 3px;
     }
     .border-right{
-        border-right: 1px solid black;
+        border-right: 1px solid white;
         padding: 2px 3px;
     }
     .border-top{
-        border-top: 1px solid black;
+        border-top: 1px solid white;
     }
     .border-bottom{
-        border-bottom: 1px solid black;
+        border-bottom: 1px solid white;
     }
     #v-illegal, #f-illegal{
         position: relative;
@@ -766,6 +963,128 @@
         display:flex;
     }
 
+
+    #legend {
+        width: 30px;
+        height: 55px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-around;
+        position: absolute;
+        color:white;
+        top: 397px;
+        color: white;
+        left: 16px;
+    }
+
+    .legend-line {
+        width: 33px;
+        height: 10px;
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .line-0{
+        background-color: #0000FF;
+        width: 20px;
+        height: 2px;
+    }
+    .line-1{
+        background-color: #00ff00;
+        width: 20px;
+        height: 2px;
+    }
+    .line-2{
+        background-color: #ff0000;
+        width: 20px;
+        height: 2px;
+    }
+    #slide-container{
+        display: none;
+    }
+    input[type=range].custom-slider {
+        -webkit-appearance: none;
+        padding: 0;
+        font: inherit;
+        outline: none;
+        color: #fff;
+        background: #000;
+        box-sizing: border-box;
+        transition: opacity .2s;
+        cursor: pointer;
+        width: 100px;
+        border: 1px solid white;
+        position: absolute;
+        top: 424px;
+        left:50px;
+    }
+    /* la zone de déplacement */
+    input[type=range].custom-slider::-webkit-slider-runnable-track {
+    height: 100%;
+    border: none;
+    border-radius: 0;
+    background-color: transparent;  /* supprimé définie sur l'input */
+    }
+    /* le curseur */
+    input[type=range].custom-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;       /* également nécessaire sur le curseur */
+    width: 1em;
+    height: inherit;                /* s'adapte à la hauteur de l'input */
+    border: none;
+    border-radius: 0;               /* pris en compte sur Webkit et Edge */
+    background: currentColor;       /* pris en compte sur Webkit only */
+    }
+
+    /* la zone de déplacement */
+    input[type=range].custom-slider::-moz-range-track {
+    height: 100%;
+    border: none;
+    border-radius: 0;
+    background-color: transparent;  /* supprimé définie sur l'input */
+    }
+    /* le curseur */
+    input[type=range].custom-slider::-moz-range-thumb {
+    width: 1em;
+    height: inherit;                /* s'adapte à la hauteur de l'input */
+    border: none;                   /* supprimer la bordure */
+    border-radius: 0;               /* supprimer le rayon */
+    background: currentColor;
+    }
+    /* barre progression avant */
+    input[type=range].custom-slider::-moz-range-progress {
+    height: 0;
+    background: transparent;        /* supprime barre progression avant */
+    }
+    /* la zone de déplacement */
+    input[type=range].custom-slider::-ms-track {
+    height: 100%;
+    border: none;
+    border-radius: 0;
+    color: transparent;             /* supprime les graduations pour IE */
+    background-color: transparent;  /* supprimé définie sur l'input */
+    }
+    /* le curseur */
+    input[type=range].custom-slider::-ms-thumb {
+    width: 1em;
+    height: inherit;                /* s'adapte à la hauteur de l'input */
+    border: none;                   /* supprimer la bordure */
+    border-radius: 0;               /* supprimer le rayon */
+    background: currentColor;
+    }
+    /* la tooltip de la valeur */
+    input[type=range].custom-slider::-ms-tooltip {
+    display: none;                  /* supprime l'affichage de la valeur au survol */
+    }
+    /* barre progression avant */
+    input[type=range].custom-slider::-ms-fill-lower {
+    background: transparent;
+    }
+    /* barre progression après */
+    input[type=range].custom-slider::-ms-fill-upper {
+    background: transparent;
+    }
 </style>
 </body>
 </html>

@@ -12,18 +12,27 @@ let nbError = tests();
 if ( nbError > 0 ){
     return;
 }
+
 //Simulation
-//We place the first square on the center, it will not change.
-squares[0].initRotZero(80, {x: CTE.W/2, y: CTE.H/2});
 
 //Define how far the center of the moving squares can go from the fixed central square
 const excursion = (3/4)*squares[0].a;
 
+// we calculate the right size for the square 0
+// so that the square 1 and 2 will always be visible is the 500*500 pixels window 
+// while we move them around (must take the excursion value into account and consider the worse case 
+// for which a moving square is the farest possible from square 0 and with a size equal two times 
+// the size of square 0.
+const a0 = CTE.W / (5/2 + 2*Math.sqrt(2));
+
+//We place the first square on the center, it will not change.
+squares[0].initRotZero(a0, {x: CTE.W/2, y: CTE.H/2});
+
 let params = {
     nbSquare: 3,
-    step: 10,
+    step: 5,
     angles: [0, 10, 20, 30, 40, 50, 60, 70, 80],
-    sizes: [30, 40, 50, 80, 90, 100, 110],
+    sizes: [a0/4, (2/4)*a0, (3/4)*a0, a0, (5/4)*a0, (6/4)*a0, (7/4)*a0, 2*a0],
     excursion,
     scanArea: {
         xmin: squares[0].box.xmin - excursion,
@@ -35,8 +44,9 @@ let params = {
 };
 
 //The 2 other squares will change overtime (position, size, angle)  
+
 for (let i=1;i<params.nbSquare;i++){ 
-  squares[i].initRotZero(80, {x:0, y:0});
+  squares[i].initRotZero(a0, {x:0, y:0});
 }
 //number od step on the scan zone
 params.nx = parseInt((params.scanArea.xmax - params.scanArea.xmin)/params.step)
