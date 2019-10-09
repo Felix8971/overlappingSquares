@@ -17,4 +17,5 @@
     }
     exports.COS = _COS;
     exports.SIN = _SIN;
+
 }(typeof exports === 'undefined' ? this.constants = {} : exports));

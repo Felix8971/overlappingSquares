@@ -31,7 +31,7 @@ squares[0].initRotZero(a0, {x: CTE.W/2, y: CTE.H/2});
 let params = {
     nbSquare: 3,
     step: 5,
-    angles: [0, 10, 20, 30, 40, 50, 60, 70, 80],
+    angles: [0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70, 75, 80, 85],
     sizes: [a0/4, (2/4)*a0, (3/4)*a0, a0, (5/4)*a0, (6/4)*a0, (7/4)*a0, 2*a0],
     excursion,
     scanArea: {
