@@ -4,6 +4,10 @@
     <script type="text/javascript" src="./src/constants.js"></script>
     <script type="text/javascript" src="./controlEvents.js"></script>
     <script type="text/javascript" src="./src/compare-arrangements.js"></script>
+
+    <script type="text/javascript" src="./src/calculVI.js"></script>
+    <script type="text/javascript" src="./src/initSquares.js"></script>
+
     <script type="text/javascript" src="raphael.min.js"></script>
     <link rel="stylesheet" href="style.css">
 </head>
@@ -19,23 +23,23 @@
             </div>
             <div id="btn-control">
                 <div id="play-pause-btn">
-                    <img id="play-btn" src="play-button.svg" width="30" height="30" alt="Play" title="Play">   
-                    <img id="pause-btn" src="pause-button.svg" width="30" height="30" alt="Pause" title="Pause">                  
+                    <img id="play-btn" src="./images/play-button.svg" width="30" height="30" alt="Play" title="Play">   
+                    <img id="pause-btn" src="./images/pause-button.svg" width="30" height="30" alt="Pause" title="Pause">                  
                 </div>    
                 <div id="stop-btn">
-                    <img id="stop-btn" src="stop-button.svg" width="30" height="30" alt="Stop" title="Stop">                 
+                    <img id="stop-btn" src="./images/stop-button.svg" width="30" height="30" alt="Stop" title="Stop">                 
                 </div>   
                 <div id="previous-btn">
-                    <img src="next-button.svg" width="30" height="30" alt="Previous" title="Previous">                 
+                    <img src="./images/next-button.svg" width="30" height="30" alt="Previous" title="Previous">                 
                 </div> 
                 <div id="next-btn">
-                    <img src="next-button.svg" width="30" height="30" alt="Next" title="Next">                 
+                    <img src="./images/next-button.svg" width="30" height="30" alt="Next" title="Next">                 
                 </div>  
                 <div id="zoom-out-btn">
-                    <img id="zoom-out-btn" src="zoom-out-button.svg" width="35" height="35" alt="Zoom-out" title="Zoom-out">                 
+                    <img id="zoom-out-btn" src="./images/zoom-out-button.svg" width="35" height="35" alt="Zoom-out" title="Zoom-out">                 
                 </div>  
                 <div id="zoom-in-btn">
-                    <img src="zoom-in-button.svg" width="35" height="35" alt="Zoom-in" title="Zoom-in">  
+                    <img src="./images/zoom-in-button.svg" width="35" height="35" alt="Zoom-in" title="Zoom-in">  
                 </div>     
             </div>
 
@@ -215,7 +219,6 @@
         let nbArr = null;
         var ANIMATION_DURATION = 200;
         
-
         //Update the displayed matrices according to the value of the squares object
         var updateMatrices = function(){
             let arr = arrangement_to_VI(squares, NB_VERTEX, NB_SQUARE);
@@ -313,6 +316,7 @@
             const _h = H - 2 * zoomValue * zoomStep;
             if ( _w > 0 && _h > 0 && _w <= W && _h <= H)
             paper.setViewBox(xmin, ymin, _w, _h);
+
             for (let k=0;k<3;k++){
                 squares[k].svg.attr({'stroke-width': 1 - zoomValue/14});
             }
@@ -459,8 +463,7 @@
         loadArrangments('http://localhost:8081/src/result/arrangments-found-3828-0-0.json');
 
     </script>
-    <script type="text/javascript" src="./src/calculVI.js"></script>
-    <script type="text/javascript" src="./src/initSquares.js"></script>
+
 
 </body>
 </html>
