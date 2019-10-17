@@ -320,13 +320,13 @@
             }
         }
 
-        let mode = 'unlocked';
+        let mode = 'lock';//'unlocked';
 
         var validMove = function(sq, callback){
             //calcul nouvelle matrices V et I pour cette position
             let arr = arrangement_to_VI(squares, NB_VERTEX, NB_SQUARE);
             let index = _controlEvents.getSelectedSquareIndex();
-            if ( mode == 'unlocked' ){
+            if ( mode == 'unlocked' ){// unlocked mode: we can chanage the current arrangment
                 if (arr.valid){
                     let x = sq.center.x - 0.5*sq.a;
                     let y = sq.center.y - 0.5*sq.a;
@@ -355,7 +355,7 @@
                     callback(sq);             
                 }
                 
-            } else {
+            } else { // locked mode: we cannot chanage the current arrangment
                 if (arr.valid && are_VI_Equivalents(arrangments[_controlEvents.getCurrentArr()], arr) ) {
                     //updateSVGSquare(sq, selectedSquareIndex);
                     //and we update the svg square  
