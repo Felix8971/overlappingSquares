@@ -29,6 +29,7 @@
                 if ( elem.value < 0 ){ elem.value = 0; }
                 self.translationStep = parseInt(elem.value);
             });
+            return this;
         },
 
         rotationStepEvents: function(){
@@ -47,6 +48,7 @@
                 if ( elem.value < 0 ){ elem.value = 0; }
                 self.rotationStep = parseInt(elem.value);
             });
+            return this;
         },
 
         resizeStepEvents: function(){
@@ -65,6 +67,7 @@
                 if ( elem.value < 0 ){ elem.value = 0; }
                 self.resizeStep = parseInt(elem.value);
             });
+            return this;
         },
 
         translationEvents: function(squares, validMove, fadeOut){
@@ -104,6 +107,7 @@
                     fadeOut(document.getElementById('msg'), null);
                 });   
             });
+            return this;
         },
 
         rotationEvents: function(squares, validMove, fadeOut){
@@ -111,7 +115,8 @@
             document.getElementById('rotate-plus').addEventListener('click', function(event) {
                 let sq = squares[self.selectedSquareIndex];
                 sq.angle = sq.angle + parseInt(self.rotationStep);
-                sq.rotate(sq.angle, true);
+                //sq.rotate(sq.angle, true);
+                sq.changeState({x:sq.center.x,y:sq.center.y}, sq.a, sq.angle);
                 validMove(sq, (elem)=>{
                     sq.angle = sq.angle - parseInt(self.rotationStep);
                     sq.rotate(sq.angle, true);
@@ -121,13 +126,15 @@
             document.getElementById('rotate-moins').addEventListener('click', function(event) {
                 let sq = squares[self.selectedSquareIndex];
                 sq.angle = sq.angle - parseInt(self.rotationStep);
-                sq.rotate(sq.angle, true);
+                //sq.rotate(sq.angle, true);
+                sq.changeState({x:sq.center.x,y:sq.center.y}, sq.a, sq.angle);
                 validMove(sq, (elem)=>{
                     sq.angle = sq.angle + parseInt(self.rotationStep);
                     sq.rotate(sq.angle, true);
                     fadeOut(document.getElementById('msg'), null);
                 }); 
             });
+            return this;
         },
 
 
@@ -153,7 +160,7 @@
                     fadeOut(document.getElementById('msg'), null);
                 }); 
             });
-    
+            return this;
         },
 
         radioBtnEvents: function(squares){
@@ -173,6 +180,7 @@
                     });              
                 });
             }
+            return this;
         },
 
         arrangmentNavigationEvents: function(applyZoom, loadArr, nbArr){
@@ -240,7 +248,7 @@
                 self.currentArr = 0;
                 loadArr(self.currentArr);
             });
-    
+            return this;
         },
 
         getTranslationStep: function(){

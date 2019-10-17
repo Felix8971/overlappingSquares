@@ -165,23 +165,12 @@
         const are_VI_Equivalents = compareArrangments.are_VI_Equivalents;
         const arrangement_to_VI = calculVI.arrangement_to_VI;
         const getInitSquares = initSquares.getInitSquares;
-        var squares = getInitSquares(constants);
-
+        
         let arrangments = [];    
         let nbArr;
 
         let currentArr = 0;
-        let currV = [ 
-            [0, 0, 0],
-            [0, 0, 0],
-            [0, 0, 0]
-        ];
-        let currI = [
-            [0, 0, 0],
-            [0, 0, 0],
-            [0, 0, 0],
-            [0, 0, 0]
-        ];
+      
         var squares = getInitSquares(constants);
 
         //List of arrangments that we will select and export to use later in a simulation

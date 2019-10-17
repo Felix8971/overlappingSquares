@@ -204,6 +204,8 @@
                     this.center.y = M.y;
                     this.a = a;
                     //rotate
+                    angle = angle < 0 ? 180*100 + angle : angle;
+                    angle = angle - parseInt(angle/90)*90;
                     this.angle = angle; 
                     for (let i=0;i<NB_VERTEX;i++){ 
                         let vx = this.vertex[i].x;//important de conserver cette variable pivot

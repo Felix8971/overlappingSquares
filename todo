@@ -65,4 +65,15 @@ Relancer le calcul (en mode reprise) entre 0 et 5% avec des pas plus fins et voi
 si on trouve de nouveaux arrangements
 
 Lancer un premier calcul avec des carrés de tailles similaires afin qu'ils soient plus presentables 
-graphiquement. Puis utiliser la proprieté viewBox dans la balise svg afin de zoomer sur la partie interressante ?
+graphiquement. Puis utiliser la proprieté viewBox dans la balise svg afin de zoomer
+ sur la partie interressante ?
+
+Ajouter une option plein ecran avec zoom et translation ?
+
+Fusionner "Refinenent " and "Try to find new arrangment" in a single page.
+Ajouter option pour verouiller ou non un arrangment.
+Si non verouillé et que l'on construit un arrangement deja connu afficher son numero.
+sinon afficher un message pour dire qu'il est nouveau.
+
+
+il y a un bug sur la rotation

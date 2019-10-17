@@ -4,7 +4,6 @@
     <script type="text/javascript" src="./src/constants.js"></script>
     <script type="text/javascript" src="./controlEvents.js"></script>
     <script type="text/javascript" src="./src/compare-arrangements.js"></script>
-
     <script type="text/javascript" src="./src/calculVI.js"></script>
     <script type="text/javascript" src="./src/initSquares.js"></script>
 
@@ -13,11 +12,19 @@
 </head>
 
 <body>
-    <h2>Refinement tool 3 squares overlapping</h2>    
-    <div id="container">
+    <h2>Refinement tool 3 squares overlapping</h2>  
+    
+    <div class="container">
+        <p>This page presents the arrangments possible for 3 overlapping squares.</p>
+        <p>Two arrangements of N squares are considered the same if one can be continuously changed to the other without any vertex passing through an edge</p>
+        <p>V(i,j) = number of vertices from the square i included in the square j</p>>
+        <p>F(i,j) = number intersections found on the segment jfor square i</p>>
+    </div>
+
+    <div class="container">
         <div id='result-zone'>
             <div id="msg">Invalid move</div>
-
+            <div id="new-arr">New arrangment !</div>
             <div id="slide-container">
                 <input class="custom-slider" type="range" value="50">
             </div>
@@ -207,7 +214,8 @@
     <script type="module">
 
         //idee optimisation: pre calculer tous les gabari de carres (avec scales et rotations) puis les translater
-        import { fadeOut } from './draw.js';
+        import { fadeOut, updateSVGSquare } from './draw.js';
+       
         const { W, H, NB_SQUARE, NB_VERTEX, } = constants;
         const { _controlEvents } = controlEvents;
         const are_VI_Equivalents = compareArrangments.are_VI_Equivalents;
@@ -220,8 +228,7 @@
         var ANIMATION_DURATION = 200;
         
         //Update the displayed matrices according to the value of the squares object
-        var updateMatrices = function(){
-            let arr = arrangement_to_VI(squares, NB_VERTEX, NB_SQUARE);
+        var updateMatrices = function(arr){          
             let V = arr.V;
             let I = arr.I;
             if (arr.valid) {
@@ -251,46 +258,170 @@
                     }                 
                 }
             }
+            testCurrentArrangment(arr);
         }
 
        
-        var validMove = function(sq, callback){
-            //calcul nouvelle matrices V et I pour cette position
-            let arr = arrangement_to_VI(squares, NB_VERTEX, NB_SQUARE);     
-            if (arr.valid && are_VI_Equivalents(arrangments[_controlEvents.getCurrentArr()], arr) ) {
-                //updateSVGSquare(sq, selectedSquareIndex);
-                //and we update the svg square  
-                let x = sq.center.x - 0.5*sq.a;
-                let y = sq.center.y - 0.5*sq.a;
-                squares[_controlEvents.getSelectedSquareIndex()].svg.animate({ 
-                    x,
-                    y,
-                    width: sq.a,
-                    height: sq.a,
-                    transform: "r"+sq.angle,
-                    delay: 1000
-                }, 200); 
+        var testCurrentArrangment = (arr)=>{
+            if ( arr.valid ){
+                let found = false;
+                let index = null;
+                let n = arrangments.length;
+                for (let i=0;i<n;i++){              
+                    if (are_VI_Equivalents(arrangments[i], arr) ) {
+                        found = true;
+                        index = i + 1;
+                        break;
+                    }
+                }
+                if (!found && n > 0){
+                    //alert('new arrangment !');
+                    console.log('new !');
+                    document.getElementById('new-arr').innerHTML = "new arrangment !";
+                    document.getElementById('current-arr').value = null;
+                    document.getElementById('new-arr').style.opacity = 1;
 
-                // Mettre a jour arrangments[currentArr] pour pouvoir exporter la modif plus tard
-                let square = arrangments[_controlEvents.getCurrentArr()].squares[_controlEvents.getSelectedSquareIndex()];
-                square.a = sq.a; //edge length
-                square.center.x = sq.center.x;
-                square.center.y = sq.center.y;
-                square.angle = sq.angle; 
-                square.vertex = [];
-                for (let i=0;i<NB_VERTEX;i++){
-                    square.vertex[i] = {};
-                    square.vertex[i].x = sq.vertex[i].x; 
-                    square.vertex[i].y = sq.vertex[i].y;  
-                } 
+                    let newArr = {
+                        V: arr.V,
+                        I: arr.I,
+                        squares: [
+                            {
+                                a: arr.squares[0].a,
+                                center: arr.squares[0].center,
+                                angle: arr.squares[0].angle,
+                            },
+                            {
+                                a: arr.squares[1].a,
+                                center: arr.squares[1].center,
+                                angle: arr.squares[1].angle,
+                            },
+                            {
+                                a: arr.squares[2].a,
+                                center: arr.squares[2].center,
+                                angle: arr.squares[2].angle,
+                            },               
+                        ],
+                    };
+
+                    debugger;
+                    arrangments.push(newArr);
+                    
+                    console.log(JSON.stringify(newArr));
+
+                } else {
+                    console.log('not new...');
+                    document.getElementById('new-arr').innerHTML = "";
+                    _controlEvents.setCurrentArr(index-1); 
+                    document.getElementById('current-arr').value = index;
+                    document.getElementById('new-arr').style.opacity = 1;
+                }
             } else {
-                //Reverse the modification  
-                callback(sq);             
+                console.log('Illegal!');
             }
         }
 
+        let mode = 'unlocked';
+
+        var validMove = function(sq, callback){
+            //calcul nouvelle matrices V et I pour cette position
+            let arr = arrangement_to_VI(squares, NB_VERTEX, NB_SQUARE);
+            let index = _controlEvents.getSelectedSquareIndex();
+            if ( mode == 'unlocked' ){
+                if (arr.valid){
+                    let x = sq.center.x - 0.5*sq.a;
+                    let y = sq.center.y - 0.5*sq.a;
+                    sq.svg.animate({
+                        x,
+                        y,
+                        width: sq.a,
+                        height: sq.a,
+                        transform: "r"+sq.angle,
+                        delay: 1000
+                    }, ANIMATION_DURATION);
+                   
+                    // console.log(sq.angle);
+                    // sq.svg.attr({
+                    //     x, 
+                    //     y, 
+                    //     width: sq.a, 
+                    //     height: sq.a,
+                    //     transform: "r"+sq.angle,
+                    // });
+
+                    updateMatrices(arr);
+                    
+                } else {
+                    //Reverse the modification  
+                    callback(sq);             
+                }
+                
+            } else {
+                if (arr.valid && are_VI_Equivalents(arrangments[_controlEvents.getCurrentArr()], arr) ) {
+                    //updateSVGSquare(sq, selectedSquareIndex);
+                    //and we update the svg square  
+                    let x = sq.center.x - 0.5*sq.a;
+                    let y = sq.center.y - 0.5*sq.a;
+                    squares[index].svg.animate({ 
+                        x,
+                        y,
+                        width: sq.a,
+                        height: sq.a,
+                        transform: "r"+sq.angle,
+                        delay: 1000
+                    }, ANIMATION_DURATION); 
+
+                    // Mettre a jour arrangments[currentArr] pour pouvoir exporter la modif plus tard
+                    let square = arrangments[_controlEvents.getCurrentArr()].squares[index];
+                    square.a = sq.a; //edge length
+                    square.center.x = sq.center.x;
+                    square.center.y = sq.center.y;
+                    square.angle = sq.angle; 
+                    square.vertex = [];
+                    for (let i=0;i<NB_VERTEX;i++){
+                        square.vertex[i] = {};
+                        square.vertex[i].x = sq.vertex[i].x; 
+                        square.vertex[i].y = sq.vertex[i].y;  
+                    } 
+                } else {
+                    //Reverse the modification  
+                    callback(sq);             
+                }
+            }
+        }
+
+        // document.getElementById('export_new_arr').addEventListener('click', function(event) {
+        //     //{"V":[[0,0,0],[2,0,0],[0,0,0]],"I":[[3,4,4],[4,4,4],[3,2,4],[2,2,4]],"squares":[{"a":94,"center":{"x":250,"y":250},"angle":0},{"a":118,"center":{"x":222.5,"y":242.5},"angle":20},{"a":118,"center":{"x":242.5,"y":247.5},"angle":50}]}
+        //     JSON.stringify(arrsLigth);
+        // });
+
         document.getElementById('update-json').addEventListener('click', function(event) {
-            let dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(arrangments));
+            let arrsLigth = arrangments.map((elem)=>{
+                return {
+                    V: elem.V,
+                    I: elem.I,
+                    squares: [
+                        {
+                            a: elem.squares[0].a,
+                            center: elem.squares[0].center,
+                            angle: elem.squares[0].angle,
+                            //vertex: elem.squares[0].vertex,
+                        },
+                        {
+                            a: elem.squares[1].a,
+                            center: elem.squares[1].center,
+                            angle: elem.squares[1].angle,
+                            //vertex: elem.squares[1].vertex,
+                        },
+                        {
+                            a: elem.squares[2].a,
+                            center: elem.squares[2].center,
+                            angle: elem.squares[2].angle,
+                            //vertex: elem.squares[2].vertex,
+                        },               
+                    ],
+                }
+            });
+            let dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(arrsLigth));
             let dlAnchorElem = document.getElementById('downloadAnchorElem');
             var downloadLink = document.createElement("a");
             document.body.appendChild(downloadLink);
@@ -322,24 +453,24 @@
             }
         }
 
-        function getArrangmentBox(squares){
-            let xmin=999, xmax=-999, ymin=999, ymax=-999;
-            for (let j=0;j<3;j++){
-                if ( squares[j].box.xmin < xmin ){
-                    xmin = squares[j].box.xmin;                   
-                }
-                if ( squares[j].box.ymin < ymin ){
-                    ymin = squares[j].box.ymin;                   
-                }
-                if ( squares[j].box.xmax > xmax ){
-                    xmax = squares[j].box.xmax;                   
-                }
-                if ( squares[j].box.ymax > ymax ){
-                    ymax = squares[j].box.ymax;           
-                }
-            }
-            return {xmin, xmax, ymin, ymax};
-        }
+        // function getArrangmentBox(squares){
+        //     let xmin=999, xmax=-999, ymin=999, ymax=-999;
+        //     for (let j=0;j<3;j++){
+        //         if ( squares[j].box.xmin < xmin ){
+        //             xmin = squares[j].box.xmin;                   
+        //         }
+        //         if ( squares[j].box.ymin < ymin ){
+        //             ymin = squares[j].box.ymin;                   
+        //         }
+        //         if ( squares[j].box.xmax > xmax ){
+        //             xmax = squares[j].box.xmax;                   
+        //         }
+        //         if ( squares[j].box.ymax > ymax ){
+        //             ymax = squares[j].box.ymax;           
+        //         }
+        //     }
+        //     return {xmin, xmax, ymin, ymax};
+        // }
 
         //Load arrangement i: update the local squares objet with it and update displayed svg
         function loadArr(i){                
@@ -355,18 +486,18 @@
                     arr.squares[j].a, 
                     arr.squares[j].angle
                 );             
-                if ( squares[j].box.xmin < xmin ){
-                    xmin = squares[j].box.xmin;                   
-                }
-                if ( squares[j].box.ymin < ymin ){
-                    ymin = squares[j].box.ymin;                   
-                }
-                if ( squares[j].box.xmax > xmax ){
-                    xmax = squares[j].box.xmax;                   
-                }
-                if ( squares[j].box.ymax > ymax ){
-                    ymax = squares[j].box.ymax;                   
-                }
+                // if ( squares[j].box.xmin < xmin ){
+                //     xmin = squares[j].box.xmin;                   
+                // }
+                // if ( squares[j].box.ymin < ymin ){
+                //     ymin = squares[j].box.ymin;                   
+                // }
+                // if ( squares[j].box.xmax > xmax ){
+                //     xmax = squares[j].box.xmax;                   
+                // }
+                // if ( squares[j].box.ymax > ymax ){
+                //     ymax = squares[j].box.ymax;                   
+                // }
                
                 //and we update the svg square   
                 let x = squares[j].center.x - 0.5*squares[j].a;
@@ -380,35 +511,46 @@
                 }, ANIMATION_DURATION, "ease-in-out"); 
 
                 document.getElementById('current-arr').value = parseInt(i + 1);
-                updateMatrices();
+                updateMatrices(arrangement_to_VI(squares, NB_VERTEX, NB_SQUARE));
             }   
         };
 
+        function shuffle(a) {
+            var j, x, i;
+            for (i = a.length - 1; i > 0; i--) {
+                j = Math.floor(Math.random() * (i + 1));
+                x = a[i];
+                a[i] = a[j];
+                a[j] = x;
+            }
+            return a;
+        }
 
         const loadArrangments = (url)=>{
             fetch(url)
             .then(response => response.text())
-            .then((data) => {
-                arrangments = JSON.parse(data);    
+            .then((data) => {               ;
+                arrangments = JSON.parse(data)
+                //arrangments = shuffle(JSON.parse(data));    
                 //  arrangments = arrangments.filter((elem)=>
                 //  (( elem.V[0][1] + elem.V[0][2] == 0 ) && ( elem.I[0][0] + elem.I[1][0] + elem.I[2][0] + elem.I[3][0] == 0 ) ));
                 nbArr = arrangments.length;
                 
-                _controlEvents.translationStepEvents();
-                _controlEvents.rotationStepEvents();
-                _controlEvents.resizeStepEvents();
-
-                _controlEvents.translationEvents(squares, validMove, fadeOut);
-                _controlEvents.rotationEvents(squares, validMove, fadeOut);
-                _controlEvents.resizeEvents(squares, validMove, fadeOut);
-                _controlEvents.radioBtnEvents(squares);
-                _controlEvents.arrangmentNavigationEvents(applyZoom, loadArr, nbArr);
+                _controlEvents
+                .translationStepEvents()
+                .rotationStepEvents()
+                .resizeStepEvents()
+                .translationEvents(squares, validMove, fadeOut)
+                .rotationEvents(squares, validMove, fadeOut)
+                .resizeEvents(squares, validMove, fadeOut)
+                .radioBtnEvents(squares)
+                .arrangmentNavigationEvents(applyZoom, loadArr, nbArr);
 
                 document.getElementById('nbArr').innerHTML = nbArr;
                 console.log(nbArr);
                 _controlEvents.setCurrentArr(0); //currentArr = 0;
                 loadArr(_controlEvents.getCurrentArr());
-                _controlEvents.setZoomValue(4); 
+                _controlEvents.setZoomValue(2); 
                 applyZoom(_controlEvents.getZoomValue());
             });
         }
@@ -460,7 +602,7 @@
         }
         
         //Load the arrangments from the json file and display the fist one
-        loadArrangments('http://localhost:8081/src/result/arrangments-found-3828-0-0.json');
+        loadArrangments('http://localhost:8080/src/result/arrangments-found-4288-0-0.json');
 
     </script>
 

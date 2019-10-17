@@ -27,23 +27,11 @@ var getArrsN3Length = (arrsN3) => {
 }
 exports.getArrsN3Length = getArrsN3Length;
 
-// Extract the arrangments from arrsN3 to return a simplified one dimension array
-var getArrsN3Array = (arrsN3) => {
-    //let n = arrsN3.length;
-    let arrs = [];
-    for ( let key in arrsN3 ){
-        let n = arrsN3[key].length;
-        for (let i=0;i<n;i++){
-            arrs.push(arrsN3[key][i]);
-        }
-    }
-    
-    // We only keep the informations usefull to draw the arrangement in svg
-    let arrsLigth = arrs.map((elem)=>{
+var shortenArrangment = (arrs)=>{
+    return arrs.map((elem)=>{
         return {
             V: elem.V,
             I: elem.I,
-            //fuzzy: elem.fuzzy,
             squares: [
                 {
                     a: elem.squares[0].a,
@@ -66,6 +54,22 @@ var getArrsN3Array = (arrsN3) => {
             ],
         }
     });
+}
+
+exports.shortenArrangment = shortenArrangment;
+// Extract the arrangments from arrsN3 to return a simplified one dimension array
+var getArrsN3Array = (arrsN3) => {
+    //let n = arrsN3.length;
+    let arrs = [];
+    for ( let key in arrsN3 ){
+        let n = arrsN3[key].length;
+        for (let i=0;i<n;i++){
+            arrs.push(arrsN3[key][i]);
+        }
+    }
+    
+    // We only keep the informations usefull to draw the arrangement in svg
+    let arrsLigth = shortenArrangment(arrs);
     
     // // We remove unnecessary decimals, 4 digits after the decimal point should be ok
     // const n = arrsLigth.length;
@@ -240,9 +244,7 @@ var _searchArrangments = function (squares, params, arrangments=[], i0_start=0 )
         let _arrangments = JSON.parse(data);
         if ( i0_end < nx ){
           _searchArrangments(squares, params, _arrangments, i0_end);
-        } else {
-
-        }
+        } 
     });
   
     console.log('========= END =========');

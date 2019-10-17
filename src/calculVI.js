@@ -87,7 +87,7 @@ var intersectionSegments = function(x1, x2, x3, x4, y1, y2, y3, y4){
     //Calcul ||A2I||/||A2A3|| length 
     let ub = ((x2 - x1) * (y1 - y3) - (y2 - y1) * (x1 - x3)) / det;
 
-    // is the intersection not along the segments
+    // is the intersection not along the segments ?
     if (ua < 0 || ua > 1 || ub < 0 || ub > 1) {
         return false;
     }
@@ -97,10 +97,15 @@ var intersectionSegments = function(x1, x2, x3, x4, y1, y2, y3, y4){
         return false;
     }
     // Return a object with the x and y coordinates of the intersection
-    let x = x1 + ua * (x2 - x1);
-    let y = y1 + ua * (y2 - y1);
+    // let x = x1 + ua * (x2 - x1);
+    // let y = y1 + ua * (y2 - y1);
 
-    return {x, y, ua, ub}
+    return {
+        x: x1 + ua * (x2 - x1), 
+        y: y1 + ua * (y2 - y1), 
+        ua, 
+        ub
+    }
 }
 
 exports.intersectionSegments = intersectionSegments;

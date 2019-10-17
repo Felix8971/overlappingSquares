@@ -1,7 +1,7 @@
 body {
     font-family: monospace;
 }
-#container {
+.container {
     display:flex;
     flex-direction: row;
     justify-content: center;
@@ -78,6 +78,15 @@ p {
 }
 
 #msg {
+    position: absolute;
+    color:white;
+    font-size: 2em;
+    top: 33%;
+    opacity:0;
+    cursor: default;
+    pointer-events:none;
+}
+#new-arr {
     position: absolute;
     color:white;
     font-size: 2em;
