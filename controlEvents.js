@@ -12,6 +12,40 @@
         playPauseBtnState : null,
         playLoopId : null,
         transitionDelay: 400,
+        arrangmentLocked: false,
+
+
+        readMoreLessEvents: function () {
+            var introContainer = document.getElementById("intro-container");
+            var readMoreLessBtn = document.getElementById("readMoreLessBtn");
+            var dots = document.getElementById("dots");
+            var moreText = document.getElementById("more");
+
+            readMoreLessBtn.addEventListener('click', function(event) { 
+                if (dots.style.display === "none") {
+                    dots.style.display = "inline";
+                    readMoreLessBtn.innerHTML = "Read more";
+                    moreText.style.display = "none";
+                    introContainer.style.height = "57px";
+                } else {
+                    dots.style.display = "none";
+                    readMoreLessBtn.innerHTML = "Read less";
+                    moreText.style.display = "inline";
+                    introContainer.style.height = "150px";
+                }
+            });
+            return this;
+        },
+
+        navEvents: function(){        
+            document.getElementById('open-nav-btn').addEventListener('click', function(event) { 
+                document.getElementById("nav").style.width = "100%";
+            });
+            document.getElementById('close-nav-btn').addEventListener('click', function(event) { 
+                document.getElementById("nav").style.width = "0%";
+            });
+            return this;
+        },  
 
         translationStepEvents: function(){
             let self = this;
@@ -163,22 +197,45 @@
             return this;
         },
 
-        radioBtnEvents: function(squares){
+        // radioBtnEvents: function(squares){
+        //     let self = this;  
+        //     //Define event when click a radio button
+        //     var radio = document.getElementsByName('square-selected');
+        //     for (var i = 0; i < radio.length; i++) {
+        //         radio[i].addEventListener('change', function(event) { 
+        //             self.setSelectedSquareIndex(event.target.value);
+        //             for (let j=0;j<3;j++){
+        //                 squares[j].svg.attr({                       
+        //                     "fill-opacity": 0
+        //                 });
+        //             }                  
+        //             squares[self.selectedSquareIndex].svg.attr({
+        //                 "fill-opacity": 0.2
+        //             });              
+        //         });
+        //     }
+        //     return this;
+        // },
+
+        selectSquareEvents: function(squares){
             let self = this;  
             //Define event when click a radio button
-            var radio = document.getElementsByName('square-selected');
-            for (var i = 0; i < radio.length; i++) {
-                radio[i].addEventListener('change', function(event) { 
-                    self.setSelectedSquareIndex(event.target.value);
-                    for (let j=0;j<3;j++){
-                        squares[j].svg.attr({                       
-                            "fill-opacity": 0
-                        });
-                    }                  
-                    squares[self.selectedSquareIndex].svg.attr({
-                        "fill-opacity": 0.2
-                    });              
-                });
+            var line = document.getElementsByClassName('legend-line');
+            
+            for (var i = 0; i < line.length; i++) {
+                ((k)=>{
+                    line[k].addEventListener('click', function(event) { 
+                        self.setSelectedSquareIndex(k);
+                        for (let j=0;j<3;j++){
+                            squares[j].svg.attr({                       
+                                "fill-opacity": 0
+                            });
+                        }                  
+                        squares[self.selectedSquareIndex].svg.attr({
+                            "fill-opacity": 0.2
+                        });              
+                    });
+                })(i);
             }
             return this;
         },

@@ -70,10 +70,9 @@ graphiquement. Puis utiliser la proprieté viewBox dans la balise svg afin de zo
 
 Ajouter une option plein ecran avec zoom et translation ?
 
-Fusionner "Refinenent " and "Try to find new arrangment" in a single page.
 Ajouter option pour verouiller ou non un arrangment.
 Si non verouillé et que l'on construit un arrangement deja connu afficher son numero.
 sinon afficher un message pour dire qu'il est nouveau.
 
-
+Ajouter un outil pour filtrer les arrangment sur certains criteres.
 il y a un bug sur la rotation
