@@ -5,7 +5,7 @@ const path = require('path');
 const { getInitSquares } = require('./initSquares.js');
 const CTE = require('./constants.js');
 const { searchArrangments } = require('./searchArrangments.js');
-const { tests } =  require('./test.js');
+const { tests } = require('./test.js');
 let squares = getInitSquares(CTE);
 
 let nbError = tests();

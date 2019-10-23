@@ -76,3 +76,14 @@ sinon afficher un message pour dire qu'il est nouveau.
 
 Ajouter un outil pour filtrer les arrangment sur certains criteres.
 il y a un bug sur la rotation
+
+
+ajouter spinner pendant le chargement des arrangements (car un peu long au premier chargement) 
+reduire taille json
+
+à lire :
+https://en.wikipedia.org/wiki/Combinatorial_explosion
+
+https://pdfs.semanticscholar.org/1fc5/1e1edc64b2d634e3cc37b86154dc90b37721.pdf
+
+https://www.quantamagazine.org/the-math-problem-with-pentagons-20171211/

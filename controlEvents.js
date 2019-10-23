@@ -15,23 +15,37 @@
         arrangmentLocked: false,
 
 
+        arrangmentLockedEvents: function () {
+            let self = this;
+            var switchOnOff = document.getElementById("switch-on-off");
+            switchOnOff.addEventListener('click', function(event) { 
+                self.arrangmentLocked = !self.arrangmentLocked;
+                if (self.arrangmentLocked) {
+                    document.getElementById('switch-on-btn').style.display = "block";
+                    document.getElementById('switch-off-btn').style.display = "none";
+                } else {
+                    document.getElementById('switch-on-btn').style.display = "none";
+                    document.getElementById('switch-off-btn').style.display = "block";
+                }
+            });
+            return this;
+        },
+
+
         readMoreLessEvents: function () {
-            var introContainer = document.getElementById("intro-container");
+           
             var readMoreLessBtn = document.getElementById("readMoreLessBtn");
-            var dots = document.getElementById("dots");
             var moreText = document.getElementById("more");
 
             readMoreLessBtn.addEventListener('click', function(event) { 
-                if (dots.style.display === "none") {
-                    dots.style.display = "inline";
+                if (moreText.style.display === "block") {
                     readMoreLessBtn.innerHTML = "Read more";
                     moreText.style.display = "none";
-                    introContainer.style.height = "57px";
+                   
                 } else {
-                    dots.style.display = "none";
                     readMoreLessBtn.innerHTML = "Read less";
-                    moreText.style.display = "inline";
-                    introContainer.style.height = "150px";
+                    moreText.style.display = "block";
+                   
                 }
             });
             return this;
@@ -329,6 +343,10 @@
         },
         setCurrentArr: function(value){
             this.currentArr = value;
+        },
+
+        getArrLocked: function(){
+            return this.arrangmentLocked;
         },
         
     }
