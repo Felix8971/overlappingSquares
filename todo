@@ -1,22 +1,8 @@
 
-- Lancer des calculs en faisant diminuer progressivement les parametres step, pas angulaire, etc 
-jusqu'a convergeance du nombre d'arrangements.
-
-idee: regrouper moveto, rotate et resize en une seule fonction qui prend:
-   - position x,y du centre du carre
-   - size
-   - angle rotation
-==> done
-
-idee optimisation: separer arrsN3 en plusieurs parties ==> done
-
-arrsN3 devient un array a 2 dimensions arrsN3[i][j]
-- i correspond au nombre entier obtenu en faisant la somme de chaque colonne de V puis un tri croissant
-- j correspond au nombre entier obtenu en faisant la somme de chaque colonne de I puis un tri croissant
-
-- ecrire le code pour creer les svg a partir du fichier arrangments-found-*.json
-
-- creer les tests avec Jest 
+- finir calcul theorique de S
+- use react js for front end (create-react-app)
+- adapt code to display N = 2 and N = 4 squares in the web site
+- adapt code to use S matrix server side and client side
 
 - optimisation: ne faire bouger qu'un seul carre à la fois afin de ne pas 
    recalculer inutilement les intersections entre les deux autres carres
@@ -37,20 +23,8 @@ arrsN3 devient un array a 2 dimensions arrsN3[i][j]
 - idee new projet: calculer le nombre d'arrangements possibles de n polygones reguliers convexes:
 triangles equilaterals, carrés, pentagones, hexagone, etc.
 Voir si il exite une formule U(n) = ...
-Ways to intersect regular convex polygons
+Ways to intersect regular convex polygons ?
 
-- ecrire une fct qui renvoie false si 2 segments ne se croisent pas sinon renvoyer le point d'intersection: done
-=> done
-
-N=2 avec rotation et resize: 12
-N=2 sans resize avec rotation: donne 7 arr
-N=2 sans rotation avec resize: donne 4 arr
-N=2 sans rotation et sans resize: donne 1 arr
-
-N=3 donne ... arr (>= 4337)
-N=3 sans resize avec rotation:: donne 457 arr (la rotation a un impact fort sur le nombre d'arrangement trouvés)
-N=3 sans rotation avec resize: donne 47 arr
-N=3 sans rotation et sans resize: donne 6 arr
 
 http://www.ams.org/publicoutreach/feature-column/fc-2019-01
 https://www.researchgate.net/publication/321604192_Arrangements_of_Pseudocircles_On_Circularizability
@@ -66,7 +40,7 @@ si on trouve de nouveaux arrangements
 
 Lancer un premier calcul avec des carrés de tailles similaires afin qu'ils soient plus presentables 
 graphiquement. Puis utiliser la proprieté viewBox dans la balise svg afin de zoomer
- sur la partie interressante ?
+ sur la partie interessante ?
 
 Ajouter une option plein ecran avec zoom et translation ?
 
@@ -75,11 +49,9 @@ Si non verouillé et que l'on construit un arrangement deja connu afficher son n
 sinon afficher un message pour dire qu'il est nouveau.
 
 Ajouter un outil pour filtrer les arrangment sur certains criteres.
-il y a un bug sur la rotation
+il y a un bug sur la rotation.
 
-
-ajouter spinner pendant le chargement des arrangements (car un peu long au premier chargement) 
-reduire taille json
+mettre new events dans controlEvents.js
 
 à lire :
 https://en.wikipedia.org/wiki/Combinatorial_explosion
@@ -87,3 +59,10 @@ https://en.wikipedia.org/wiki/Combinatorial_explosion
 https://pdfs.semanticscholar.org/1fc5/1e1edc64b2d634e3cc37b86154dc90b37721.pdf
 
 https://www.quantamagazine.org/the-math-problem-with-pentagons-20171211/
+
+à tester: (swipe)
+https://stackoverflow.com/questions/2264072/detect-a-finger-swipe-through-javascript-on-the-iphone-and-android
+
+
+curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.34.0/install.sh | bash
+ssh -i squares.pem  ubuntu@ec2-54-169-214-23.ap-southeast-1.compute.amazonaws.com

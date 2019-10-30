@@ -1,1 +1,1 @@
-{"nbSquare":3,"step":3,"angles":[0,5,10,15,20,25,30,35,40,45,50,55,60,65,70,75,80,85],"sizes":[3,6,11,24,48,71,95,118,142,165,189],"excursion":70.5,"scanArea":{"xmin":132.5,"xmax":367.5,"ymin":132.5,"ymax":367.5},"resultPath":"D:\\overlappingSquares\\src\\result","nx":78,"ny":78}
+{"nbSquare":2,"step":10,"angles":[0,10,20,30,40,50,60,70,80],"sizes":[71,95,118,142],"excursion":70.5,"scanArea":{"xmin":132.5,"xmax":367.5,"ymin":132.5,"ymax":367.5},"resultPath":"/home/user/dev/overlappingSquares/src/result","nx":23,"ny":23}

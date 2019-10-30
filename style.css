@@ -1,560 +1,581 @@
-
-*{ -webkit-tap-highlight-color: rgba(0, 0, 0, 0) !important; } 
-*:focus { text-decoration: none; outline:none; border: none; box-shadow: none; } 
+* {
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0) !important;
+}
+*:focus {
+  text-decoration: none;
+  outline: none;
+  border: none;
+  box-shadow: none;
+}
 
 body {
-    font-family: monospace;
-    background-color: black;
-    margin: 0;
-    padding: 0;  
+  font-family: monospace;
+  background-color: black;
+  margin: 0;
+  padding: 0;
 }
-.container {
-    display:flex;
-    flex-direction: column;
-    justify-content: center;
+
+#container-squares {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+/* The Overlay (background) */
+#container-about,
+#container-contact {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  background-color: #000;
+  color: white;
+  padding: 12px;
+}
+
+#container-about {
+  font-size: 1m;
+}
+#container-about {
+  font-size: 1.5m;
+}
+#container-2-squares,
+#container-about,
+#container-contact {
+  display: none;
+}
+
+#container-contact a {
+  color: white;
 }
 
 #intro-container {
-    display:flex;
-    flex-direction: row;
-    align-items: center;
-    background-color: #000;
-    color:white;
-    padding:7px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  background-color: #000;
+  color: white;
+  padding: 7px;
+}
+#more-info {
+  color: white;
 }
 
-#intro{
-    width:72%;
+#intro {
+  width: 72%;
 }
 
-#more{
-    background-color: #000;
-    color:white;
-    padding: 7px 7px 9px 7px;
+#more {
+  background-color: #000;
+  color: white;
+  padding: 7px 7px 9px 7px;
 }
 
-#readMoreLessBtn{
-    font-size:1em;
-    border:1px solid white;
-    padding:6px;
-    cursor:pointer;
-    border-radius: 16px;
+#readMoreLessBtn {
+  font-size: 1em;
+  border: 1px solid white;
+  padding: 6px;
+  cursor: pointer;
+  border-radius: 16px;
 }
 #more {
-    display: none;
+  display: none;
 }
 
-
-#translate, #rotate, #resize {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+#translate,
+#rotate,
+#resize {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
-#go-up, #go-left, #go-right, #go-down, #rotate-plus, #rotate-moins, #resize-plus, #resize-moins {
-    width: 44px;
-    height:44px;
-    font-size: 2.2em;
-    cursor:pointer;
-    background-color: black;
-    color: white;
-    border: 1px solid white;
-    outline: inherit;
-    padding: 0;
-    text-align: center;
+#go-up,
+#go-left,
+#go-right,
+#go-down,
+#rotate-plus,
+#rotate-moins,
+#resize-plus,
+#resize-moins {
+  width: 44px;
+  height: 44px;
+  font-size: 2.2em;
+  cursor: pointer;
+  background-color: black;
+  color: white;
+  border: 1px solid white;
+  outline: inherit;
+  padding: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
-input {
-    width: 44px;
-    font-size: 1em;
-    text-align: center;
-    height: 22px;
-    cursor:pointer;
+.step-input {
+  width: 44px;
+  font-size: 1em;
+  text-align: center;
+  height: 18px;
+  cursor: pointer;
 }
 
 .radio-button {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-evenly;
-    align-items: center;
-    padding-left: 10px;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-evenly;
+  align-items: center;
+  padding-left: 10px;
 }
-#active-square{
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
+#active-square {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
 }
-.line {
-    
+
+.flip {
+  transform: scale(-1, 1);
 }
-.flip{
-    transform: scale(-1, 1);
+.column {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
 }
-.column{
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    flex-direction: column;
+.small-button {
+  width: 22px;
+  height: 20px;
+  border: 1px solid #b9b9b9;
+  text-align: center;
+  cursor: pointer;
 }
-.small-button{
-    width: 20px;
-    height:20px;
-    border: 1px solid #b9b9b9;
-    text-align: center;
-    cursor:pointer;
-}
-.small-btn-container{
-    display: flex;
-    flex-direction: row;
+.small-btn-container {
+  display: flex;
+  flex-direction: row;
 }
 
 .form-group {
-    display:flex;
+  display: flex;
 }
 p {
-    font-size: 1em;
+  font-size: 1em;
 }
-#result-zone{
-    display: flex;
-    /* flex-direction: column; */
-    justify-content: space-evenly;
-    align-items: center;
-    position: relative;
-    border-top:1px solid white;
-    width:100%;
-    height:375px;
-    background-color: black;
+#result-zone {
+  position: relative;
+  border-top: 1px solid white;
+  width: 100%;
+  height: 375px;
+  background-color: black;
+  display: flex;
+  justify-content: center;
 }
 
 #msg {
-    position: absolute;
-    color:white;
-    font-size: 2em;
-    top: 33%;
-    opacity:0;
-    cursor: default;
-    pointer-events:none;
+  position: absolute;
+  color: white;
+  font-size: 2em;
+  top: 33%;
+  opacity: 0;
+  cursor: default;
+  pointer-events: none;
 }
 #new-arr {
-    position: absolute;
-    color:white;
-    font-size: 2em;
-    top: 33%;
-    opacity:0;
-    cursor: default;
-    pointer-events:none;
-}
-#arr-count-container{
-    position: absolute;
-    color:white;
-    left: 7px;
-    width: 200px;
-    top: 7px;
-}
-#current-arr-container{
-    position: absolute;
-    color:white;
-    top: 16px;
+  position: absolute;
+  color: white;
+  font-size: 2em;
+  top: 33%;
+  opacity: 0;
+  cursor: default;
+  pointer-events: none;
 }
 
-#spinner{
-    position: absolute;
-    top: 161px;
+#current-arr-container {
+  position: absolute;
+  color: white;
+  display: flex;
+  flex-direction: row;
+  bottom: 16px;
+  font-size: 17px;
+}
+#current-arr {
+    border: none;
+    width: 40px;
+    margin-left: 4px;
+    margin-right: 4px;
+    margin-top: -1px;
+    height: 20px;
+    text-align: center;
+    visibility: visible;
+    font-size: 17px;
+    border-radius: 2px;
+}
+#spinner {
+  position: absolute;
+  left: 45%;
+  top: 45%;
 }
 
 #move-squares-container {
-   display:flex;
-   justify-content: space-evenly;
-   background-color: black;
-   color:white;
+  display: flex;
+  justify-content: space-evenly;
+  background-color: black;
+  color: white;
+  width: 100%;
+  margin-top: 10px;
+  z-index: 10;
+  visibility: hidden;
 }
 
-
-#lock-arr{
-    position: absolute;
-    display:flex;
-    color:white;
-    top: 29px;
-}
-#switch-on-off{
-    position:relative;
-    transform: scale(1.5);
-    top: 8px;
-    left: 5px;
-    cursor:pointer;
+#nbr-squares{
+  position: absolute;
+  display: flex;
+  align-items: center;
+  color: white;
+  left: 8px;
+  top:30px;
 }
 
-#switch-on-btn{
-    position: absolute;
-    top: 8px;
-    display:none;
-}
-#switch-off-btn{
-    position: absolute;
-    top: -8px;
-}
-#nb-arr-container{
-    position: absolute;
-    color:white;
-}
-#current-arr{
-    border:none;
-    color: white;
-    width: 30px;
-    background-color: black;
-    margin-left: -3px;
-    font-size: 13px;
-    font-family: monospace;
-}
-#zone{
-    background-color: black;
-}
-h1, h2 {
+#select-nb-squares {
+    border: none;
+    width: 40px;
+    font-size: 17px;
     text-align: center;
-    font-size: 3em;
+    height: 22px;
+    border-radius: 2px;
 }
-#footer-container{
-    display: flex;
-    justify-content: space-around;
-    align-items: center;
-    border: 1px solid #d8d8d8;
-    width: 500px;
-    height: 140px;
+
+#lock-arr {
+  position: absolute;
+  display: flex;
+  color: white;
+  left: 8px;
+}
+#switch-on-off {
+  position: relative;
+  transform: scale(1.5);
+  top: 8px;
+  left: 5px;
+  cursor: pointer;
+}
+
+#switch-on-btn {
+  position: absolute;
+  top: 8px;
+}
+#switch-off-btn {
+  position: absolute;
+  top: -8px;
+  display: none;
+}
+#zone {
+  background-color: black;
+}
+h1,
+h2 {
+  text-align: center;
+  font-size: 3em;
+}
+#footer-container {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  border: 1px solid #d8d8d8;
+  width: 500px;
+  height: 140px;
 }
 #export-svg {
-    width: 50%;
-    height: 100%;
-    display: flex;
-    justify-content: space-around;
-    align-items: center;
-    border-right:1px solid #d8d8d8;
-    flex-direction: column;
+  width: 50%;
+  height: 100%;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  border-right: 1px solid #d8d8d8;
+  flex-direction: column;
 }
-#update-json, #save-squares-btn {
-    width: 155px;
-    height: 30px;
-    font-size: 0.8em;
+#update-json{
+  width: 155px;
+  height: 30px;
+  font-size: 0.8em;
+  color:white;
+  border: 1px solid #d8d8d8;
 }
-#import-export-container{
-    display:flex;
-    flex-direction: column;
+#import-export-container {
+  display: flex;
+  flex-direction: column;
 }
-#import-selection-btn, #export-selection-btn{
-    width: 76px;
-    height: 30px;
-    font-size: 0.8em;
+#import-selection-btn,
+#export-selection-btn {
+  width: 76px;
+  height: 30px;
+  font-size: 0.8em;
 }
 #previous-btn {
-    transform: scaleX(-1);
+  transform: scaleX(-1);
 }
 
-#info-btn{
-    position: absolute;
-    cursor: pointer;
-    outline: none;
+#info-btn {
+  position: absolute;
+  cursor: pointer;
+  outline: none;
 }
 
-#next-btn, #previous-btn, #stop-btn, #play-pause-btn, #zoom-in-btn, #zoom-out-btn {
-    cursor: pointer;
-    padding-left: 4px;
-    padding-right: 4px;
-    outline: none;
-}
-#btn-control {
-    position: absolute;
-    display: flex;
-    justify-content: space-between;
-    transform: scale(1);
-    top:1000px;
-}
-
-#zoom-in-btn{
-    display: block;
-    margin-left: -6px;
-}
-#zoom-out-btn{
-    display: block;
+#next-btn,
+#previous-btn,
+#stop-btn,
+#play-pause-btn,
+#zoom-in-btn,
+#zoom-out-btn,
+#drag-btn {
+  cursor: pointer;
+  outline: none;
+  /* padding-left: 2px; */
+  /* padding-right: 2px; */
 }
 
-
-
-#pause-btn{
-    display: none;
+#drag-btn,
+#stop-btn,
+#play-pause-btn {
+  /*  background-color: #21b721;*/
+  border-radius: 4px;
 }
 
-#play-btn{
-    display: block;
+.btn-control-img {
+  width: 40px;
+  height: 40px;
 }
-#pause-btn{
-    display: none;
-}
-#matrices{
-    position: absolute;
-    top: 5px;
-    right: 3px;
-    color:white;
-    display: flex;
-    flex-direction: column;
-    pointer-events: none;
-}
-.column-result{
-    width:100%;
-    justify-content: center;
-    display: flex;
-    align-items: center;
+#btn-control-container {
+  display: flex;
+  justify-content: space-around;
+  flex-direction: row;
+  width: 100%;
+  z-index: 10;
 }
 
-.matrix-body{
-    display: flex;
-    flex-direction: column;
+#pause-btn {
+  display: none;
 }
-.line-matrix-group{
-    margin:6px;
+
+#play-btn {
+  display: block;
+}
+#pause-btn {
+  display: none;
+}
+#matrices {
+  position: absolute;
+  top: 5px;
+  right: 3px;
+  color: white;
+  display: flex;
+  flex-direction: column;
+  pointer-events: none;
+}
+.column-result {
+  width: 100%;
+  justify-content: center;
+  display: flex;
+  align-items: center;
+}
+
+.matrix-body {
+  display: flex;
+  flex-direction: column;
+}
+.line-matrix-group {
+  margin: 6px;
 }
 .line-matrix {
-    display: flex;
-    flex-direction: row;
+  display: flex;
+  flex-direction: row;
 }
-.m-square{
-    padding: 0px 3px;
+.m-square {
+  padding: 0px 3px;
 }
-.border-left{
-    border-left: 1px solid white;
-    padding: 2px;
+.border-left {
+  border-left: 1px solid white;
+  padding: 2px;
 }
-.border-right{
-    border-right: 1px solid white;
-    padding: 2px;
+.border-right {
+  border-right: 1px solid white;
+  padding: 2px;
 }
-.border-top{
-    border-top: 1px solid white;
+.border-top {
+  border-top: 1px solid white;
 }
-.border-bottom{
-    border-bottom: 1px solid white;
+.border-bottom {
+  border-bottom: 1px solid white;
 }
-#v-illegal, #f-illegal{
-    position: relative;
-    left: -60px;
-    top: 30px;
-    display:none;
-}
-
-#square0, #square1 , #square2{
-    cursor: pointer;
+#v-illegal,
+#f-illegal {
+  position: relative;
+  left: -60px;
+  top: 30px;
+  display: none;
 }
 
-.nav{
-    display:flex;
+#square0,
+#square1,
+#square2 {
+  cursor: pointer;
+}
+
+.nav {
+  display: flex;
 }
 
 #legend {
-    width: 30px;
-    height: 55px;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-around;
-    position: absolute;
-    color:white;
-    top: 72px;
-    color: white;
-    left: 7px;
+  width: 30px;
+  height: 57px;
+  flex-direction: column;
+  justify-content: space-around;
+  position: absolute;
+  color: white;
+  top: 140px;
+  color: white;
+  right: 11px;
 }
 
 .legend-line {
-    width: 33px;
-    height: 10px;
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: center;
-    cursor:pointer;
+  width: 33px;
+  height: 40px;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
 }
 
-.line-0{
-    background-color: #0000FF;
-    width: 20px;
-    height: 4px;
+.line-0 {
+  background-color: #0000ff;
+  width: 20px;
+  height: 4px;
 }
-.line-1{
-    background-color: #00ff00;
-    width: 20px;
-    height: 4px;
+.line-1 {
+  background-color: #00ff00;
+  width: 20px;
+  height: 4px;
 }
-.line-2{
-    background-color: #ff0000;
-    width: 20px;
-    height: 4px;
-}
-#slide-container{
-    display: none;
-}
-input[type=range].custom-slider {
-    -webkit-appearance: none;
-    padding: 0;
-    font: inherit;
-    outline: none;
-    color: #fff;
-    background: #000;
-    box-sizing: border-box;
-    transition: opacity .2s;
-    cursor: pointer;
-    width: 100px;
-    border: 1px solid white;
-    position: absolute;
-    top: 424px;
-    left:50px;
-}
-/* la zone de déplacement */
-input[type=range].custom-slider::-webkit-slider-runnable-track {
-    height: 100%;
-    border: none;
-    border-radius: 0;
-    background-color: transparent;  /* supprimé définie sur l'input */
-}
-/* le curseur */
-input[type=range].custom-slider::-webkit-slider-thumb {
-    -webkit-appearance: none;       /* également nécessaire sur le curseur */
-    width: 1em;
-    height: inherit;                /* s'adapte à la hauteur de l'input */
-    border: none;
-    border-radius: 0;               /* pris en compte sur Webkit et Edge */
-    background: currentColor;       /* pris en compte sur Webkit only */
+.line-2 {
+  background-color: #ff0000;
+  width: 20px;
+  height: 4px;
 }
 
-/* la zone de déplacement */
-input[type=range].custom-slider::-moz-range-track {
-    height: 100%;
-    border: none;
-    border-radius: 0;
-    background-color: transparent;  /* supprimé définie sur l'input */
-}
-/* le curseur */
-input[type=range].custom-slider::-moz-range-thumb {
-    width: 1em;
-    height: inherit;                /* s'adapte à la hauteur de l'input */
-    border: none;                   /* supprimer la bordure */
-    border-radius: 0;               /* supprimer le rayon */
-    background: currentColor;
-}
-/* barre progression avant */
-input[type=range].custom-slider::-moz-range-progress {
-    height: 0;
-    background: transparent;        /* supprime barre progression avant */
-}
-/* la zone de déplacement */
-input[type=range].custom-slider::-ms-track {
-    height: 100%;
-    border: none;
-    border-radius: 0;
-    color: transparent;             /* supprime les graduations pour IE */
-    background-color: transparent;  /* supprimé définie sur l'input */
-}
-/* le curseur */
-input[type=range].custom-slider::-ms-thumb {
-    width: 1em;
-    height: inherit;                /* s'adapte à la hauteur de l'input */
-    border: none;                   /* supprimer la bordure */
-    border-radius: 0;               /* supprimer le rayon */
-    background: currentColor;
-}
-/* la tooltip de la valeur */
-input[type=range].custom-slider::-ms-tooltip {
-    display: none;                  /* supprime l'affichage de la valeur au survol */
-}
-/* barre progression avant */
-input[type=range].custom-slider::-ms-fill-lower {
-    background: transparent;
-}
-/* barre progression après */
-input[type=range].custom-slider::-ms-fill-upper {
-    background: transparent;
+#header-title {
+  font-size: 1.5em;
 }
 
-#header-title{
-    font-size:1.5em;
+#header {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  padding: 1em;
+  background-color: black;
+  color: white;
+  border-bottom: 1px solid white;
 }
-
-#header{
-    display:flex;
-    flex-direction: row;
-    justify-content: space-between;
-    padding: 1em;
-    background-color: black;
-    color: white;
-    border-bottom: 1px solid white;
-}
-
-/* #open-nav-btn{
-    cursor:pointer;
-} */
 
 .fa {
-    font-size: 1.4em;
+  font-size: 1.4em;
 }
 
 #header a {
-    float: left;
-    display: block;
-    color: #f2f2f2;
-    text-align: center;
-    text-decoration: none;
-    font-size: 17px;
-  }
+  float: left;
+  display: block;
+  color: #f2f2f2;
+  text-align: center;
+  text-decoration: none;
+  font-size: 17px;
+}
 
 /* The Overlay (background) */
 .overlay {
-    /* Height & width depends on how you want to reveal the overlay (see JS below) */   
-    height: 100%;
-    width: 0;
-    position: fixed; /* Stay in place */
-    z-index: 1; /* Sit on top */
-    left: 0;
-    top: 0;
-    background-color: rgb(0,0,0); /* Black fallback color */
-    background-color: rgba(0,0,0, 0.9); /* Black w/opacity */
-    overflow-x: hidden; /* Disable horizontal scroll */
-    transition: 0.5s; /* 0.5 second transition effect to slide in or slide down the overlay (height or width, depending on reveal) */
+  height: 100%;
+  width: 0;
+  position: fixed;
+  z-index: 12;
+  left: 0;
+  top: 0;
+  background-color: rgb(0, 0, 0); /* Black fallback color */
+  background-color: rgba(0, 0, 0, 0.9); /* Black w/opacity */
+  overflow-x: hidden; /* Disable horizontal scroll */
+  transition: 0.5s; /* 0.5 second transition effect to slide in or slide down the overlay (height or width, depending on reveal) */
 }
-  
-  /* Position the content inside the overlay */
-  .overlay-content {
-    position: relative;
-    top: 25%; /* 25% from the top */
-    width: 100%; /* 100% width */
-    text-align: center; /* Centered text/links */
-    margin-top: 30px; /* 30px top margin to avoid conflict with the close button on smaller screens */
-  }
-  
-  /* The navigation links inside the overlay */
-  .overlay a {
-    padding: 8px;
-    text-decoration: none;
-    font-size: 2em;
-    color:white;
-    display: block; /* Display block instead of inline */
-    transition: 0.3s; /* Transition effects on hover (color) */
-  }
-  
-  /* When you mouse over the navigation links, change their color */
-  .overlay a:hover, .overlay a:focus {
-    color: #f1f1f1;
-  }
-  
-  /* Position the close button (top right corner) */
-  .overlay .closebtn {
-    position: absolute;
-    top: 20px;
-    right: 45px;
-    font-size: 50px;
-  }
-  
-  /* When the height of the screen is less than 450 pixels, change the font-size of the links and position the close button again, so they don't overlap */
-  @media screen and (max-height: 450px) {
-    .overlay a {font-size: 2em}
-    .overlay .closebtn {
-      font-size: 40px;
-      top: 15px;
-      right: 35px;
-    }
-  }
 
+/* Position the content inside the overlay */
+.overlay-content {
+  position: relative;
+  top: 25%; /* 25% from the top */
+  width: 100%; /* 100% width */
+  text-align: center; /* Centered text/links */
+  margin-top: 30px; /* 30px top margin to avoid conflict with the close button on smaller screens */
+}
+
+/* The navigation links inside the overlay */
+.overlay a {
+  padding: 8px;
+  text-decoration: none;
+  font-size: 2em;
+  color: white;
+  display: block; /* Display block instead of inline */
+  transition: 0.3s; /* Transition effects on hover (color) */
+}
+
+/* When you mouse over the navigation links, change their color */
+.overlay a:hover,
+.overlay a:focus {
+  color: #f1f1f1;
+}
+
+/* Position the close button (top right corner) */
+.overlay .closebtn {
+  position: absolute;
+  top: 20px;
+  right: 45px;
+  font-size: 50px;
+}
+#example-1 {
+  width: 100%;
+}
+/* When the height of the screen is less than 450 pixels, change the font-size of the 
+// links and position the close button again, so they don't overlap */
+@media screen and (max-height: 450px) {
+  .overlay a {
+    font-size: 2em;
+  }
+  .overlay .closebtn {
+    font-size: 40px;
+    top: 15px;
+    right: 35px;
+  }
+}
+
+@media screen and (min-width: 800px) {
+  #btn-control-container {
+    width: 450px;
+    margin: auto;
+    position: relative;
+  }
+  #move-squares-container {
+    width: 160px;
+    display: block;
+    position: relative;
+    /* left: -347px; */
+    top: -367px;
+  }
+  input {
+    height: 18px;
+  }
+  .small-button {
+    width: 22px;
+  }
+  #example-1 {
+    width: 400px;
+  }
+}
+
+@media screen and (min-width: 600px) {
+  #example-1 {
+    width: 400px;
+  }
+}
