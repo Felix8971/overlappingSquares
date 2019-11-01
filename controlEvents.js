@@ -183,7 +183,7 @@
         actionId && clearInterval(actionId);
       }
 
-      let onlongtouch = (vector) => (event) => {
+      let onlongtouch = (vector) => (event) => {      
         actionId = setInterval(()=>{
           applyAction(vector);
         }, 100);
@@ -194,10 +194,20 @@
       self.addEvent('go-left','touchstart', touchstart({ x: -1, y: 0}));
       self.addEvent('go-right','touchstart', touchstart({ x: 1, y: 0}));
 
+      self.addEvent('go-up','mousedown',touchstart({ x: 0, y: -1}));
+      self.addEvent('go-down','mousedown', touchstart({ x: 0, y: 1}));
+      self.addEvent('go-left','mousedown', touchstart({ x: -1, y: 0}));
+      self.addEvent('go-right','mousedown', touchstart({ x: 1, y: 0}));
+
       self.addEvent('go-up','touchend', touchend);
       self.addEvent('go-down','touchend', touchend);
       self.addEvent('go-left','touchend', touchend);
       self.addEvent('go-right','touchend', touchend);
+
+      self.addEvent('go-up','mouseup', touchend);
+      self.addEvent('go-down','mouseup', touchend);
+      self.addEvent('go-left','mouseup', touchend);
+      self.addEvent('go-right','mouseup', touchend);
       return self;
     },
 
@@ -240,10 +250,13 @@
       
       self.addEvent('rotate-plus','touchstart',touchstart(+1));
       self.addEvent('rotate-moins','touchstart', touchstart(-1));
-     
+      self.addEvent('rotate-plus','mousedown',touchstart(+1));
+      self.addEvent('rotate-moins','mousedown', touchstart(-1));
+
       self.addEvent('rotate-plus','touchend', touchend);
       self.addEvent('rotate-moins','touchend', touchend);
-     
+      self.addEvent('rotate-plus','mouseup', touchend);
+      self.addEvent('rotate-moins','mouseup', touchend);  
       return self;
     },
 
@@ -286,9 +299,13 @@
       
       self.addEvent('resize-plus','touchstart',touchstart(+1));
       self.addEvent('resize-moins','touchstart', touchstart(-1));
-      
+      self.addEvent('resize-plus','mousedown',touchstart(+1));
+      self.addEvent('resize-moins','mousedown', touchstart(-1));
+
       self.addEvent('resize-plus','touchend', touchend);
       self.addEvent('resize-moins','touchend', touchend);
+      self.addEvent('resize-plus','mouseup', touchend);
+      self.addEvent('resize-moins','mouseup', touchend);
       return self;
     },
 
