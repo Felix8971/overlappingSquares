@@ -97,7 +97,7 @@ window.addEventListener("load", function() {
 
         console.log(JSON.stringify(newArr));
       } else {
-        console.log("not new...");
+        //console.log("not new...");
         newArrElement.innerHTML = "";
         newArrElement.style.opacity = 1;
         currentArrElement.value = index;
@@ -389,8 +389,8 @@ window.addEventListener("load", function() {
   }
 
   function handleTouchEnd(evt) {
-    const xUp = evt.changedTouches[0].clientX;
-    const yUp = evt.changedTouches[0].clientY;
+    let xUp = evt.changedTouches[0].clientX;
+    let yUp = evt.changedTouches[0].clientY;
     let xDiff = xDown - xUp;
     let yDiff = yDown - yUp;
     //debugger;
@@ -398,6 +398,7 @@ window.addEventListener("load", function() {
     yMin = yMin + yDiff;
     paper.setViewBox(xMin, yMin, _w, _h);
   }
+
 
   // function handleTouchMove(evt) {
   //     if ( ! xDown || ! yDown ) {
@@ -444,57 +445,70 @@ window.addEventListener("load", function() {
       });
 
     //add glow effect on hover
-    let g;
-    squares[j].svg.hover(
-      function() {
-        g = squares[j].svg.glow().attr("stroke", squareStyle[j].stroke);
-      },
-      function() {
-        // removing the glow
-        g.remove();
-      }
-    );
+    // let g;
+    // squares[j].svg.hover(
+    //   function() {
+    //     g = squares[j].svg.glow().attr("stroke", squareStyle[j].stroke);
+    //   },
+    //   function() {
+    //     // removing the glow
+    //     g.remove();
+    //   }
+    // );
   }
-
 
   //Load the arrangments from the js file and display the fist one
   loadArrangments(arrangmentsN2);
+  document.getElementById("legend-line-0").style.display = 'none';
 
   //events
   _controlEvents
-      .navEvents()
-      .arrangmentLockedEvents()
-      .readMoreLessEvents()
-      .translationStepEvents()
-      .rotationStepEvents()
-      .resizeStepEvents()
-      .translationEvents(squares, validMove, fadeOut)
-      .rotationEvents(squares, validMove, fadeOut)
-      .resizeEvents(squares, validMove, fadeOut)
-      .selectSquareEvents(squares)
-      .arrangmentNavigationEvents(applyZoom, loadArr)
-      .dragViewEvents(handleTouchStart, handleTouchEnd);
+    .navEvents()
+    .arrangmentLockedEvents()
+    .readMoreLessEvents()
+    .translationStepEvents()
+    .rotationStepEvents()
+    .resizeStepEvents()
+    .translationEvents(squares, validMove, fadeOut)
+    .rotationEvents(squares, validMove, fadeOut)
+    .resizeEvents(squares, validMove, fadeOut)
+    .selectSquareEvents(squares)
+    .arrangmentsNavigationEvents(applyZoom, loadArr)
+    .dragViewEvents(handleTouchStart, handleTouchEnd);
   
+  _controlEvents.setSelectedSquareIndex(1);
+
 
   document.getElementById("2-squares").addEventListener("click", function(event) {
     loadArrangments(arrangmentsN2);
     _controlEvents.setNbSquares(2);
-    document.getElementById("nav").style.width = "0%";
     _controlEvents.setCurrentContent("squares");
+    _controlEvents.setSelectedSquareIndex(1);
+    document.getElementById("select-nb-squares").value = 2;
+    document.getElementById("nav").style.width = "0%";
+    document.getElementById("legend-line-0").style.display = 'none';
   });
+
   document.getElementById("3-squares").addEventListener("click", function(event) {
     loadArrangments(arrangmentsN3);
     _controlEvents.setNbSquares(3);
-    document.getElementById("nav").style.width = "0%";
     _controlEvents.setCurrentContent("squares");
+    _controlEvents.setSelectedSquareIndex(0);
+    document.getElementById("select-nb-squares").value = 3;
+    document.getElementById("nav").style.width = "0%"
+    document.getElementById("legend-line-0").style.display = 'flex';
   });
+
   document.getElementById("select-nb-squares").addEventListener("change", function(event) {
-    console.log(event.target.value);
     if ( event.target.value == 2){
       loadArrangments(arrangmentsN2);
+      document.getElementById("legend-line-0").style.display = 'none';
+      _controlEvents.setSelectedSquareIndex(1);
     }
     if ( event.target.value == 3){
       loadArrangments(arrangmentsN3);
+      document.getElementById("legend-line-0").style.display = 'flex';
+      _controlEvents.setSelectedSquareIndex(0);
     }
   });
   

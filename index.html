@@ -74,7 +74,7 @@
         <p><strong>How this project was born ?</strong> I was looking for a problem where I can use a computer to do a
             bit of experimental
             mathematics. This overlapping square problem appeared to be interesting to me because
-            it didn’t seem to require knowledge in math higher than analytic geometry.
+            it didn’t seem to require knowledge in math higher than analytic geometry (for the brute force algorithm part).
             Moreover, as far as I know, it is also an unexplored territory...</p>
     </div>
     <div id="container-contact">
@@ -89,10 +89,15 @@
     
     <div id="container-squares">
         <div id="intro-container">
-            <div id="intro">This page presents the arrangments I found for 3 overlapping squares.</div>
-            <div id="readMoreLessBtn">Read more</div>
+            <div id="intro">
+                This web site is concerned with a problem in combinatorial geometry in the plane.
+                Roughly speaking, I’m interested in the number of ways in which N squares can overlap
+            </div>
+            
         </div>
+        <div id="readMoreLessBtn">Read more</div>
         <div id="more">
+            This page presents some of the possible arrangments found for 2 or 3 overlapping squares.
             Two arrangements of squares are considered the same if one can be continuously changed to the other without
             any vertex passing through an edge.<br><br>
             V(i,j) = number of vertices from the square i included in the square j<br><br>
@@ -106,7 +111,7 @@
             <img id="spinner" src="./images/spinner.svg" width="50" height="50" alt="spinner" title="spinner">
 
             <div id="legend">
-                <div class="legend-line">
+                <div id="legend-line-0" class="legend-line">
                     <div class="line-0"></div>
                     <div class="value">0</div>
                 </div>
@@ -319,7 +324,7 @@
                 title="Smashicons">Smashicons</a> from <a href="https://www.flaticon.com/"
                 title="Flaticon">www.flaticon.com</a></div>
       
-        <div id="update-json">Update json</div>                         
+        <!-- <div id="update-json">Update json</div>                          -->
        
         <script type="module" src="./main.js"></script>
 

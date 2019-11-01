@@ -62,7 +62,7 @@ body {
 }
 
 #intro {
-  width: 72%;
+  width: 100%;
 }
 
 #more {
@@ -77,6 +77,9 @@ body {
   padding: 6px;
   cursor: pointer;
   border-radius: 16px;
+  width: 72px;
+  color: white;
+  margin: 0 auto 7px;
 }
 #more {
   display: none;
@@ -197,6 +200,7 @@ p {
   bottom: 16px;
   font-size: 17px;
 }
+
 #current-arr {
     border: none;
     width: 40px;
@@ -295,9 +299,14 @@ h2 {
 #update-json{
   width: 155px;
   height: 30px;
-  font-size: 0.8em;
+  font-size: 1em;
   color:white;
   border: 1px solid #d8d8d8;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin:auto;
+  bottom:0;
 }
 #import-export-container {
   display: flex;
