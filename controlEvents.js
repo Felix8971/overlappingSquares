@@ -66,7 +66,7 @@
       });
       self.addEvent("header-title", "click", function(event) {
         document.getElementById("container-nav").style.width = "0%";
-        self.setCurrentContent("about");
+        self.setCurrentContent("squares");
       });
       self.addEvent("about", "click", function(event) {   
         document.getElementById("container-nav").style.width = "0%";
