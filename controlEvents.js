@@ -8,16 +8,20 @@
     currentArr: 0,
     playPauseBtnState: null,
     playLoopId: null,
-    transitionDelay: 400,
+    transitionDelay: 1000,
     arrangmentLocked: false,
     dragView: false,
     nbArr:null,
     nbSquares: 2,
     currentContent: "squares", //others possible values: about, contact, ...
-
+    epsilon: 0.013168595184845,
 
     addEvent: (elementName, eventName, callback) => {
-      return document.getElementById(elementName).addEventListener(eventName, callback);
+      try {
+        return document.getElementById(elementName).addEventListener(eventName, callback);
+      } catch {
+        console.log("Error on addEvent on element: "+elementName);
+      }
     },
 
     arrangmentLockedEvents: function() {
@@ -37,14 +41,15 @@
 
     readMoreLessEvents: function() {
       let self = this;
+     
       let moreText = document.getElementById("more");
       let readMoreLessBtn = document.getElementById("readMoreLessBtn");
       self.addEvent("readMoreLessBtn", "click", function(event) {
         if (moreText.style.display === "block") {
-          readMoreLessBtn.innerHTML = "Read more";
+          readMoreLessBtn.innerHTML = "Read more...";
           moreText.style.display = "none";
         } else {
-          readMoreLessBtn.innerHTML = "Read less";
+          readMoreLessBtn.innerHTML = "Read less...";
           moreText.style.display = "block";
         }
       });
@@ -54,21 +59,21 @@
     navEvents: function() {
       let self = this;
       self.addEvent("open-nav-btn", "click", function(event) {
-        document.getElementById("nav").style.width = "100%";
+        document.getElementById("container-nav").style.width = "100%";
       });
       self.addEvent("close-nav-btn", "click", function(event) {
-        document.getElementById("nav").style.width = "0%";
+        document.getElementById("container-nav").style.width = "0%";
       });
       self.addEvent("header-title", "click", function(event) {
-        document.getElementById("nav").style.width = "0%";
+        document.getElementById("container-nav").style.width = "0%";
         self.setCurrentContent("about");
       });
       self.addEvent("about", "click", function(event) {   
-        document.getElementById("nav").style.width = "0%";
+        document.getElementById("container-nav").style.width = "0%";
         self.setCurrentContent("about");
       });
       self.addEvent("more-info", "click", function(event) {   
-        document.getElementById("nav").style.width = "0%";
+        document.getElementById("container-nav").style.width = "0%";
         self.setCurrentContent("about");
         var readMoreLessBtn = document.getElementById("readMoreLessBtn");
         var moreText = document.getElementById("more");
@@ -76,7 +81,7 @@
         moreText.style.display = "none";
       });
       self.addEvent("contact", "click", function(event) {      
-        document.getElementById("nav").style.width = "0%";
+        document.getElementById("container-nav").style.width = "0%";
         self.setCurrentContent("contact");
       });
      
@@ -151,14 +156,14 @@
       function applyAction(vector){
         let sq = squares[self.selectedSquareIndex];
         sq.translate({ 
-          x: vector.x*self.translationStep, 
-          y: vector.y*self.translationStep 
+          x: vector.x*self.translationStep + self.epsilon, 
+          y: vector.y*self.translationStep + self.epsilon 
         }, true);
         //if the move is not allowed we cancel it 
         validMove(sq, elem => {
           elem.translate({ 
-            x: -vector.x*self.translationStep, 
-            y: -vector.y*self.translationStep 
+            x: -vector.x*self.translationStep - self.epsilon, 
+            y: -vector.y*self.translationStep - self.epsilon
           }, true);
           fadeOut(document.getElementById("msg"), null);
           touchend();
@@ -194,15 +199,15 @@
       self.addEvent('go-left','touchstart', touchstart({ x: -1, y: 0}));
       self.addEvent('go-right','touchstart', touchstart({ x: 1, y: 0}));
 
-      self.addEvent('go-up','mousedown',touchstart({ x: 0, y: -1}));
-      self.addEvent('go-down','mousedown', touchstart({ x: 0, y: 1}));
-      self.addEvent('go-left','mousedown', touchstart({ x: -1, y: 0}));
-      self.addEvent('go-right','mousedown', touchstart({ x: 1, y: 0}));
-
       self.addEvent('go-up','touchend', touchend);
       self.addEvent('go-down','touchend', touchend);
       self.addEvent('go-left','touchend', touchend);
       self.addEvent('go-right','touchend', touchend);
+
+      self.addEvent('go-up','mousedown',touchstart({ x: 0, y: -1}));
+      self.addEvent('go-down','mousedown', touchstart({ x: 0, y: 1}));
+      self.addEvent('go-left','mousedown', touchstart({ x: -1, y: 0}));
+      self.addEvent('go-right','mousedown', touchstart({ x: 1, y: 0}));
 
       self.addEvent('go-up','mouseup', touchend);
       self.addEvent('go-down','mouseup', touchend);
@@ -215,10 +220,11 @@
       let self = this;
       function applyAction(sign){
         let sq = squares[self.selectedSquareIndex];
+        let angle0 = sq.angle;
         sq.angle = sq.angle + sign*parseInt(self.rotationStep);
         sq.changeState({ x: sq.center.x, y: sq.center.y }, sq.a, sq.angle);
         validMove(sq, elem => {
-          sq.angle = sq.angle - sign*parseInt(self.rotationStep);
+          sq.angle = angle0;
           sq.rotate(sq.angle, true);
           fadeOut(document.getElementById("msg"), null);
         });
@@ -264,11 +270,11 @@
       let self = this;
       function applyAction(sign){
         let sq = squares[self.selectedSquareIndex];
-        let a = sq.a + sign*parseInt(self.resizeStep);
+        let a0 = sq.a;
+        let a = sq.a + sign*parseInt(self.resizeStep) + self.epsilon;
         sq.changeSize(a, true);
         validMove(sq, elem => {
-          let a = sq.a - sign*parseInt(self.resizeStep);
-          sq.changeSize(a, true);
+          sq.changeSize(a0, true);
           fadeOut(document.getElementById("msg"), null);
         });
       }
@@ -369,13 +375,14 @@
         ) {
           self.playPauseBtnState = "play";
           document.getElementById("play-btn").style.display = "none";
-          document.getElementById("pause-btn").style.display = "block";
+          document.getElementById("pause-btn").style.display = "block";        
           self.playLoopId = setInterval(() => {
             if (self.currentArr < self.nbArr - 1) {
               self.currentArr++;
               loadArr(self.currentArr);
             } else {
               clearInterval(self.playLoopId);
+              self.playPauseBtnState == null;
               document.getElementById("play-btn").style.display = "block";
               document.getElementById("pause-btn").style.display = "none";
             }

@@ -38,7 +38,7 @@
     exports.det33 = det33;
 
     //Return the 6 equivalent forms for V matrix
-    //we also give the I matrice (but only only one form per V matrice for the moment)
+    //we also give the I matrice (but only one form per V matrice for the moment)
     var getEquivalent_VI_List = function(V, I) {
         //Calcul des matrices V equivalentes à V0
         // let a = V[0][1]; let b = V[1][0];let c = V[0][2];let d = V[2][0]; let e = V[1][2]; let f = V[2][1];
@@ -181,8 +181,8 @@
     exports.getEquivalent_I_List = getEquivalent_I_List; 
 
     //Determine si une couple de matrice (V0, I0) est equivalent à un autre couple (V1, I1)
-    //c'est à dire correspond à la meme configuration
-    exports.are_VI_Equivalents = function(arr0, arr1, sumOnColumn) {
+    //c'est à dire correspond au meme arrangment
+    exports.are_VI_Equivalents = function(arr0, arr1) {
         //Tester l'egalité stricte pour V0 == V1 et I0 == I1
         //On va souvent comparer des conf sctrictement egales lors du balayage donc
         //autant tester directement l'egalité stricte en premier
@@ -238,11 +238,6 @@
                     }
                 }  
 
-                // for (let j=0;j < 128;j++){
-                //     if ( areEqual(arr1.I, equivalentListI0[j]) ){
-                //         return true;
-                //     }
-                // }
             }
         }
         //console.log('non equivalentes');

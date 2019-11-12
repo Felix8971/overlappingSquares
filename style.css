@@ -49,9 +49,9 @@ body {
   color: white;
 }
 
-#intro-container {
+#container-intro{
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
   align-items: center;
   background-color: #000;
   color: white;
@@ -68,18 +68,14 @@ body {
 #more {
   background-color: #000;
   color: white;
-  padding: 7px 7px 9px 7px;
 }
 
 #readMoreLessBtn {
   font-size: 1em;
-  border: 1px solid white;
-  padding: 6px;
+  text-decoration: underline;
   cursor: pointer;
-  border-radius: 16px;
-  width: 72px;
-  color: white;
-  margin: 0 auto 7px;
+  margin-top:5px;
+  margin-bottom:5px;
 }
 #more {
   display: none;
@@ -219,7 +215,7 @@ p {
   top: 45%;
 }
 
-#move-squares-container {
+#container-move-squares {
   display: flex;
   justify-content: space-evenly;
   background-color: black;
@@ -246,6 +242,7 @@ p {
     text-align: center;
     height: 21px;
     border-radius: 2px;
+    background-color: white;
 }
 
 #lock-arr {
@@ -296,8 +293,8 @@ h2 {
   border-right: 1px solid #d8d8d8;
   flex-direction: column;
 }
-#update-json{
-  width: 155px;
+#update-json, #add-current-arr, #export-selection-arrs{
+  width: 320px;
   height: 30px;
   font-size: 1em;
   color:white;
@@ -352,7 +349,8 @@ h2 {
   width: 40px;
   height: 40px;
 }
-#btn-control-container {
+
+#container-btn-control {
   display: flex;
   justify-content: space-around;
   flex-direction: row;
@@ -560,12 +558,12 @@ h2 {
 }
 
 @media screen and (min-width: 800px) {
-  #btn-control-container {
+  #container-btn-control {
     width: 450px;
     margin: auto;
     position: relative;
   }
-  #move-squares-container {
+  #container-move-squares {
     width: 160px;
     display: block;
     position: relative;

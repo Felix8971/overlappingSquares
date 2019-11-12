@@ -88,7 +88,7 @@ var getArrsN3Array = (arrsN3) => {
 exports.getArrsN3Array = getArrsN3Array;
 
 // Add the arr arrangement into the list arrsN3 if there is 
-// no equivalent arrangment already present
+// no equivalent arrangment already present in arrsN3
 var updateArrsN3 = (arr, arrsN3) => {
     
     if ( arr.valid ){
@@ -100,32 +100,48 @@ var updateArrsN3 = (arr, arrsN3) => {
         // this method will reduce drastically the number of arrangement to compared
 
         let sV = [
-            sumOnColumn(arr.V, 0), 
-            sumOnColumn(arr.V, 1),  
-            sumOnColumn(arr.V, 2)
+            arr.V[0][0] + arr.V[1][0] + arr.V[2][0], //sumOnColumn(arr.V, 0), 
+            arr.V[0][1] + arr.V[1][1] + arr.V[2][1], //sumOnColumn(arr.V, 1),  
+            arr.V[0][2] + arr.V[1][2] + arr.V[2][2], //sumOnColumn(arr.V, 2)
         ];
         sV.sort((a, b) => a - b);//ascending sort
 
         let sI = [
-            sumOnColumn(arr.I, 0), 
-            sumOnColumn(arr.I, 1),  
-            sumOnColumn(arr.I, 2)
+            arr.I[0][0] + arr.I[1][0] + arr.I[2][0] + arr.I[3][0], //sumOnColumn(arr.I, 0), 
+            arr.I[0][1] + arr.I[1][1] + arr.I[2][1] + arr.I[3][1], //sumOnColumn(arr.I, 1),  
+            arr.I[0][2] + arr.I[1][2] + arr.I[2][2] + arr.I[3][2], //sumOnColumn(arr.I, 2)
         ];
         sI.sort((a, b) => a - b);//ascending sort
+
+        // let sV = [
+        //     sumOnColumn(arr.V, 0), 
+        //     sumOnColumn(arr.V, 1),  
+        //     sumOnColumn(arr.V, 2)
+        // ];
+        // sV.sort((a, b) => a - b);//ascending sort
+
+        // let sI = [
+        //     sumOnColumn(arr.I, 0), 
+        //     sumOnColumn(arr.I, 1),  
+        //     sumOnColumn(arr.I, 2)
+        // ];
+        // sI.sort((a, b) => a - b);//ascending sort
+
         // the sort is important if we want to save the equivalents arr in
         // the same place in arrsN3
         // sV and sI are invariants inside and group of equivalent arrangements
 
         //convertion to a decimal number 
-        let nV = sV[0]*100 + sV[1]*10 + sV[2];
-        let nI = sI[0]*100 + sI[1]*10 + sI[2];
-        let key = nV+"_"+nI;
+        // let nV = sV[0]*100 + sV[1]*10 + sV[2];
+        // let nI = sI[0]*100 + sI[1]*10 + sI[2];
+        // let key = nV+"_"+nI;
+        let key = `${sV[0]*100 + sV[1]*10 + sV[2]}_${sI[0]*100 + sI[1]*10 + sI[2]}`;
         if ( arrsN3[key] ){//the category exist so we search an equivalent of arr inside
             let n = arrsN3[key].length;              
             let found = false;
             for(let i=n-1;i>=0;i--){
-                if ( are_VI_Equivalents(arrsN3[key][i], arr, sumOnColumn) ){
-                    found = true;                                            
+                if ( are_VI_Equivalents(arrsN3[key][i], arr) ){
+                    found = true;                                  
                     break;
                 }
             }
@@ -170,30 +186,15 @@ var _searchArrangments = function (squares, params, arrangments=[], i0_start=0 )
     const n_angles = angles.length;
     const n_size = sizes.length;
 
-    let positionsTested = 0;
+    //let positionsTested = 0;
     let count = 0;
     
-    // switch(params.nbSquare) {
-    //     case 2:
-    //       // code block
-    //       break;
-    //     case 3:
-    //       // code block
-    //       break;
-    //     case 4:
-    //         // code block
-    //         //matrices V et F + 
-    //         break;
-    //     default:
-    //       // code block
-    //   } 
-
     for(let i0=i0_start;i0<i0_end/*nx*/;i0++){
         x2 = scanArea.xmin + i0*step;
         for(let j0=0;j0<ny;j0++){
             y2 = scanArea.ymin + j0*step;
             count++; 
-            let delta_t = parseFloat(((Date.now() - t0)/(1000*60)).toFixed(2))  ;
+            let delta_t = parseFloat(((Date.now() - t0)/(1000*60)).toFixed(2));
             console.log(parseInt(1000*(count/nxny))/10 + '% : '+ getArrsN3Length(arrsN3) + ' arrangments found in '+ parseInt(100*(delta_t))/100 + ' minutes');
             for(let p=0;p<n_size;p++){
                 for(let k=0;k<n_angles;k++){                                                          
@@ -202,12 +203,12 @@ var _searchArrangments = function (squares, params, arrangments=[], i0_start=0 )
                         x3 = scanArea.xmin + i1*step;
                         for(let j1=j0;j1<ny;j1++){// j1=j0
                             y3 = scanArea.ymin + j1*step;                                    
-                            for(let q=0;q<n_size;q++){                                     
+                            for(let q=0;q<n_size;q++){                               
                                 for(let m=0;m<n_angles;m++){                                                              
                                     squares[2].changeState({x:x3,y:y3}, sizes[q], angles[m]);                                  
                                     //let n3 = getArrsN3Length(arrsN3)                                 
                                     updateArrsN3(arrangement_to_VI(squares, NB_VERTEX, NB_SQUARE), arrsN3);                                   
-                                    positionsTested++;                                                                                        
+                                    //positionsTested++;                                                                                        
                                 }
                             }
                         }
@@ -223,7 +224,7 @@ var _searchArrangments = function (squares, params, arrangments=[], i0_start=0 )
     console.log('angles:'+angles);
     console.log('sizes:'+sizes);
     let delta_t = (Date.now() - t0)/(1000*60);
-    console.log(positionsTested + ' positionsTested');
+    //console.log(positionsTested + ' positionsTested');
     const nbArrFound = getArrsN3Length(arrsN3);
     console.log(nbArrFound + ' arrangments found in '+ delta_t + ' minutes');
     console.log('Global progression: ' + parseInt(1000*(i0_end/nx))/10 + '%');
@@ -251,3 +252,103 @@ var _searchArrangments = function (squares, params, arrangments=[], i0_start=0 )
 }
 
 exports.searchArrangments = _searchArrangments;
+
+
+
+var _searchArrangmentsFromE2 = function (squares, params, arrangments=[], i0_start=0 ) {
+    //Principle: we place a fixed square in the center of the simulation zone then we scan
+    //the simulation zone with 2 other squares (by varying their size and their angle of rotation)
+    let { step, angles, sizes, scanArea, nx, ny, resultPath } = params;
+   
+    //List of the N=3 arrangments found
+    let arrsN3 = [];
+   
+    const t0 = Date.now();
+   
+    //const step = 5;//squares[0].a/20;
+    //==> 80 * 2 = 160, 160/5 = 32
+
+    //on ne balaye que l'intervalle specifié en x
+    
+    const nxny = nx*ny;//total number of points used to moves squares
+    let x0, y0;
+    const n_angles = angles.length;
+    const n_size = sizes.length;
+
+    //let positionsTested = 0;
+    let count = 0;
+
+    const nbE2Arr = arrangments.length;
+    
+    for(let i=0;i<nbE2Arr;i++){
+        console.log("Arrangment E2:" + i);
+        //recalculer la scanArea pour chaque arrangement E2
+        params.scanArea = {
+            xmin: Math.min(squares[1].box.xmin, squares[2].box.xmin) - params.excursion,
+            xmax: Math.max(squares[1].box.xmax, squares[2].box.xmax) + params.excursion,
+            ymin: Math.min(squares[1].box.ymin, squares[2].box.ymin) - params.excursion,
+            ymax: Math.max(squares[1].box.ymax, squares[2].box.ymax) + params.excursion
+        };
+        //console.log("scanArea E2:" + scanArea);
+        //number of step on the scan zone
+        params.nx = parseInt((params.scanArea.xmax - params.scanArea.xmin)/params.step);
+        params.ny = parseInt((params.scanArea.ymax - params.scanArea.ymin)/params.step);
+        console.log("nx:" + params.nx);
+        console.log("ny:" + params.ny);
+        squares[1].changeState({
+            x: arrangments[i].squares[1].center.x,
+            y: arrangments[i].squares[1].center.y,
+        }, arrangments[i].squares[1].a, arrangments[i].squares[1].angle);
+
+        squares[2].changeState({
+            x: arrangments[i].squares[2].center.x,
+            y: arrangments[i].squares[2].center.y,
+        }, arrangments[i].squares[2].a, arrangments[i].squares[2].angle);  
+
+        for(let i0=i0_start;i0<params.nx;i0++){
+            x0 = scanArea.xmin + i0*step;
+            for(let j0=0;j0<params.ny;j0++){
+                y0 = scanArea.ymin + j0*step;
+                count++; 
+                for(let p=0;p<n_size;p++){
+                    for(let k=0;k<n_angles;k++){                                                          
+                        squares[0].changeState({x:x0,y:y0}, sizes[p], angles[k]);                                      
+                        updateArrsN3(arrangement_to_VI(squares, NB_VERTEX, NB_SQUARE), arrsN3);                                                                                                                                      
+                    }
+                }
+            }
+        }
+
+        let delta_t = parseFloat(((Date.now() - t0)/(1000*60)).toFixed(2));
+        console.log( getArrsN3Length(arrsN3) + ' arrangments found in '+ parseInt(100*(delta_t))/100 + ' minutes');
+
+    }
+    console.log('========= RESULT =========');
+    
+    
+    console.log('step:'+step);
+    console.log('angles:'+angles);
+    console.log('sizes:'+sizes);
+    let delta_t = (Date.now() - t0)/(1000*60);
+    //console.log(positionsTested + ' positionsTested');
+    const nbArrFound = getArrsN3Length(arrsN3);
+    console.log(nbArrFound + ' arrangments found in '+ delta_t + ' minutes');
+    
+    //Export result 
+    console.log('Save result...');
+    const result = getArrsN3Array(arrsN3);
+    //var log = (obj) => { console.log(util.inspect(obj, {showHidden: false, depth: null})) };
+    //log(result);
+    let fileName = "arrangments-found-"+nbArrFound+".json";
+    
+    fs.writeFile(resultPath+'/'+fileName, JSON.stringify(result), function(err) {
+        if (err) {
+            return console.log(err);
+        }
+        console.log("File saved successfully!");
+    });
+  
+    console.log('========= END =========');
+}
+
+exports.searchArrangmentsFromE2 = _searchArrangmentsFromE2;

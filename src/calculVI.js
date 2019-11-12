@@ -33,6 +33,7 @@ var pointInSquare = (point, square) => {//test ok
 
     //Too close to 0 or 1    
     const epsilon = 0.0001;
+    //const epsilon = 0.2//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!;
     const tooClose = x => (x > -epsilon && x < epsilon) || ( x > 1-epsilon && x < 1+epsilon );
 
     //point trop proche des extremités

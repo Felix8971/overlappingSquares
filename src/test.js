@@ -174,28 +174,28 @@ var tests = function(){
     }
 
     //test sumOnColumn function
-    V = [ [0, 1, 2], [3, 1, 2], [2, 1, 0] ];
-    I = [ [0, 1, 2], [3, 1, 2], [2, 1, 0], [2, 1, 5] ];
-    let sV = [
-        sumOnColumn(V, 0), 
-        sumOnColumn(V, 1),  
-        sumOnColumn(V, 2)
-    ];
-    sV.sort((a, b) => a - b);//ascending sort
-    if ( JSON.stringify(sV) != JSON.stringify([3,4,5]) ){
-        console.log("ERROR 27");
-        nbError++;
-    }
-    let sI = [
-        sumOnColumn(I, 0), 
-        sumOnColumn(I, 1),  
-        sumOnColumn(I, 2)
-    ];
-    sI.sort((a, b) => a - b);//ascending sort
-    if ( JSON.stringify(sI) != JSON.stringify([4,7,9]) ){
-        console.log("ERROR 28");
-        nbError++;
-    }
+    // V = [ [0, 1, 2], [3, 1, 2], [2, 1, 0] ];
+    // I = [ [0, 1, 2], [3, 1, 2], [2, 1, 0], [2, 1, 5] ];
+    // let sV = [
+    //     sumOnColumn(V, 0), 
+    //     sumOnColumn(V, 1),  
+    //     sumOnColumn(V, 2)
+    // ];
+    // sV.sort((a, b) => a - b);//ascending sort
+    // if ( JSON.stringify(sV) != JSON.stringify([3,4,5]) ){
+    //     console.log("ERROR 27");
+    //     nbError++;
+    // }
+    // let sI = [
+    //     sumOnColumn(I, 0), 
+    //     sumOnColumn(I, 1),  
+    //     sumOnColumn(I, 2)
+    // ];
+    // sI.sort((a, b) => a - b);//ascending sort
+    // if ( JSON.stringify(sI) != JSON.stringify([4,7,9]) ){
+    //     console.log("ERROR 28");
+    //     nbError++;
+    // }
 
 
     // test getArrsN3Length function

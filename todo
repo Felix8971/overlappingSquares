@@ -1,8 +1,11 @@
 
-- finir calcul theorique de S
-- use react js for front end (create-react-app)
-- adapt code to display N = 2 and N = 4 squares in the web site
+- finir calcul theorique de S dans le document: ok
 - adapt code to use S matrix server side and client side
+- explore idea of building E3 from randomly generated parameters (with fix square in the middle)
+- explore idea of building E3 from element in E2 already formed
+
+
+voir si E2 oeut former groupe
 
 - optimisation: ne faire bouger qu'un seul carre à la fois afin de ne pas 
    recalculer inutilement les intersections entre les deux autres carres

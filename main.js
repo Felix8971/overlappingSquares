@@ -1,7 +1,18 @@
-//idee optimisation: pre calculer tous les gabari de carres (avec scales et rotations) puis les translater
 import { getViewportSize, fadeOut, blink } from "./util.js";
-import arrangmentsN3 from "./src/result/arrangments-found-4288-0-0.js";
+//import arrangmentsN3 from "./src/result/arrangments-found-146-46-47.js";
 import arrangmentsN2 from "./src/result/arrangments-found-n-2.js";
+import arrangmentsN3 from "./src/result/arrangments-found-n-3.js";
+
+
+//templates
+import nav from "./templates/nav.js";
+import about from "./templates/about.js";
+import contact from "./templates/contact.js";
+import intro from "./templates/intro.js";
+import squaresView from "./templates/squaresView.js";
+import matrices from "./templates/matrices.js";
+import buttonControl from "./templates/buttonControl.js";
+import moveSquaresControlButtons from "./templates/moveSquaresControlButtons.js";
 
 const { W, H, NB_SQUARE, NB_VERTEX } = constants;
 const { _controlEvents } = controlEvents;
@@ -13,10 +24,23 @@ const ANIMATION_DURATION = 200;
 let blinkId = { value:null };
 let arrangments = [];
 
+let selectionArr = [];
+
 window.addEventListener("load", function() {
+  document.getElementById('container-nav').innerHTML = nav;
+  document.getElementById('container-about').innerHTML = about;
+  document.getElementById('container-contact').innerHTML = contact;
+  document.getElementById('container-squares').innerHTML = squaresView;
+  //the elements below are inside container-squares
+    document.getElementById('container-intro').innerHTML = intro;
+    document.getElementById('container-btn-control').innerHTML = buttonControl;
+    document.getElementById('container-move-squares').innerHTML = moveSquaresControlButtons;
+    document.getElementById('matrices').innerHTML = matrices;
+
   _controlEvents.setCurrentContent("squares");
   const resultZone = document.getElementById("result-zone");
-  //Update the displayed matrices according to the value of the squares object
+  
+  //Update the displayed matrices according to the current arrangment 
   var updateMatrices = function(arr, test) {
     let V = arr.V;
     let I = arr.I;
@@ -50,6 +74,33 @@ window.addEventListener("load", function() {
     test && testCurrentArrangment(arr);
   };
 
+
+  var addCurrentArrToArray = (arr, arrs) => {
+    let newArr = {
+      V: arr.V,
+      I: arr.I,
+      squares: [
+        {
+          a: arr.squares[0].a,
+          center: arr.squares[0].center,
+          angle: arr.squares[0].angle
+        },
+        {
+          a: arr.squares[1].a,
+          center: arr.squares[1].center,
+          angle: arr.squares[1].angle
+        },
+        {
+          a: arr.squares[2].a,
+          center: arr.squares[2].center,
+          angle: arr.squares[2].angle
+        }
+      ]
+    };
+
+    arrs.push(newArr);
+  }
+
   var testCurrentArrangment = arr => {
     if (arr.valid) {
       const newArrElement = document.getElementById("new-arr");
@@ -64,38 +115,13 @@ window.addEventListener("load", function() {
           break;
         }
       }
-      if (!found && n > 0) {
-        //alert('new arrangment !');
-        console.log("new !");
+      if (!found && n > 0) {      
         currentArrElement.value = null;
         newArrElement.innerHTML = "new arrangment !";
         newArrElement.style.opacity = 1;
         
-        let newArr = {
-          V: arr.V,
-          I: arr.I,
-          squares: [
-            {
-              a: arr.squares[0].a,
-              center: arr.squares[0].center,
-              angle: arr.squares[0].angle
-            },
-            {
-              a: arr.squares[1].a,
-              center: arr.squares[1].center,
-              angle: arr.squares[1].angle
-            },
-            {
-              a: arr.squares[2].a,
-              center: arr.squares[2].center,
-              angle: arr.squares[2].angle
-            }
-          ]
-        };
+        //addCurrentArrToArray(arr, arrangments);
 
-        arrangments.push(newArr);
-
-        console.log(JSON.stringify(newArr));
       } else {
         //console.log("not new...");
         newArrElement.innerHTML = "";
@@ -131,16 +157,6 @@ window.addEventListener("load", function() {
           },
           ANIMATION_DURATION
         );
-
-        // console.log(sq.angle);
-        // sq.svg.attr({
-        //     x,
-        //     y,
-        //     width: sq.a,
-        //     height: sq.a,
-        //     transform: "r"+sq.angle,
-        // });
-
         updateMatrices(arr, true);
       } else {
         //Reverse the modification
@@ -162,7 +178,7 @@ window.addEventListener("load", function() {
             width: sq.a,
             height: sq.a,
             transform: "r" + sq.angle,
-            delay: 1000
+            delay: 500
           },
           ANIMATION_DURATION
         );
@@ -192,48 +208,90 @@ window.addEventListener("load", function() {
   // });
 
   let updateJsonBtn = document.getElementById("update-json");
-  updateJsonBtn &&
-    document
-      .getElementById("update-json")
-      .addEventListener("click", function(event) {
-        let arrsLigth = arrangments.map(elem => {
-          return {
-            V: elem.V,
-            I: elem.I,
-            squares: [
-              {
-                a: elem.squares[0].a,
-                center: elem.squares[0].center,
-                angle: elem.squares[0].angle
-                //vertex: elem.squares[0].vertex,
-              },
-              {
-                a: elem.squares[1].a,
-                center: elem.squares[1].center,
-                angle: elem.squares[1].angle
-                //vertex: elem.squares[1].vertex,
-              },
-              {
-                a: elem.squares[2].a,
-                center: elem.squares[2].center,
-                angle: elem.squares[2].angle
-                //vertex: elem.squares[2].vertex,
-              }
-            ]
-          };
-        });
-        let dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(arrsLigth));
-        //let dlAnchorElem = document.getElementById("downloadAnchorElem");
-        let downloadLink = document.createElement("a");
-        document.body.appendChild(downloadLink);
-        document.body.removeChild(downloadLink);
-        downloadLink.setAttribute("href", dataStr);
-        let fileName = "arrangments-found-" + Date.now() + ".json";
-        console.log(fileName);
-        downloadLink.setAttribute("download", fileName);
-        downloadLink.click();
-      });
+  updateJsonBtn && updateJsonBtn.addEventListener("click", function(event) {
+    let arrsLigth = arrangments.map(elem => {
+      return {
+        V: elem.V,
+        I: elem.I,
+        squares: [
+          {
+            a: elem.squares[0].a,
+            center: elem.squares[0].center,
+            angle: elem.squares[0].angle
+            //vertex: elem.squares[0].vertex,
+          },
+          {
+            a: elem.squares[1].a,
+            center: elem.squares[1].center,
+            angle: elem.squares[1].angle
+            //vertex: elem.squares[1].vertex,
+          },
+          {
+            a: elem.squares[2].a,
+            center: elem.squares[2].center,
+            angle: elem.squares[2].angle
+            //vertex: elem.squares[2].vertex,
+          }
+        ]
+      };
+    });
+    let dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(arrsLigth));      
+    let downloadLink = document.createElement("a");
+    document.body.appendChild(downloadLink);
+    document.body.removeChild(downloadLink);
+    downloadLink.setAttribute("href", dataStr);
+    let fileName = "arrangments-found-" + Date.now() + ".json";
+    console.log(fileName);
+    downloadLink.setAttribute("download", fileName);
+    downloadLink.click();
+  });
 
+  const  addCurrentArrBtn = document.getElementById("add-current-arr");
+  addCurrentArrBtn && addCurrentArrBtn.addEventListener("click", function(event) {
+    let arr = arrangement_to_VI(squares, NB_VERTEX, NB_SQUARE);
+    addCurrentArrToArray(arr, selectionArr);
+    console.log(selectionArr);
+  });
+
+
+  const exportSelectionArrsBtn = document.getElementById("export-selection-arrs");
+  exportSelectionArrsBtn && exportSelectionArrsBtn.addEventListener("click", function(event) {
+    let currentArrsLigth = selectionArr.map(elem => {
+      return {
+        V: elem.V,
+        I: elem.I,
+        squares: [
+          {
+            a: elem.squares[0].a,
+            center: elem.squares[0].center,
+            angle: elem.squares[0].angle
+            //vertex: elem.squares[0].vertex,
+          },
+          {
+            a: elem.squares[1].a,
+            center: elem.squares[1].center,
+            angle: elem.squares[1].angle
+            //vertex: elem.squares[1].vertex,
+          },
+          {
+            a: elem.squares[2].a,
+            center: elem.squares[2].center,
+            angle: elem.squares[2].angle
+            //vertex: elem.squares[2].vertex,
+          }
+        ]
+      };
+    });
+    let dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(currentArrsLigth));      
+    let downloadLink = document.createElement("a");
+    document.body.appendChild(downloadLink);
+    document.body.removeChild(downloadLink);
+    downloadLink.setAttribute("href", dataStr);
+    let fileName = "export-current-arr-" + Date.now() + ".json";
+    console.log(fileName);
+    downloadLink.setAttribute("download", fileName);
+    downloadLink.click();
+  });
   // function match(elem) {
   //     return ( ( elem.V[0][1] == 0 && elem.V[1][0] == 0 )
   //       || ( elem.V[1][2] == 0 && elem.V[2][1] == 0 )
@@ -260,7 +318,7 @@ window.addEventListener("load", function() {
   //     return {xmin, xmax, ymin, ymax};
   // }
 
-  //Load arrangement i: update the local squares objet with it and update displayed svg
+  //Load arrangement i: update the local squares objet with arrangments[i] and update displayed svg
   function loadArr(i) {
     let arr = arrangments[i];
 
@@ -285,9 +343,10 @@ window.addEventListener("load", function() {
           y,
           width: squares[j].a,
           height: squares[j].a,
-          transform: "r" + squares[j].angle
+          transform: "r" + squares[j].angle,
+          
         },
-        ANIMATION_DURATION,
+        400,
         "ease-in-out"
       );
      
@@ -318,7 +377,7 @@ window.addEventListener("load", function() {
     //_controlEvents.setZoomValue(2);
     //applyZoom(_controlEvents.getZoomValue());
     document.getElementById("spinner").style.display = "none";
-    document.getElementById("move-squares-container").style.visibility = "visible";
+    document.getElementById("container-move-squares").style.visibility = "visible";
     
     // });
   };
@@ -329,12 +388,12 @@ window.addEventListener("load", function() {
   //curreny position of the upper corner of the view
   var xMin = 0;
   var yMin = 0;
+
   let xOffset = null;
   let yOffset = null;
   let xDown = null;
   let yDown = null;
-  let _w = W,
-    _h = H;
+  let _w = W, _h = H;
 
   let viewportSize = getViewportSize();
   const w = viewportSize.w;
@@ -362,20 +421,18 @@ window.addEventListener("load", function() {
     if (_w > 0 && _h > 0 && _w <= W && _h <= H)
       paper.setViewBox(xMin, yMin, _w, _h);
 
-    for (let k = 0; k < 3; k++) {
-      squares[k].svg.attr({ "stroke-width": 2 - zoomValue / 14 });
-    }
+    squares.map((square)=>{
+      square.svg.attr({ "stroke-width": 2 - zoomValue / 5 });
+    })  
+   
   }
 
-  //make a black rectangle that fills the whole canvas area
-  //let hitZone = paper.rect(0, 0, 500, 500);
-  document
-    .getElementsByTagName("svg")[0]
+  document.getElementsByTagName("svg")[0]
     .addEventListener("click", function(event) {
       _controlEvents.setSelectedSquareIndex(0);
-      for (let k = 0; k < 3; k++) {
-        squares[k].svg.attr({ "fill-opacity": 0 });
-      }
+      squares.map((square)=>{
+        square.svg.attr({ "fill-opacity": 0 });
+      })
     });
 
   function getTouches(evt) {
@@ -409,13 +466,8 @@ window.addEventListener("load", function() {
   //     console.log(xUp, yUp);
   // };
 
-  // var rect1 = paper.rect(250, 250, 2, 2);
-  // rect1.attr("fill", "red")
-  // var rect3 = paper.rect(0, 0, 500, 500);
-  // rect3.attr({'stroke-width': 5, stroke:'white',});
-
   //we make sure that the control buttons are below the svg and can be clicked
-  let btnControl = document.getElementById("btn-control-container");
+  let btnControl = document.getElementById("container-btn-control");
   let dy = h - resultZone.clientHeight;
   if (h > resultZone.clientHeight && h < 800) {
     btnControl.style.marginTop = dy + "px";
@@ -485,7 +537,7 @@ window.addEventListener("load", function() {
     _controlEvents.setCurrentContent("squares");
     _controlEvents.setSelectedSquareIndex(1);
     document.getElementById("select-nb-squares").value = 2;
-    document.getElementById("nav").style.width = "0%";
+    document.getElementById("container-nav").style.width = "0%";
     document.getElementById("legend-line-0").style.display = 'none';
   });
 
@@ -495,7 +547,7 @@ window.addEventListener("load", function() {
     _controlEvents.setCurrentContent("squares");
     _controlEvents.setSelectedSquareIndex(0);
     document.getElementById("select-nb-squares").value = 3;
-    document.getElementById("nav").style.width = "0%"
+    document.getElementById("container-nav").style.width = "0%"
     document.getElementById("legend-line-0").style.display = 'flex';
   });
 
@@ -512,4 +564,5 @@ window.addEventListener("load", function() {
     }
   });
   
+
 });

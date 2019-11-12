@@ -4,7 +4,7 @@ const fs = require('fs');
 const path = require('path');
 const { getInitSquares } = require('./initSquares.js');
 const CTE = require('./constants.js');
-const { searchArrangments } = require('./searchArrangments.js');
+const { searchArrangmentsFromE2 } = require('./searchArrangments.js');
 const { tests } = require('./test.js');
 let squares = getInitSquares(CTE);
 
@@ -21,7 +21,7 @@ let squares = getInitSquares(CTE);
 // for which a moving square is the farest possible from square 0 and with a size equal two times 
 // the size of square 0.
 const a0 = parseInt(CTE.W / (5/2 + 2*Math.sqrt(2)) + 1);
-
+debugger;
 //Define how far the center of the moving squares can go from the fixed central square
 const excursion = (3/4)*a0;
 //const excursion = a0;
@@ -31,11 +31,12 @@ squares[0].initRotZero(a0, {x: CTE.W/2, y: CTE.H/2});
 
 let params = {
     nbSquare: 3,
-    step: 5,
-    //angles: [0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70, 75, 80, 85],
-    //sizes: [2, 5, 10, a0/4, (2/4)*a0, (3/4)*a0, a0, (5/4)*a0, (6/4)*a0, (7/4)*a0, 2*a0],
-    angles: [0, 10, 20, 30, 40, 50, 60, 70, 80],
-    sizes: [(2/4)*a0, (3/4)*a0, a0, (5/4)*a0, (6/4)*a0],
+    step: 2,
+    angles: [0, 5, 10, 12, 15, 18, 20, 25, 27, 30, 32, 35, 40, 42, 45, 50, 52, 55, 60, 62 ,65, 70, 72, 75, 77, 80, 82, 85],
+    sizes: [2, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70, 75, 80, 85, 90, 95, 100, 105, 110, 120, 130, 140, 150, 160, 170, 180],
+    //sizes: [ 2, 5, 10, a0/4, (2/4)*a0, (3/4)*a0, a0, (5/4)*a0, (6/4)*a0, (7/4)*a0, 2*a0],
+    //angles: [0, 10, 20, 30, 40, 50, 60, 70, 80],
+    //sizes: [(2/4)*a0, (3/4)*a0, a0, (5/4)*a0, (6/4)*a0],
     excursion,
     scanArea: {
         xmin: squares[0].box.xmin - excursion,
@@ -65,37 +66,15 @@ fs.writeFile(params.resultPath+'/'+paramsFileName, JSON.stringify(params), funct
     console.log("Parameters file saved successfully!");
 });
 
-//To do the (not efficient) calcul with only 2 squares we just put the square 0 far away
-//so that it will never interact with the other squares
-if ( params.nbSquare == 2 ){
-    squares[0].initRotZero(2, {x:-9999, y:9999});
-}
-
 //Find the last result file calculated and start the calcul from there
-let lastFile = null;
-fs.readdir(params.resultPath, function (err, files) {
-    //handling error
-    if (err) {
-        return console.log('Unable to scan directory: ' + err);
-    } 
-    //Listing all result files and find the last one
-    let i0_start = 0;
-    files.forEach(function (file) {
-        if ( file.indexOf("arrangments-found") === 0 && file.indexOf(".json") > 0){
-            console.log(file);
-            let i = parseInt(file.split('.')[0].split('-')[3]);
-            if ( i >= i0_start ) {
-                i0_start = i;
-                lastFile = file;
-            }
-        }
-    });
+let lastFile = 'arrangments-found-12-n2.json';
 
-    console.log('Last File=',lastFile);
-    let data = fs.readFileSync(params.resultPath+'/'+lastFile);
-    //let data = fs.readFileSync('arrangments-found-4337-29-31.json');
-    let arrangments = JSON.parse(data);
-    searchArrangments(squares, params, arrangments, i0_start+1);
-});
+console.log('Last File=',lastFile);
+let data = fs.readFileSync(params.resultPath+'/'+lastFile);
+//let data = fs.readFileSync('arrangments-found-4337-29-31.json');
+let arrangments = JSON.parse(data);
+
+searchArrangmentsFromE2(squares, params, arrangments);
+
 
 
